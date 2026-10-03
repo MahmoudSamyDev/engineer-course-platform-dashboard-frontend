@@ -35,7 +35,10 @@ export function SearchInput({
 
   return (
     <div className={cn("relative", className)}>
-      <Search aria-hidden="true" className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-graphite" />
+      <Search
+        aria-hidden="true"
+        className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-graphite"
+      />
       <input
         type="search"
         aria-label={label}
@@ -90,7 +93,17 @@ export function FilterBar({
         ) : null}
       </div>
       {children ? (
-        <Dialog open={open} onOpenChange={setOpen} title={t("filters")} size="sm" footer={<Button variant="primary" onClick={() => setOpen(false)}>{t("showResults")}</Button>}>
+        <Dialog
+          open={open}
+          onOpenChange={setOpen}
+          title={t("filters")}
+          size="sm"
+          footer={
+            <Button variant="primary" onClick={() => setOpen(false)}>
+              {t("showResults")}
+            </Button>
+          }
+        >
           <div className="flex flex-col gap-3 md:hidden">{children}</div>
         </Dialog>
       ) : null}
@@ -104,13 +117,22 @@ export function FilterBar({
 }
 
 /** Active filters as removable chips + Clear all (DSH-STU-03). */
-export function FilterChips({ chips, onClearAll }: { chips: Array<{ key: string; label: string; onRemove: () => void }>; onClearAll: () => void }) {
+export function FilterChips({
+  chips,
+  onClearAll,
+}: {
+  chips: Array<{ key: string; label: string; onRemove: () => void }>;
+  onClearAll: () => void;
+}) {
   const t = useTranslations("common");
   if (chips.length === 0) return null;
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2">
       {chips.map((chip) => (
-        <span key={chip.key} className="inline-flex h-8 items-center gap-1 rounded-sm border border-line-strong bg-sheet ps-2.5 pe-1 text-caption text-ink">
+        <span
+          key={chip.key}
+          className="inline-flex h-8 items-center gap-1 rounded-sm border border-line-strong bg-sheet ps-2.5 pe-1 text-caption text-ink"
+        >
           {chip.label}
           <button
             type="button"
@@ -122,7 +144,11 @@ export function FilterChips({ chips, onClearAll }: { chips: Array<{ key: string;
           </button>
         </span>
       ))}
-      <button type="button" onClick={onClearAll} className="h-8 px-2 text-caption font-medium text-cyan hover:underline">
+      <button
+        type="button"
+        onClick={onClearAll}
+        className="h-8 px-2 text-caption font-medium text-cyan hover:underline"
+      >
         {t("clearAll")}
       </button>
     </div>

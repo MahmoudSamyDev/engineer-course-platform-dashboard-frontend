@@ -5,7 +5,7 @@
 | Version | 1.0 |
 | Date | 2026-10-03 |
 | Sources | `docs/SRS.md` · `docs/PRD.md` · `docs/DESIGN_SYSTEM.md` · `docs/MARKET_RESEARCH.md` · `../SYSTEM.md` |
-| Status | D0–D4 done; next: **D5 — UI kit** |
+| Status | D0–D9 done; next: **D10 — Assistants & profile** |
 
 This file is the **authoritative phase list**. `AGENTS.md` §5 points here; `PROGRESS.md` tracks status.
 
@@ -22,7 +22,7 @@ This file is the **authoritative phase list**. `AGENTS.md` §5 points here; `PRO
 | i18n | `use-intl` 4.14, `ar.json` (default) + `en.json`, RTL/LTR switch, typed keys |
 | Mock API | MSW 3: auth endpoints, guard, `?mockError=`, in-memory DB seeded from the Website placeholder data |
 | Routes | All SRS §3.2 routes exist; signed-in routes guarded; pages are placeholders until their phase |
-| Quality | ESLint (a11y, hooks, no raw hex), Prettier, Vitest (15 tests), Playwright (6 specs, desktop + mobile) — all green; production build has no mock code |
+| Quality | ESLint (a11y, hooks, no raw hex), Prettier, Vitest (30 tests), Playwright (12 specs, desktop + mobile) — all green; production build has no mock code |
 
 ### React Router 8 / MSW 3 facts that shape the plan
 
@@ -62,11 +62,11 @@ Status: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 | D2 | **Market research** | `MARKET_RESEARCH.md`: references, gaps G1–G13 | PRD §2 | Gaps decided in SRS/PRD | ✅ |
 | D3 | **Requirements & design system** | `SRS.md`, `PRD.md`, `../SYSTEM.md`, `DESIGN_SYSTEM.md`, tokens | all | Approved by the product owner (review) | ✅ (pending review) |
 | D4 | **Foundation (boilerplate)** | Project, tooling, tokens, fonts, store + RTK Query base, i18n, MSW, routes, app shell, sign-in, tests, e2e | DSH-GEN-01/02/10, DSH-NAV-01…03, DSH-AUTH-01…06 | Shell + sign-in in AR/EN at 4 widths; checks green | ✅ |
-| D5 | **UI kit & states** | Primitives (§4), `/dev/ui` preview route (dev only), Toast system, route ErrorBoundary, Skeletons, EmptyState variants, DataTable + FilterBar + Pagination, TitleBlock, SeatBar, Badge mappings for every status | DESIGN_SYSTEM §6, DSH-GEN-05/07/08 | Every primitive in AR/EN, keyboard-checked; **review point** | ⬜ |
-| D6 | **Home** | Overview endpoint + mock (generated bookings/payments with seeded RNG), KPI title block, needs action, revenue SVG chart, latest lists, upcoming sessions, empty start guide | DSH-HOME-*, DUS-03…05 | Numbers match the mock dataset (unit-tested aggregations) | ⬜ |
-| D7 | **Students** | Registrations endpoint + mock, table/filters/search/pagination, mobile rows, student page, CSV export | DSH-STU-*, DUS-06…08, DAC-05 | DAC-05 passes | ⬜ |
-| D8 | **Payments** | Payments endpoint + summary, details sheet, record refund, move, cancel, export | DSH-PAY-*, DUS-09…11, DAC-04 | DAC-04 passes; independent review of money actions | ⬜ |
-| D9 | **Courses, sessions & attendance** | Course cards + Add course dialog, details tabs, publishing checklist (DBR-04), sessions + meetings (Cairo time, weekly helper), roster, print, attendance grid + manual check-in | DSH-CRS-*, DSH-SES-*, DSH-ATT-*, DUS-12…19, DAC-02/03/06 | DAC-02/03/06 pass; **review point** | ⬜ |
+| D5 | **UI kit & states** | Primitives (§4), Toast system, route ErrorBoundary, Skeletons, EmptyState variants, DataTable + FilterBar + Pagination, TitleBlock, SeatBar, Badge mappings for every status | DESIGN_SYSTEM §6, DSH-GEN-05/07/08 | Every primitive in AR/EN, keyboard-checked; **review point** | ✅ |
+| D6 | **Home** | Overview endpoint + mock (generated bookings/payments with seeded RNG), KPI title block, needs action, revenue SVG chart, latest lists, upcoming sessions, empty start guide | DSH-HOME-*, DUS-03…05 | Numbers match the mock dataset (unit-tested aggregations) | ✅ |
+| D7 | **Students** | Registrations endpoint + mock, table/filters/search/pagination, mobile rows, student page, CSV export | DSH-STU-*, DUS-06…08, DAC-05 | DAC-05 passes | ✅ |
+| D8 | **Payments** | Payments endpoint + summary, details sheet, record refund, move, cancel, export | DSH-PAY-*, DUS-09…11, DAC-04 | DAC-04 passes; independent review of money actions | ✅ |
+| D9 | **Courses, sessions & attendance** | Course cards + Add course dialog, details tabs, publishing checklist (DBR-04), sessions + meetings (Cairo time, weekly helper), roster, print, attendance grid + manual check-in | DSH-CRS-*, DSH-SES-*, DSH-ATT-*, DUS-12…19, DAC-02/03/06 | DAC-02/03/06 pass; **review point** | ✅ |
 | D10 | **Assistants & profile** | Assistant cards + dialog + (de)activate; profile tabs, photo upload/crop, certifications & journey lists, account language/password | DSH-ASS-*, DSH-PRO-*, DUS-20…24, DAC-07/08 | DAC-07, DAC-08 (mock) pass | ⬜ |
 | D11 | **Messages & polish** | Inbox + sheet, nav badges, unsaved-changes guards everywhere, quick search (Could) | DSH-MSG-*, DSH-NAV-04, DSH-GEN-06/12 | DUS-25 passes | ⬜ |
 | D12 | **QA & hardening** | Full Playwright suite (DAC-01…10, both locales), axe checks, bundle budget, security headers config for the host, print checks | DNFR-* | All guardrails green | ⬜ |
@@ -93,7 +93,7 @@ Every page phase (D6–D11) follows the same steps — this is the work loop in 
 
 ### D5 component build order
 
-1. Tokens check + `/dev/ui` preview route (dev only)
+1. Tokens check (the kit is reviewed through the real pages — DD-027)
 2. Button, IconButton (+Tooltip), Badge (status map for every enum), Spinner, Skeleton
 3. Field, Input, Textarea, Select, Checkbox, Switch, RadioGroup, BilingualField
 4. Dialog, Sheet, AlertDialog, DropdownMenu, Popover, Tabs (URL-bound)

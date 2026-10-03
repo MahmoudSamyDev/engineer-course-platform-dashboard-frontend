@@ -23,17 +23,26 @@ export function CurriculumTab({ course }: { course: CourseDetail }) {
   const [replace, { isLoading }] = useReplaceModulesMutation();
   const [error, setError] = useState<string | null>(null);
   const { draft, setDraft, dirty, reset } = useDraft<ModuleDraft[]>(
-    course.modules.map((m) => ({ title: m.title, durationHours: m.durationHours ?? null, topics: listToText(m.topics) })),
+    course.modules.map((m) => ({
+      title: m.title,
+      durationHours: m.durationHours ?? null,
+      topics: listToText(m.topics),
+    })),
   );
   const totalHours = draft.reduce((sum, m) => sum + (m.durationHours ?? 0), 0);
 
   async function save() {
-    if (draft.some((m) => !m.title.ar.trim() || !m.title.en.trim())) return setError(t("titleError"));
+    if (draft.some((m) => !m.title.ar.trim() || !m.title.en.trim()))
+      return setError(t("titleError"));
     setError(null);
     try {
       await replace({
         id: course.id,
-        modules: draft.map((m) => ({ title: m.title, durationHours: m.durationHours ?? undefined, topics: textToList(m.topics) })),
+        modules: draft.map((m) => ({
+          title: m.title,
+          durationHours: m.durationHours ?? undefined,
+          topics: textToList(m.topics),
+        })),
       }).unwrap();
       toast({ title: tc("saved") });
     } catch (e) {
@@ -55,7 +64,13 @@ export function CurriculumTab({ course }: { course: CourseDetail }) {
         emptyText={t("empty")}
         renderItem={(module, update) => (
           <>
-            <BilingualField label={t("title")} value={module.title} onChange={(title) => update({ ...module, title })} maxLength={100} required />
+            <BilingualField
+              label={t("title")}
+              value={module.title}
+              onChange={(title) => update({ ...module, title })}
+              maxLength={100}
+              required
+            />
             <Field label={t("hours")} className="sm:max-w-40">
               {(control) => (
                 <Input
@@ -65,11 +80,25 @@ export function CurriculumTab({ course }: { course: CourseDetail }) {
                   min={0}
                   dir="ltr"
                   value={module.durationHours ?? ""}
-                  onChange={(e) => update({ ...module, durationHours: Number.isNaN(e.target.valueAsNumber) ? null : e.target.valueAsNumber })}
+                  onChange={(e) =>
+                    update({
+                      ...module,
+                      durationHours: Number.isNaN(e.target.valueAsNumber)
+                        ? null
+                        : e.target.valueAsNumber,
+                    })
+                  }
                 />
               )}
             </Field>
-            <BilingualField label={t("topics")} hint={t("perLine")} value={module.topics} onChange={(topics) => update({ ...module, topics })} multiline rows={4} />
+            <BilingualField
+              label={t("topics")}
+              hint={t("perLine")}
+              value={module.topics}
+              onChange={(topics) => update({ ...module, topics })}
+              multiline
+              rows={4}
+            />
           </>
         )}
       />

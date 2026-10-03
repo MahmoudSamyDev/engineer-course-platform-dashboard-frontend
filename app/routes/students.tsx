@@ -12,13 +12,18 @@ export default function Students() {
   const state = useRegistrationFilters();
   const { filters, url, setQ } = state;
   const { data, error, isLoading, isFetching, refetch } = useGetRegistrationsQuery(filters);
-  const filtered = Boolean(filters.q || filters.courseId || filters.attendance || state.range || state.status !== "PAID");
+  const filtered = Boolean(
+    filters.q || filters.courseId || filters.attendance || state.range || state.status !== "PAID",
+  );
 
   return (
     <>
       <PageHeader title={t("title")} description={t("description")} />
       <StudentsFilters state={state} />
-      <div aria-busy={isFetching} className={isFetching && !isLoading ? "opacity-70 transition-opacity" : undefined}>
+      <div
+        aria-busy={isFetching}
+        className={isFetching && !isLoading ? "opacity-70 transition-opacity" : undefined}
+      >
         <StudentsTable
           rows={data?.items}
           loading={isLoading}
@@ -29,7 +34,13 @@ export default function Students() {
           filtered={filtered}
           onClearFilters={() => {
             setQ("");
-            url.set({ course: undefined, session: undefined, status: undefined, attendance: undefined, range: undefined });
+            url.set({
+              course: undefined,
+              session: undefined,
+              status: undefined,
+              attendance: undefined,
+              range: undefined,
+            });
           }}
         />
         {data ? (

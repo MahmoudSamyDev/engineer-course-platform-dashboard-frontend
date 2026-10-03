@@ -26,7 +26,10 @@ export function Pagination({
   const to = Math.min(total, page * pageSize);
 
   return (
-    <nav aria-label={t("pagination")} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <nav
+      aria-label={t("pagination")}
+      className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
       <p className="tabular text-caption text-graphite" aria-live="polite">
         {t("showing", { from, to, total })}
       </p>
@@ -35,14 +38,27 @@ export function Pagination({
           aria-label={t("rowsPerPage")}
           value={String(pageSize)}
           onValueChange={(value) => value && onPageSizeChange(Number(value))}
-          options={PAGE_SIZES.map((size) => ({ value: String(size), label: t("perPage", { size }) }))}
+          options={PAGE_SIZES.map((size) => ({
+            value: String(size),
+            label: t("perPage", { size }),
+          }))}
           className="h-9 w-auto touch:h-11"
         />
-        <Button size="sm" variant="secondary" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={page <= 1}
+          onClick={() => onPageChange(page - 1)}
+        >
           <ChevronLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {t("previous")}
         </Button>
-        <Button size="sm" variant="secondary" disabled={page >= pages} onClick={() => onPageChange(page + 1)}>
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={page >= pages}
+          onClick={() => onPageChange(page + 1)}
+        >
           {t("next")}
           <ChevronRight aria-hidden="true" className="rtl:-scale-x-100" />
         </Button>

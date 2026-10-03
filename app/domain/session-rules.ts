@@ -30,10 +30,16 @@ export function defaultRegistrationClose(firstStartIso: string): string {
 }
 
 /** DBR-10 — `{COURSE3}-{YYMM}-{A..Z}` with the next free letter for that course and month. */
-export function nextSessionCode(courseCode: string, firstStartIso: string, existingCodes: string[]): string {
+export function nextSessionCode(
+  courseCode: string,
+  firstStartIso: string,
+  existingCodes: string[],
+): string {
   const [year, month] = cairoMonthKey(firstStartIso).split("-") as [string, string];
   const prefix = `${courseCode}-${year.slice(2)}${month}-`;
-  const used = new Set(existingCodes.filter((c) => c.startsWith(prefix)).map((c) => c.slice(prefix.length)));
+  const used = new Set(
+    existingCodes.filter((c) => c.startsWith(prefix)).map((c) => c.slice(prefix.length)),
+  );
   for (let i = 0; i < 26; i++) {
     const letter = String.fromCharCode(65 + i);
     if (!used.has(letter)) return prefix + letter;

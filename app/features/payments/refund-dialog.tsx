@@ -5,6 +5,7 @@ import { useTranslations } from "use-intl";
 import { z } from "zod";
 import { Money } from "~/components/format";
 import { useDiscardGuard } from "~/components/use-discard-guard";
+import { AmountInput } from "~/components/ui/amount-input";
 import { Button } from "~/components/ui/button";
 import { Dialog } from "~/components/ui/dialog";
 import { Field } from "~/components/ui/field";
@@ -20,7 +21,15 @@ import { useRecordRefundMutation } from "./api";
  * Record a refund made in the Paymob portal (DSH-PAY-05, DBR-11). Partial refunds allowed
  * (1 EGP up to the remaining amount); the booking becomes Refunded and the ticket Cancelled.
  */
-export function RefundDialog({ payment, open, onOpenChange }: { payment: PaymentDetail; open: boolean; onOpenChange: (open: boolean) => void }) {
+export function RefundDialog({
+  payment,
+  open,
+  onOpenChange,
+}: {
+  payment: PaymentDetail;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const t = useTranslations("payments.refund");
   const tc = useTranslations("common");
   const toast = useToast();
@@ -56,7 +65,8 @@ export function RefundDialog({ payment, open, onOpenChange }: { payment: Payment
     } catch (error) {
       const apiError = getApiError(error);
       if (apiError?.fields?.amount) form.setError("amount", { message: "amount" });
-      if (apiError?.fields?.refundTransactionId) form.setError("refundTransactionId", { message: "transaction" });
+      if (apiError?.fields?.refundTransactionId)
+        form.setError("refundTransactionId", { message: "transaction" });
       if (!apiError?.fields) toast({ title: apiError?.message ?? tc("save"), tone: "error" });
     }
   }
@@ -80,23 +90,50 @@ export function RefundDialog({ payment, open, onOpenChange }: { payment: Payment
         </>
       }
     >
-      <form id="refund-form" noValidate onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-4">
-        <p className="rounded-sm bg-warning-wash px-3 py-2 text-body text-warning">{t("consequence")}</p>
+      <form
+        id="refund-form"
+        noValidate
+        onSubmit={form.handleSubmit(submit)}
+        className="flex flex-col gap-4"
+      >
+        <p className="rounded-sm bg-warning-wash px-3 py-2 text-body text-warning">
+          {t("consequence")}
+        </p>
         <Field
           label={t("amount")}
-          hint={<>{t("amountHint")} <Money amount={payment.amount - payment.refundedAmount} /></>}
+          hint={
+            <>
+              {t("amountHint")} <Money amount={payment.amount - payment.refundedAmount} />
+            </>
+          }
           error={errors.amount ? t("amountError", { max: remaining }) : undefined}
           required
         >
           {(control) => (
-            <div className="relative">
-              <Input {...control} {...form.register("amount", { valueAsNumber: true })} type="number" inputMode="decimal" min={1} max={remaining} step="0.01" dir="ltr" className="pe-14" />
-              <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-caption text-graphite">{t("currency")}</span>
-            </div>
+            <AmountInput
+              {...control}
+              {...form.register("amount", { valueAsNumber: true })}
+              suffix={t("currency")}
+              min={1}
+              max={remaining}
+              step="0.01"
+            />
           )}
         </Field>
-        <Field label={t("transaction")} hint={t("transactionHint")} error={errors.refundTransactionId ? t("transactionError") : undefined} required>
-          {(control) => <Input {...control} {...form.register("refundTransactionId")} dir="ltr" autoComplete="off" />}
+        <Field
+          label={t("transaction")}
+          hint={t("transactionHint")}
+          error={errors.refundTransactionId ? t("transactionError") : undefined}
+          required
+        >
+          {(control) => (
+            <Input
+              {...control}
+              {...form.register("refundTransactionId")}
+              dir="ltr"
+              autoComplete="off"
+            />
+          )}
         </Field>
         <Field label={t("note")} hint={t("noteHint")}>
           {(control) => <Textarea {...control} {...form.register("note")} rows={3} />}

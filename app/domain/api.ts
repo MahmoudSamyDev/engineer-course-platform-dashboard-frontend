@@ -376,7 +376,11 @@ export type AssistantInput = {
 
 // ── Instructor profile (DSH-PRO) ───────────────────────────────────────────
 
-export type InstructorStatDto = { key: "years" | "students" | "cohorts" | "projects"; value: string; label: LocalizedText };
+export type InstructorStatDto = {
+  key: "years" | "students" | "cohorts" | "projects";
+  value: string;
+  label: LocalizedText;
+};
 
 export type CertificationDto = {
   id: string;
@@ -415,9 +419,7 @@ export type InstructorProfile = {
   journey: MilestoneDto[];
 };
 
-export type UpdateInstructorInput = Partial<
-  Omit<InstructorProfile, "certifications" | "journey">
->;
+export type UpdateInstructorInput = Partial<Omit<InstructorProfile, "certifications" | "journey">>;
 
 // ── Messages (DSH-MSG) ─────────────────────────────────────────────────────
 

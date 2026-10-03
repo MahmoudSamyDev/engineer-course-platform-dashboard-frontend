@@ -23,13 +23,17 @@ export function Sheet({
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="fixed inset-0 z-40 bg-overlay animate-overlay-in" />
-        <RadixDialog.Content className="fixed inset-y-0 end-0 z-50 flex w-full flex-col border-s-[1.5px] border-line-strong bg-sheet shadow-float outline-none animate-sheet-in-end sm:w-[30rem]">
+        <RadixDialog.Overlay className="fixed inset-0 z-40 animate-overlay-in bg-overlay" />
+        <RadixDialog.Content className="fixed inset-y-0 end-0 z-50 flex w-full animate-sheet-in-end flex-col border-s-[1.5px] border-line-strong bg-sheet shadow-float outline-none sm:w-[30rem]">
           <header className="flex items-start gap-3 border-b border-line px-5 py-4">
             <div className="min-w-0 flex-1">
-              <RadixDialog.Title className="font-display text-heading font-semibold">{title}</RadixDialog.Title>
+              <RadixDialog.Title className="font-display text-heading font-semibold">
+                {title}
+              </RadixDialog.Title>
               {description ? (
-                <RadixDialog.Description className="mt-0.5 text-body text-graphite">{description}</RadixDialog.Description>
+                <RadixDialog.Description className="mt-0.5 text-body text-graphite">
+                  {description}
+                </RadixDialog.Description>
               ) : (
                 <RadixDialog.Description className="sr-only">{title}</RadixDialog.Description>
               )}
@@ -42,7 +46,11 @@ export function Sheet({
             </RadixDialog.Close>
           </header>
           <div className="flex-1 overflow-y-auto px-5 py-5">{children}</div>
-          {footer ? <footer className="flex flex-wrap gap-2 border-t border-line px-5 py-3">{footer}</footer> : null}
+          {footer ? (
+            <footer className="flex flex-wrap gap-2 border-t border-line px-5 py-3">
+              {footer}
+            </footer>
+          ) : null}
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>

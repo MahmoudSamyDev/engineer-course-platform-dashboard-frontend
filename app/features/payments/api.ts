@@ -1,9 +1,24 @@
 import type { ItemResponse, ListResponse } from "~/domain/admin";
-import type { Page, PaymentDetail, PaymentFilters, PaymentRow, PaymentSummary, RecordRefundInput } from "~/domain/api";
+import type {
+  Page,
+  PaymentDetail,
+  PaymentFilters,
+  PaymentRow,
+  PaymentSummary,
+  RecordRefundInput,
+} from "~/domain/api";
 import { api, toQueryString } from "~/store/api";
 
 /** Everything a money or seat change can affect (DBR-11/12). */
-const AFFECTED_BY_BOOKING_CHANGE = ["Payment", "Registration", "Student", "Overview", "Counts", "Session", "Course"] as const;
+const AFFECTED_BY_BOOKING_CHANGE = [
+  "Payment",
+  "Registration",
+  "Student",
+  "Overview",
+  "Counts",
+  "Session",
+  "Course",
+] as const;
 
 /** SRS §7.2 — payments, refunds, move, cancel (DSH-PAY). */
 export const paymentsApi = api.injectEndpoints({
@@ -31,7 +46,10 @@ export const paymentsApi = api.injectEndpoints({
       transformResponse: (r: ItemResponse<PaymentDetail>) => r.data,
       invalidatesTags: [...AFFECTED_BY_BOOKING_CHANGE],
     }),
-    moveBooking: build.mutation<{ bookingId: string; sessionId: string }, { bookingId: string; targetSessionId: string; idempotencyKey: string }>({
+    moveBooking: build.mutation<
+      { bookingId: string; sessionId: string },
+      { bookingId: string; targetSessionId: string; idempotencyKey: string }
+    >({
       query: ({ bookingId, targetSessionId, idempotencyKey }) => ({
         url: `/bookings/${encodeURIComponent(bookingId)}/move`,
         method: "POST",
@@ -41,7 +59,10 @@ export const paymentsApi = api.injectEndpoints({
       transformResponse: (r: ItemResponse<{ bookingId: string; sessionId: string }>) => r.data,
       invalidatesTags: [...AFFECTED_BY_BOOKING_CHANGE],
     }),
-    cancelBooking: build.mutation<{ bookingId: string }, { bookingId: string; reason: string; idempotencyKey: string }>({
+    cancelBooking: build.mutation<
+      { bookingId: string },
+      { bookingId: string; reason: string; idempotencyKey: string }
+    >({
       query: ({ bookingId, reason, idempotencyKey }) => ({
         url: `/bookings/${encodeURIComponent(bookingId)}/cancel`,
         method: "POST",

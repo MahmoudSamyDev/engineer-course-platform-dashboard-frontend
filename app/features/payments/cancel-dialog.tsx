@@ -9,7 +9,15 @@ import { getApiError } from "~/store/api";
 import { useCancelBookingMutation } from "./api";
 
 /** Cancel a paid booking: ticket cancelled, seat released, reason required (DSH-PAY-07). */
-export function CancelDialog({ payment, open, onOpenChange }: { payment: PaymentDetail; open: boolean; onOpenChange: (open: boolean) => void }) {
+export function CancelDialog({
+  payment,
+  open,
+  onOpenChange,
+}: {
+  payment: PaymentDetail;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const t = useTranslations("payments.cancel");
   const toast = useToast();
   const [reason, setReason] = useState("");
@@ -22,14 +30,21 @@ export function CancelDialog({ payment, open, onOpenChange }: { payment: Payment
       open={open}
       onOpenChange={onOpenChange}
       title={t("title")}
-      description={t("description", { name: payment.student.fullName, reference: payment.reference })}
+      description={t("description", {
+        name: payment.student.fullName,
+        reference: payment.reference,
+      })}
       confirmLabel={t("submit")}
       destructive
       loading={isLoading}
       onConfirm={async () => {
         if (!reason.trim()) return setError(t("reasonError"));
         try {
-          await cancel({ bookingId: payment.bookingId, reason: reason.trim(), idempotencyKey }).unwrap();
+          await cancel({
+            bookingId: payment.bookingId,
+            reason: reason.trim(),
+            idempotencyKey,
+          }).unwrap();
           toast({ title: t("done"), description: payment.reference });
           onOpenChange(false);
         } catch (e) {
@@ -38,7 +53,17 @@ export function CancelDialog({ payment, open, onOpenChange }: { payment: Payment
       }}
     >
       <Field label={t("reason")} error={error} required>
-        {(control) => <Textarea {...control} value={reason} onChange={(e) => { setReason(e.target.value); setError(undefined); }} rows={3} />}
+        {(control) => (
+          <Textarea
+            {...control}
+            value={reason}
+            onChange={(e) => {
+              setReason(e.target.value);
+              setError(undefined);
+            }}
+            rows={3}
+          />
+        )}
       </Field>
     </ConfirmDialog>
   );

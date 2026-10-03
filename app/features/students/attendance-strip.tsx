@@ -32,7 +32,9 @@ export function AttendanceStrip({ meetings }: { meetings: MeetingAttendance[] })
               {state === "attended" ? (
                 <>
                   <Check aria-hidden="true" className="size-3.5 text-success" />
-                  <span className="text-success">{t("attendedAt", { time: formatTime(m.checkIn!.at, locale) })}</span>
+                  <span className="text-success">
+                    {t("attendedAt", { time: formatTime(m.checkIn!.at, locale) })}
+                  </span>
                 </>
               ) : state === "missed" ? (
                 <>

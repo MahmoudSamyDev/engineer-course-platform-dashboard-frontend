@@ -71,7 +71,10 @@ export default function Login() {
     try {
       const user = await login(values).unwrap();
       // The language chosen on this page is the latest explicit choice: keep it (DSH-GEN-02).
-      if (user.locale !== uiLocale) await saveLocale(uiLocale).unwrap().catch(() => undefined);
+      if (user.locale !== uiLocale)
+        await saveLocale(uiLocale)
+          .unwrap()
+          .catch(() => undefined);
       navigate(safeNextPath(params.get("next")), { replace: true });
     } catch (error) {
       const apiError = getApiError(error);

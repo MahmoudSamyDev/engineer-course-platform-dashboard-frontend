@@ -11,7 +11,11 @@ export const messagesApi = api.injectEndpoints({
       providesTags: [{ type: "Message", id: "LIST" }],
     }),
     setMessageStatus: build.mutation<ContactMessage, { id: string; status: MessageStatus }>({
-      query: ({ id, status }) => ({ url: `/messages/${encodeURIComponent(id)}`, method: "PATCH", body: { status } }),
+      query: ({ id, status }) => ({
+        url: `/messages/${encodeURIComponent(id)}`,
+        method: "PATCH",
+        body: { status },
+      }),
       transformResponse: (r: ItemResponse<ContactMessage>) => r.data,
       invalidatesTags: [{ type: "Message", id: "LIST" }, "Counts", "Overview"],
     }),

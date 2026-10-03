@@ -3,7 +3,12 @@ import { attendanceOf } from "~/domain/attendance";
 import { readinessIssues, slugify } from "~/domain/course-rules";
 import { egpToPiasters } from "~/domain/money";
 import { cairoMonthKey, lastMonthKeys } from "~/domain/months";
-import { checkMeetings, defaultRegistrationClose, minimumCapacity, nextSessionCode } from "~/domain/session-rules";
+import {
+  checkMeetings,
+  defaultRegistrationClose,
+  minimumCapacity,
+  nextSessionCode,
+} from "~/domain/session-rules";
 
 const m = (start: string, end: string, checked = false) => ({
   startsAt: start,
@@ -20,7 +25,11 @@ describe("attendance (DSH-ATT-02)", () => {
     expect(attendanceOf("PAID", meetings, new Date("2026-10-01")).status).toBe("UPCOMING");
   });
   it("is attended when a started meeting was checked in", () => {
-    expect(attendanceOf("PAID", meetings, new Date("2026-10-12"))).toEqual({ status: "ATTENDED", attended: 1, total: 2 });
+    expect(attendanceOf("PAID", meetings, new Date("2026-10-12"))).toEqual({
+      status: "ATTENDED",
+      attended: 1,
+      total: 2,
+    });
   });
   it("is absent when meetings started without check-ins", () => {
     const none = meetings.map((x) => ({ ...x, checkIn: null }));
@@ -40,7 +49,12 @@ describe("Cairo months", () => {
     expect(cairoMonthKey("2026-10-31T22:30:00Z")).toBe("2026-11");
   });
   it("lists the last months across a year boundary", () => {
-    expect(lastMonthKeys(new Date("2027-02-10T10:00:00Z"), 4)).toEqual(["2026-11", "2026-12", "2027-01", "2027-02"]);
+    expect(lastMonthKeys(new Date("2027-02-10T10:00:00Z"), 4)).toEqual([
+      "2026-11",
+      "2026-12",
+      "2027-01",
+      "2027-02",
+    ]);
   });
 });
 
@@ -62,18 +76,31 @@ describe("course rules (DBR-02…04)", () => {
   });
   it("lists what is missing", () => {
     expect(
-      readinessIssues({ ...base, about: { ar: "", en: "x" }, outcomes: { ar: ["1"], en: ["1", "2", "3"] }, modules: [] }),
+      readinessIssues({
+        ...base,
+        about: { ar: "", en: "x" },
+        outcomes: { ar: ["1"], en: ["1", "2", "3"] },
+        modules: [],
+      }),
     ).toEqual(["about", "outcomes", "modules"]);
   });
   it("suggests slugs from English titles", () => {
-    expect(slugify("ETABS for Analysis & Design of RC Buildings")).toBe("etabs-for-analysis-and-design-of-rc-buildings");
+    expect(slugify("ETABS for Analysis & Design of RC Buildings")).toBe(
+      "etabs-for-analysis-and-design-of-rc-buildings",
+    );
   });
 });
 
 describe("session rules (DBR-05/07/08/10)", () => {
   const now = new Date("2026-10-03T10:00:00Z");
   it("rejects end before start, overlaps and past first meetings", () => {
-    expect(checkMeetings([{ startsAt: "2026-11-01T10:00:00Z", endsAt: "2026-11-01T09:00:00Z" }], now, true).kind).toBe("endBeforeStart");
+    expect(
+      checkMeetings(
+        [{ startsAt: "2026-11-01T10:00:00Z", endsAt: "2026-11-01T09:00:00Z" }],
+        now,
+        true,
+      ).kind,
+    ).toBe("endBeforeStart");
     expect(
       checkMeetings(
         [
@@ -84,13 +111,21 @@ describe("session rules (DBR-05/07/08/10)", () => {
         true,
       ).kind,
     ).toBe("overlap");
-    expect(checkMeetings([{ startsAt: "2026-10-01T08:00:00Z", endsAt: "2026-10-01T12:00:00Z" }], now, true).kind).toBe("firstInPast");
+    expect(
+      checkMeetings(
+        [{ startsAt: "2026-10-01T08:00:00Z", endsAt: "2026-10-01T12:00:00Z" }],
+        now,
+        true,
+      ).kind,
+    ).toBe("firstInPast");
   });
   it("closes registration 24 h before the first meeting", () => {
     expect(defaultRegistrationClose("2026-11-01T08:00:00.000Z")).toBe("2026-10-31T08:00:00.000Z");
   });
   it("generates the next free session code for the Cairo month", () => {
-    expect(nextSessionCode("ETB", "2026-10-17T07:00:00Z", ["ETB-2610-A", "ETB-2610-B", "SAF-2610-A"])).toBe("ETB-2610-C");
+    expect(
+      nextSessionCode("ETB", "2026-10-17T07:00:00Z", ["ETB-2610-A", "ETB-2610-B", "SAF-2610-A"]),
+    ).toBe("ETB-2610-C");
     expect(nextSessionCode("ETB", "2026-11-07T08:00:00Z", ["ETB-2610-A"])).toBe("ETB-2611-A");
   });
   it("never lets capacity go below sold + held", () => {

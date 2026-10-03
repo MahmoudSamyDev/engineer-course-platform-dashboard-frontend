@@ -31,7 +31,10 @@ export function PaymentSheet({ id, onClose }: { id: string | undefined; onClose:
   const { data, error, isLoading, refetch } = useGetPaymentQuery(id ?? "", { skip: !id });
   const [dialog, setDialog] = useState<"refund" | "move" | "cancel" | null>(null);
 
-  const canRefund = data && data.status === "SUCCEEDED" && (data.bookingStatus === "PAID" || data.bookingStatus === "REFUND_REQUIRED");
+  const canRefund =
+    data &&
+    data.status === "SUCCEEDED" &&
+    (data.bookingStatus === "PAID" || data.bookingStatus === "REFUND_REQUIRED");
   const canMove = data?.bookingStatus === "REFUND_REQUIRED";
   const canCancel = data?.bookingStatus === "PAID" && data.status === "SUCCEEDED";
 
@@ -51,7 +54,10 @@ export function PaymentSheet({ id, onClose }: { id: string | undefined; onClose:
               </Button>
             ) : null}
             {canRefund ? (
-              <Button variant={canMove ? "secondary" : "primary"} onClick={() => setDialog("refund")}>
+              <Button
+                variant={canMove ? "secondary" : "primary"}
+                onClick={() => setDialog("refund")}
+              >
                 <Undo2 aria-hidden="true" className="rtl:-scale-x-100" />
                 {t("refund")}
               </Button>
@@ -77,9 +83,15 @@ export function PaymentSheet({ id, onClose }: { id: string | undefined; onClose:
       ) : (
         <PaymentDetails payment={data} />
       )}
-      {data && dialog === "refund" ? <RefundDialog payment={data} open onOpenChange={(o) => !o && setDialog(null)} /> : null}
-      {data && dialog === "move" ? <MoveDialog payment={data} open onOpenChange={(o) => !o && setDialog(null)} /> : null}
-      {data && dialog === "cancel" ? <CancelDialog payment={data} open onOpenChange={(o) => !o && setDialog(null)} /> : null}
+      {data && dialog === "refund" ? (
+        <RefundDialog payment={data} open onOpenChange={(o) => !o && setDialog(null)} />
+      ) : null}
+      {data && dialog === "move" ? (
+        <MoveDialog payment={data} open onOpenChange={(o) => !o && setDialog(null)} />
+      ) : null}
+      {data && dialog === "cancel" ? (
+        <CancelDialog payment={data} open onOpenChange={(o) => !o && setDialog(null)} />
+      ) : null}
     </Sheet>
   );
 }
@@ -96,46 +108,90 @@ function PaymentDetails({ payment }: { payment: PaymentDetail }) {
       </div>
 
       {payment.bookingStatus === "REFUND_REQUIRED" ? (
-        <p className="rounded-sm bg-warning-wash px-3 py-2 text-body text-warning">{t("refundRequiredHint")}</p>
+        <p className="rounded-sm bg-warning-wash px-3 py-2 text-body text-warning">
+          {t("refundRequiredHint")}
+        </p>
       ) : null}
 
       <section aria-labelledby="pd-money">
-        <h3 id="pd-money" className="mb-1 text-label font-medium text-graphite">{t("money")}</h3>
+        <h3 id="pd-money" className="mb-1 text-label font-medium text-graphite">
+          {t("money")}
+        </h3>
         <dl className="divide-y divide-line border-y border-line">
-          <Fact label={t("amount")}><span className="font-semibold"><Money amount={payment.amount} /></span></Fact>
-          {payment.refundedAmount > 0 ? <Fact label={t("refunded")}><Money amount={payment.refundedAmount} /></Fact> : null}
+          <Fact label={t("amount")}>
+            <span className="font-semibold">
+              <Money amount={payment.amount} />
+            </span>
+          </Fact>
+          {payment.refundedAmount > 0 ? (
+            <Fact label={t("refunded")}>
+              <Money amount={payment.refundedAmount} />
+            </Fact>
+          ) : null}
           <Fact label={t("method")}>{ts(`method.${payment.method}`)}</Fact>
           <Fact label={t("transaction")}>
             {payment.providerTransactionId ? (
-              <span className="inline-flex items-center gap-1"><Ltr className="tabular">{payment.providerTransactionId}</Ltr><CopyButton value={payment.providerTransactionId} /></span>
-            ) : "—"}
+              <span className="inline-flex items-center gap-1">
+                <Ltr className="tabular">{payment.providerTransactionId}</Ltr>
+                <CopyButton value={payment.providerTransactionId} />
+              </span>
+            ) : (
+              "—"
+            )}
           </Fact>
-          <Fact label={t("order")}><span className="inline-flex items-center gap-1"><Ltr className="tabular">{payment.providerOrderId}</Ltr><CopyButton value={payment.providerOrderId} /></span></Fact>
-          {payment.refundTransactionId ? <Fact label={t("refundTransaction")}><Ltr className="tabular">{payment.refundTransactionId}</Ltr></Fact> : null}
+          <Fact label={t("order")}>
+            <span className="inline-flex items-center gap-1">
+              <Ltr className="tabular">{payment.providerOrderId}</Ltr>
+              <CopyButton value={payment.providerOrderId} />
+            </span>
+          </Fact>
+          {payment.refundTransactionId ? (
+            <Fact label={t("refundTransaction")}>
+              <Ltr className="tabular">{payment.refundTransactionId}</Ltr>
+            </Fact>
+          ) : null}
         </dl>
       </section>
 
       <section aria-labelledby="pd-booking">
-        <h3 id="pd-booking" className="mb-1 text-label font-medium text-graphite">{t("booking")}</h3>
+        <h3 id="pd-booking" className="mb-1 text-label font-medium text-graphite">
+          {t("booking")}
+        </h3>
         <dl className="divide-y divide-line border-y border-line">
           <Fact label={t("course")}>{payment.course.title[locale]}</Fact>
           <Fact label={t("session")}>
-            <Link to={`/courses/${payment.course.id}/sessions/${payment.session.id}`} className="text-cyan hover:underline"><Ltr>{payment.session.code}</Ltr></Link>
+            <Link
+              to={`/courses/${payment.course.id}/sessions/${payment.session.id}`}
+              className="text-cyan hover:underline"
+            >
+              <Ltr>{payment.session.code}</Ltr>
+            </Link>
           </Fact>
           <Fact label={t("student")}>
-            <Link to={`/students/${payment.student.id}`} className="text-cyan hover:underline">{payment.student.fullName}</Link>
+            <Link to={`/students/${payment.student.id}`} className="text-cyan hover:underline">
+              {payment.student.fullName}
+            </Link>
           </Fact>
-          <Fact label={t("phone")}><Phone e164={payment.student.phoneE164} /></Fact>
-          <Fact label={t("email")}><Ltr className="break-all">{payment.studentEmail}</Ltr></Fact>
+          <Fact label={t("phone")}>
+            <Phone e164={payment.student.phoneE164} />
+          </Fact>
+          <Fact label={t("email")}>
+            <Ltr className="break-all">{payment.studentEmail}</Ltr>
+          </Fact>
         </dl>
       </section>
 
       <section aria-labelledby="pd-timeline">
-        <h3 id="pd-timeline" className="mb-2 text-label font-medium text-graphite">{t("timeline")}</h3>
+        <h3 id="pd-timeline" className="mb-2 text-label font-medium text-graphite">
+          {t("timeline")}
+        </h3>
         <ol className="relative flex flex-col gap-4 border-s border-line ps-4">
           {payment.timeline.map((event, index) => (
             <li key={index} className="relative">
-              <span aria-hidden="true" className="absolute -start-[1.3rem] top-1.5 size-2 bg-cyan" />
+              <span
+                aria-hidden="true"
+                className="absolute -start-[1.3rem] top-1.5 size-2 bg-cyan"
+              />
               <p className="text-body font-medium">{t(`events.${event.type}`)}</p>
               <p className="text-caption text-graphite">
                 <DateTime iso={event.at} />

@@ -4,7 +4,15 @@ import type { ReactNode } from "react";
 import { cn } from "~/lib/cn";
 
 /** "More actions" menu for rows and cards. */
-export function ActionMenu({ label, children, align = "end" }: { label: string; children: ReactNode; align?: "start" | "end" }) {
+export function ActionMenu({
+  label,
+  children,
+  align = "end",
+}: {
+  label: string;
+  children: ReactNode;
+  align?: "start" | "end";
+}) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
@@ -17,7 +25,7 @@ export function ActionMenu({ label, children, align = "end" }: { label: string; 
         <DropdownMenu.Content
           align={align}
           sideOffset={4}
-          className="z-50 min-w-48 rounded-md border border-line bg-sheet p-1 shadow-float animate-dialog-in"
+          className="z-50 min-w-48 animate-dialog-in rounded-md border border-line bg-sheet p-1 shadow-float"
         >
           {children}
         </DropdownMenu.Content>

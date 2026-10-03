@@ -6,7 +6,10 @@ import { ConfirmDialog } from "./ui/confirm-dialog";
 /** Asks before leaving a page with unsaved changes (DSH-GEN-06): in-app navigation and tab close. */
 export function UnsavedChangesGuard({ when }: { when: boolean }) {
   const t = useTranslations("common");
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => when && currentLocation.pathname !== nextLocation.pathname);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      when && currentLocation.pathname !== nextLocation.pathname,
+  );
 
   useEffect(() => {
     if (!when) return;

@@ -6,7 +6,12 @@ import { isDateRange, rangeDates } from "~/lib/date-ranges";
 import { useUrlParams } from "~/lib/use-url-params";
 
 export const BOOKING_FILTERS = ["PAID", "REFUND_REQUIRED", "CANCELLED", "REFUNDED", "ALL"] as const;
-export const ATTENDANCE_FILTERS: Array<Exclude<AttendanceStatus, "NONE">> = ["UPCOMING", "ATTENDED", "ABSENT", "COMPLETED"];
+export const ATTENDANCE_FILTERS: Array<Exclude<AttendanceStatus, "NONE">> = [
+  "UPCOMING",
+  "ATTENDED",
+  "ABSENT",
+  "COMPLETED",
+];
 
 /**
  * Students list state: structured filters in the URL, the search term in memory only

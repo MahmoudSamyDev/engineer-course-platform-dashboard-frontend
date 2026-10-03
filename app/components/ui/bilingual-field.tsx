@@ -46,18 +46,28 @@ export function BilingualField({
             dir: locale === "ar" ? "rtl" : "ltr",
             value: text,
             maxLength,
-            onChange: (event: { target: { value: string } }) => onChange({ ...value, [locale]: event.target.value }),
+            onChange: (event: { target: { value: string } }) =>
+              onChange({ ...value, [locale]: event.target.value }),
           } as const;
           return (
             <Field
               key={locale}
-              label={<span className="text-caption text-graphite">{t(locale === "ar" ? "arabic" : "english")}</span>}
+              label={
+                <span className="text-caption text-graphite">
+                  {t(locale === "ar" ? "arabic" : "english")}
+                </span>
+              }
               error={errors?.[locale]}
               hint={maxLength ? t("charactersLeft", { count: maxLength - text.length }) : undefined}
             >
               {(control) =>
                 multiline ? (
-                  <textarea {...control} {...common} rows={rows} className={cn(inputClasses, "h-auto py-2 leading-6 touch:h-auto")} />
+                  <textarea
+                    {...control}
+                    {...common}
+                    rows={rows}
+                    className={cn(inputClasses, "h-auto py-2 leading-6 touch:h-auto")}
+                  />
                 ) : (
                   <input {...control} {...common} className={inputClasses} />
                 )

@@ -49,13 +49,61 @@ export function ContentTab({ course }: { course: CourseDetail }) {
   const perLine = t("perLine");
   return (
     <SectionForm dirty={dirty} saving={isLoading} onSave={save} onDiscard={reset} error={error}>
-      <BilingualField label={t("about")} hint={t("aboutHint")} value={draft.about} onChange={(about) => patch({ about })} multiline rows={6} required />
-      <BilingualField label={t("outcomes")} hint={`${perLine} ${t("outcomesHint", { min: MIN_OUTCOMES })}`} value={draft.outcomes} onChange={(outcomes) => patch({ outcomes })} multiline rows={5} required />
-      <BilingualField label={t("audience")} value={draft.audience} onChange={(audience) => patch({ audience })} multiline rows={3} />
-      <BilingualField label={t("problemSolved")} value={draft.problemSolved} onChange={(problemSolved) => patch({ problemSolved })} multiline rows={3} />
-      <BilingualField label={t("expectations")} value={draft.expectations} onChange={(expectations) => patch({ expectations })} multiline rows={3} />
-      <BilingualField label={t("requirements")} hint={perLine} value={draft.requirements} onChange={(requirements) => patch({ requirements })} multiline rows={4} />
-      <BilingualField label={t("whatToBring")} hint={perLine} value={draft.whatToBring} onChange={(whatToBring) => patch({ whatToBring })} multiline rows={3} />
+      <BilingualField
+        label={t("about")}
+        hint={t("aboutHint")}
+        value={draft.about}
+        onChange={(about) => patch({ about })}
+        multiline
+        rows={6}
+        required
+      />
+      <BilingualField
+        label={t("outcomes")}
+        hint={`${perLine} ${t("outcomesHint", { min: MIN_OUTCOMES })}`}
+        value={draft.outcomes}
+        onChange={(outcomes) => patch({ outcomes })}
+        multiline
+        rows={5}
+        required
+      />
+      <BilingualField
+        label={t("audience")}
+        value={draft.audience}
+        onChange={(audience) => patch({ audience })}
+        multiline
+        rows={3}
+      />
+      <BilingualField
+        label={t("problemSolved")}
+        value={draft.problemSolved}
+        onChange={(problemSolved) => patch({ problemSolved })}
+        multiline
+        rows={3}
+      />
+      <BilingualField
+        label={t("expectations")}
+        value={draft.expectations}
+        onChange={(expectations) => patch({ expectations })}
+        multiline
+        rows={3}
+      />
+      <BilingualField
+        label={t("requirements")}
+        hint={perLine}
+        value={draft.requirements}
+        onChange={(requirements) => patch({ requirements })}
+        multiline
+        rows={4}
+      />
+      <BilingualField
+        label={t("whatToBring")}
+        hint={perLine}
+        value={draft.whatToBring}
+        onChange={(whatToBring) => patch({ whatToBring })}
+        multiline
+        rows={3}
+      />
     </SectionForm>
   );
 }

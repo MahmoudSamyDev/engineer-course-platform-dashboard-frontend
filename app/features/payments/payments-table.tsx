@@ -44,13 +44,22 @@ export function PaymentsTable({
   );
 
   const columns: Column<PaymentRow>[] = [
-    { key: "date", header: t("columns.date"), sortKey: "createdAt", cell: (p) => <DateTime iso={p.createdAt} short /> },
+    {
+      key: "date",
+      header: t("columns.date"),
+      sortKey: "createdAt",
+      cell: (p) => <DateTime iso={p.createdAt} short />,
+    },
     {
       key: "student",
       header: t("columns.student"),
       cell: (p) => (
         <div className="min-w-40">
-          <button type="button" onClick={() => onOpen(p.id)} className="text-start font-medium text-ink hover:text-cyan hover:underline">
+          <button
+            type="button"
+            onClick={() => onOpen(p.id)}
+            className="text-start font-medium text-ink hover:text-cyan hover:underline"
+          >
             {p.student.fullName}
           </button>
           <div className="text-caption text-graphite">
@@ -127,7 +136,11 @@ export function PaymentsTable({
           <EmptyState
             title={t("noResults")}
             description={t("noResultsHint")}
-            action={<Button variant="secondary" onClick={onClearFilters}>{tc("clearAll")}</Button>}
+            action={
+              <Button variant="secondary" onClick={onClearFilters}>
+                {tc("clearAll")}
+              </Button>
+            }
           />
         ) : (
           <EmptyState title={t("empty")} description={t("emptyHint")} />

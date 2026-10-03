@@ -27,7 +27,8 @@ export function readinessIssues(
   if (!filled(course.shortDescription)) issues.push("shortDescription");
   if (!filled(course.about)) issues.push("about");
   if (!listFilled(course.outcomes, MIN_OUTCOMES)) issues.push("outcomes");
-  if (course.modules.length === 0 || !course.modules.every((m) => filled(m.title))) issues.push("modules");
+  if (course.modules.length === 0 || !course.modules.every((m) => filled(m.title)))
+    issues.push("modules");
   if (!(course.totalHours > 0)) issues.push("totalHours");
   if (!(course.meetingsCount > 0)) issues.push("meetingsCount");
   if (!(course.basePrice > 0)) issues.push("basePrice");

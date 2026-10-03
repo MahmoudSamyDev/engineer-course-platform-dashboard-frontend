@@ -34,29 +34,55 @@ export function OrderedListEditor<T>({
   };
   return (
     <div className="flex flex-col gap-3">
-      {items.length === 0 ? <p className="rounded-sm border border-dashed border-line-strong p-4 text-body text-graphite">{emptyText}</p> : null}
+      {items.length === 0 ? (
+        <p className="rounded-sm border border-dashed border-line-strong p-4 text-body text-graphite">
+          {emptyText}
+        </p>
+      ) : null}
       <ol className="flex flex-col gap-3">
         {items.map((item, index) => (
           <li key={index} className="rounded-sm border border-line">
             <div className="flex items-center gap-1 border-b border-line bg-paper px-3 py-1.5">
-              <span className="tabular flex-1 text-label font-semibold text-ink">{itemLabel(index)}</span>
-              <IconButton label={t("moveUp", { item: itemLabel(index) })} disabled={index === 0} onClick={() => move(index, index - 1)}>
+              <span className="tabular flex-1 text-label font-semibold text-ink">
+                {itemLabel(index)}
+              </span>
+              <IconButton
+                label={t("moveUp", { item: itemLabel(index) })}
+                disabled={index === 0}
+                onClick={() => move(index, index - 1)}
+              >
                 <ArrowUp aria-hidden="true" />
               </IconButton>
-              <IconButton label={t("moveDown", { item: itemLabel(index) })} disabled={index === items.length - 1} onClick={() => move(index, index + 1)}>
+              <IconButton
+                label={t("moveDown", { item: itemLabel(index) })}
+                disabled={index === items.length - 1}
+                onClick={() => move(index, index + 1)}
+              >
                 <ArrowDown aria-hidden="true" />
               </IconButton>
-              <IconButton label={t("remove", { item: itemLabel(index) })} onClick={() => onChange(items.filter((_, i) => i !== index))} className="hover:text-danger">
+              <IconButton
+                label={t("remove", { item: itemLabel(index) })}
+                onClick={() => onChange(items.filter((_, i) => i !== index))}
+                className="hover:text-danger"
+              >
                 <Trash2 aria-hidden="true" />
               </IconButton>
             </div>
             <div className="flex flex-col gap-4 p-3 sm:p-4">
-              {renderItem(item, (updated) => onChange(items.map((current, i) => (i === index ? updated : current))), index)}
+              {renderItem(
+                item,
+                (updated) => onChange(items.map((current, i) => (i === index ? updated : current))),
+                index,
+              )}
             </div>
           </li>
         ))}
       </ol>
-      <Button variant="secondary" onClick={() => onChange([...items, createItem()])} className="self-start">
+      <Button
+        variant="secondary"
+        onClick={() => onChange([...items, createItem()])}
+        className="self-start"
+      >
         <Plus aria-hidden="true" />
         {addLabel}
       </Button>

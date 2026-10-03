@@ -42,7 +42,11 @@ export function StudentsTable({
       sortKey: "name",
       cell: (r) => (
         <div className="min-w-44">
-          <Link to={`/students/${r.student.id}`} state={from} className="font-medium text-ink hover:text-cyan hover:underline">
+          <Link
+            to={`/students/${r.student.id}`}
+            state={from}
+            className="font-medium text-ink hover:text-cyan hover:underline"
+          >
             {r.student.fullName}
           </Link>
           <div className="flex items-center gap-1 text-caption text-graphite">
@@ -77,18 +81,27 @@ export function StudentsTable({
       key: "department",
       header: t("columns.department"),
       className: "hidden 2xl:table-cell",
-      cell: (r) => <span className="text-caption text-graphite">{r.student.department[locale]}</span>,
+      cell: (r) => (
+        <span className="text-caption text-graphite">{r.student.department[locale]}</span>
+      ),
     },
-    { key: "registered", header: t("columns.registered"), sortKey: "registeredAt", cell: (r) => <DateTime iso={r.registeredAt} short /> },
+    {
+      key: "registered",
+      header: t("columns.registered"),
+      sortKey: "registeredAt",
+      cell: (r) => <DateTime iso={r.registeredAt} short />,
+    },
     { key: "status", header: t("columns.status"), cell: (r) => <BookingBadge status={r.status} /> },
-    { key: "attendance", header: t("columns.attendance"), cell: (r) => <AttendanceLabel attendance={r.attendance} /> },
+    {
+      key: "attendance",
+      header: t("columns.attendance"),
+      cell: (r) => <AttendanceLabel attendance={r.attendance} />,
+    },
     {
       key: "reference",
       header: t("columns.reference"),
       className: "hidden 2xl:table-cell",
-      cell: (r) => (
-        <Ltr className="tabular text-caption text-graphite">{r.reference}</Ltr>
-      ),
+      cell: (r) => <Ltr className="tabular text-caption text-graphite">{r.reference}</Ltr>,
     },
   ];
 
@@ -125,7 +138,11 @@ export function StudentsTable({
           <EmptyState
             title={t("noResults")}
             description={t("noResultsHint")}
-            action={<Button variant="secondary" onClick={onClearFilters}>{tc("clearAll")}</Button>}
+            action={
+              <Button variant="secondary" onClick={onClearFilters}>
+                {tc("clearAll")}
+              </Button>
+            }
           />
         ) : (
           <EmptyState title={t("empty")} description={t("emptyHint")} />

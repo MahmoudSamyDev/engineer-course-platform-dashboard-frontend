@@ -30,7 +30,10 @@ export function CourseCover({
     >
       <div className="absolute inset-2.5 border-[1.5px] border-ink/70" />
       <div className="absolute inset-2.5 flex flex-col justify-between p-3">
-        <span dir="ltr" className="self-start font-display text-[2.5rem] leading-none font-bold text-cyan-deep">
+        <span
+          dir="ltr"
+          className="self-start font-display text-[2.5rem] leading-none font-bold text-cyan-deep"
+        >
           {code}
         </span>
         <span className="flex items-end justify-between gap-3 border-t-[1.5px] border-ink/70 pt-1.5 text-caption font-medium text-ink">

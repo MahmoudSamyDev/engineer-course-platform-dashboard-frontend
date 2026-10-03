@@ -7,10 +7,23 @@ import { Panel } from "~/components/ui/panel";
 import type { Overview } from "~/domain/api";
 import { formatDateTime } from "~/lib/format";
 
-function Item({ to, icon, title, detail }: { to: string; icon: ReactNode; title: ReactNode; detail?: ReactNode }) {
+function Item({
+  to,
+  icon,
+  title,
+  detail,
+}: {
+  to: string;
+  icon: ReactNode;
+  title: ReactNode;
+  detail?: ReactNode;
+}) {
   return (
     <li>
-      <Link to={to} className="flex items-start gap-3 px-4 py-3 transition-colors duration-150 hover:bg-paper">
+      <Link
+        to={to}
+        className="flex items-start gap-3 px-4 py-3 transition-colors duration-150 hover:bg-paper"
+      >
         <span className="mt-0.5 text-warning [&_svg]:size-4">{icon}</span>
         <span className="flex min-w-0 flex-col">
           <span className="text-body font-medium text-ink">{title}</span>
@@ -25,7 +38,11 @@ function Item({ to, icon, title, detail }: { to: string; icon: ReactNode; title:
 export function NeedsAction({ needs }: { needs: Overview["needsAction"] }) {
   const t = useTranslations("home.needs");
   const locale = useLocale();
-  const count = needs.refundRequired + needs.newMessages + needs.emptySessionsSoon.length + needs.closingSoon.length;
+  const count =
+    needs.refundRequired +
+    needs.newMessages +
+    needs.emptySessionsSoon.length +
+    needs.closingSoon.length;
 
   return (
     <Panel id="needs" title={count > 0 ? t("titleCount", { count }) : t("title")}>
@@ -45,7 +62,12 @@ export function NeedsAction({ needs }: { needs: Overview["needsAction"] }) {
             />
           ) : null}
           {needs.newMessages > 0 ? (
-            <Item to="/messages" icon={<Inbox />} title={t("messages", { count: needs.newMessages })} detail={t("messagesDetail")} />
+            <Item
+              to="/messages"
+              icon={<Inbox />}
+              title={t("messages", { count: needs.newMessages })}
+              detail={t("messagesDetail")}
+            />
           ) : null}
           {needs.emptySessionsSoon.map((s) => (
             <Item
@@ -65,7 +87,10 @@ export function NeedsAction({ needs }: { needs: Overview["needsAction"] }) {
               key={s.id}
               to={`/courses/${s.courseId}/sessions/${s.id}`}
               icon={<CalendarClock />}
-              title={t("closingSoon", { course: s.course.title[locale as "ar" | "en"], left: s.capacity - s.sold })}
+              title={t("closingSoon", {
+                course: s.course.title[locale as "ar" | "en"],
+                left: s.capacity - s.sold,
+              })}
               detail={t("closesAt", { time: formatDateTime(s.closesAt, locale as "ar" | "en") })}
             />
           ))}

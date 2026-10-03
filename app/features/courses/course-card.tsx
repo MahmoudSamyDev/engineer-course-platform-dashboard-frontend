@@ -31,7 +31,13 @@ export function CourseCard({
   return (
     <article className="flex flex-col overflow-hidden rounded-sm border border-line bg-sheet transition-colors duration-150 hover:border-line-strong">
       <Link to={`/courses/${course.id}`} tabIndex={-1} aria-hidden="true">
-        <CourseCover code={course.code} discipline={course.coverDiscipline} sortOrder={course.sortOrder} locale={locale} className="border-b border-line" />
+        <CourseCover
+          code={course.code}
+          discipline={course.coverDiscipline}
+          sortOrder={course.sortOrder}
+          locale={locale}
+          className="border-b border-line"
+        />
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-start justify-between gap-2">
@@ -45,7 +51,11 @@ export function CourseCard({
               {t("edit")}
             </ActionMenuItem>
             {course.state === "PUBLISHED" ? (
-              <ActionMenuItem onSelect={() => window.open(websiteCourseUrl(course.slug, locale), "_blank", "noopener")}>
+              <ActionMenuItem
+                onSelect={() =>
+                  window.open(websiteCourseUrl(course.slug, locale), "_blank", "noopener")
+                }
+              >
                 <ExternalLink aria-hidden="true" />
                 {t("viewOnWebsite")}
               </ActionMenuItem>
@@ -82,11 +92,15 @@ export function CourseCard({
       <dl className="grid grid-cols-3 border-t border-line text-caption">
         <div className="flex min-w-0 flex-col gap-0.5 border-e border-line px-3 py-2.5">
           <dt className="text-graphite">{t("nextSession")}</dt>
-          <dd className="truncate font-medium text-ink">{next ? formatDate(next.startsAt, locale) : "—"}</dd>
+          <dd className="truncate font-medium text-ink">
+            {next ? formatDate(next.startsAt, locale) : "—"}
+          </dd>
         </div>
         <div className="flex min-w-0 flex-col gap-0.5 border-e border-line px-3 py-2.5">
           <dt className="text-graphite">{t("seats")}</dt>
-          <dd className="tabular truncate font-medium text-ink">{next ? tc("seatsOf", { sold: next.sold, capacity: next.capacity }) : "—"}</dd>
+          <dd className="tabular truncate font-medium text-ink">
+            {next ? tc("seatsOf", { sold: next.sold, capacity: next.capacity }) : "—"}
+          </dd>
         </div>
         <div className="flex min-w-0 flex-col gap-0.5 px-3 py-2.5">
           <dt className="text-graphite">{t("price")}</dt>

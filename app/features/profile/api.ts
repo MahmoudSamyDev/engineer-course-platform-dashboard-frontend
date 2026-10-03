@@ -1,5 +1,10 @@
 import type { ItemResponse } from "~/domain/admin";
-import type { CertificationDto, InstructorProfile, MilestoneDto, UpdateInstructorInput } from "~/domain/api";
+import type {
+  CertificationDto,
+  InstructorProfile,
+  MilestoneDto,
+  UpdateInstructorInput,
+} from "~/domain/api";
 import { api } from "~/store/api";
 
 type Upload = { url: string; width: number; height: number };
@@ -27,7 +32,10 @@ export const profileApi = api.injectEndpoints({
       transformResponse: (r: ItemResponse<InstructorProfile>) => r.data,
       invalidatesTags: ["Instructor"],
     }),
-    uploadImage: build.mutation<Upload, { file: File; kind: "instructor-photo" | "assistant-photo" | "certification" }>({
+    uploadImage: build.mutation<
+      Upload,
+      { file: File; kind: "instructor-photo" | "assistant-photo" | "certification" }
+    >({
       query: ({ file, kind }) => {
         const body = new FormData();
         body.set("file", file);

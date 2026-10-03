@@ -16,7 +16,8 @@ export function useUrlParams() {
         (prev) => {
           const next = new URLSearchParams(prev);
           for (const [key, value] of Object.entries(updates)) {
-            if (value === undefined || value === null || value === "" || value === false) next.delete(key);
+            if (value === undefined || value === null || value === "" || value === false)
+              next.delete(key);
             else next.set(key, String(value));
           }
           if (!("page" in updates)) next.delete("page");

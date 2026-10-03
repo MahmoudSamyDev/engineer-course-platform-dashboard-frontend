@@ -1,6 +1,5 @@
 import { HttpResponse } from "msw";
 
-
 /** `{ data, meta }` list envelope with server-side paging (SRS §7.2). */
 export function listResponse<T>(items: T[], url: URL, extraMeta: Record<string, unknown> = {}) {
   const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -17,7 +16,10 @@ export function itemResponse<T>(data: T, status = 200) {
 }
 
 /** Case- and diacritic-insensitive match on any of the given values (search box). */
-export function matchesQuery(query: string | null, ...values: Array<string | null | undefined>): boolean {
+export function matchesQuery(
+  query: string | null,
+  ...values: Array<string | null | undefined>
+): boolean {
   if (!query) return true;
   const needle = normalize(query);
   return values.some((value) => value && normalize(value).includes(needle));
@@ -40,20 +42,30 @@ export function inRange(iso: string, from: string | null, to: string | null): bo
   return true;
 }
 
-export function sortBy<T>(items: T[], key: string | null, getters: Record<string, (item: T) => string | number>, fallback: string): T[] {
+export function sortBy<T>(
+  items: T[],
+  key: string | null,
+  getters: Record<string, (item: T) => string | number>,
+  fallback: string,
+): T[] {
   const sort = key && getters[key.replace(/^-/, "")] ? key : fallback;
   const desc = sort.startsWith("-");
   const get = getters[sort.replace(/^-/, "")]!;
   return [...items].sort((a, b) => {
     const x = get(a);
     const y = get(b);
-    const order = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y));
+    const order =
+      typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y));
     return desc ? -order : order;
   });
 }
 
 /** CSV with a UTF-8 BOM so Excel shows Arabic correctly (DSH-STU-06). */
-export function csvResponse(filename: string, header: string[], rows: Array<Array<string | number>>) {
+export function csvResponse(
+  filename: string,
+  header: string[],
+  rows: Array<Array<string | number>>,
+) {
   const escape = (value: string | number) => {
     const text = String(value);
     return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
@@ -66,4 +78,3 @@ export function csvResponse(filename: string, header: string[], rows: Array<Arra
     },
   });
 }
-

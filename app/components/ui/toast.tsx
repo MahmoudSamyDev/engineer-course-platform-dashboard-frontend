@@ -23,7 +23,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const t = useTranslations("common");
   const [items, setItems] = useState<ToastItem[]>([]);
   const push = useCallback<ToastFn>((toast) => {
-    setItems((current) => [...current.slice(-2), { id: Date.now() + Math.random(), tone: "success", ...toast }]);
+    setItems((current) => [
+      ...current.slice(-2),
+      { id: Date.now() + Math.random(), tone: "success", ...toast },
+    ]);
   }, []);
   const value = useMemo(() => push, [push]);
 
@@ -37,15 +40,24 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <Toast.Root
               key={item.id}
               type={item.tone === "error" ? "foreground" : "background"}
-              onOpenChange={(open) => !open && setItems((current) => current.filter((i) => i.id !== item.id))}
-              className="flex items-start gap-3 rounded-md border border-line bg-sheet p-3 shadow-float animate-dialog-in"
+              onOpenChange={(open) =>
+                !open && setItems((current) => current.filter((i) => i.id !== item.id))
+              }
+              className="flex animate-dialog-in items-start gap-3 rounded-md border border-line bg-sheet p-3 shadow-float"
             >
               <Icon aria-hidden="true" className={cn("mt-0.5 size-5 shrink-0", TONES[item.tone])} />
               <div className="min-w-0 flex-1">
                 <Toast.Title className="text-body font-semibold text-ink">{item.title}</Toast.Title>
-                {item.description ? <Toast.Description className="mt-0.5 text-caption text-graphite">{item.description}</Toast.Description> : null}
+                {item.description ? (
+                  <Toast.Description className="mt-0.5 text-caption text-graphite">
+                    {item.description}
+                  </Toast.Description>
+                ) : null}
               </div>
-              <Toast.Close aria-label={t("close")} className="inline-flex size-8 items-center justify-center rounded-sm text-graphite hover:bg-paper">
+              <Toast.Close
+                aria-label={t("close")}
+                className="inline-flex size-8 items-center justify-center rounded-sm text-graphite hover:bg-paper"
+              >
                 <X aria-hidden="true" className="size-4" />
               </Toast.Close>
             </Toast.Root>

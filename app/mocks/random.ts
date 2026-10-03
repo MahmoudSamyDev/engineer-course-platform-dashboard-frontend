@@ -11,7 +11,7 @@ export function createRandom(seed: number) {
   return {
     next,
     int: (min: number, max: number) => min + Math.floor(next() * (max - min + 1)),
-    pick: <T,>(items: readonly T[]): T => items[Math.floor(next() * items.length)]!,
+    pick: <T>(items: readonly T[]): T => items[Math.floor(next() * items.length)]!,
     chance: (p: number) => next() < p,
   };
 }

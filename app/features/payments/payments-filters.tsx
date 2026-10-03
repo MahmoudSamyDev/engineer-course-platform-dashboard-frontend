@@ -11,7 +11,13 @@ import { useCourseOptions } from "../courses/options";
 import { PAYMENT_METHODS, PAYMENT_STATUSES, type usePaymentFilters } from "./use-payment-filters";
 
 /** Search + status/method/course/date filters + the Needs action quick filter (DSH-PAY-03). */
-export function PaymentsFilters({ state, needsActionCount }: { state: ReturnType<typeof usePaymentFilters>; needsActionCount: number }) {
+export function PaymentsFilters({
+  state,
+  needsActionCount,
+}: {
+  state: ReturnType<typeof usePaymentFilters>;
+  needsActionCount: number;
+}) {
   const t = useTranslations("payments.filters");
   const ts = useTranslations("status");
   const tr = useTranslations("ranges");
@@ -19,9 +25,21 @@ export function PaymentsFilters({ state, needsActionCount }: { state: ReturnType
   const courses = useCourseOptions();
 
   const chips = [
-    filters.needsAction && { key: "needs", label: t("needsAction"), onRemove: () => url.set({ needsAction: undefined }) },
-    filters.status && { key: "status", label: ts(`payment.${filters.status}`), onRemove: () => url.set({ status: undefined }) },
-    filters.method && { key: "method", label: ts(`method.${filters.method}`), onRemove: () => url.set({ method: undefined }) },
+    filters.needsAction && {
+      key: "needs",
+      label: t("needsAction"),
+      onRemove: () => url.set({ needsAction: undefined }),
+    },
+    filters.status && {
+      key: "status",
+      label: ts(`payment.${filters.status}`),
+      onRemove: () => url.set({ status: undefined }),
+    },
+    filters.method && {
+      key: "method",
+      label: ts(`method.${filters.method}`),
+      onRemove: () => url.set({ method: undefined }),
+    },
     filters.courseId && {
       key: "course",
       label: courses.find((c) => c.value === filters.courseId)?.label ?? filters.courseId,
@@ -35,15 +53,31 @@ export function PaymentsFilters({ state, needsActionCount }: { state: ReturnType
   return (
     <>
       <FilterBar
-        search={<SearchInput label={t("searchLabel")} placeholder={t("searchPlaceholder")} value={q} onSearch={setQ} />}
+        search={
+          <SearchInput
+            label={t("searchLabel")}
+            placeholder={t("searchPlaceholder")}
+            value={q}
+            onSearch={setQ}
+          />
+        }
         activeCount={chips.length}
-        actions={<ExportButton path="/payments/export.csv" query={toQueryString(exportFilters)} filename="payments.csv" />}
+        actions={
+          <ExportButton
+            path="/payments/export.csv"
+            query={toQueryString(exportFilters)}
+            filename="payments.csv"
+          />
+        }
       >
         <Button
           variant="secondary"
           aria-pressed={Boolean(filters.needsAction)}
           onClick={() => url.set({ needsAction: filters.needsAction ? undefined : true })}
-          className={cn(filters.needsAction && "border-warning bg-warning-wash text-warning hover:bg-warning-wash")}
+          className={cn(
+            filters.needsAction &&
+              "border-warning bg-warning-wash text-warning hover:bg-warning-wash",
+          )}
         >
           <TriangleAlert aria-hidden="true" />
           {t("needsActionCount", { count: needsActionCount })}

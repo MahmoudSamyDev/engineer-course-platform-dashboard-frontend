@@ -25,7 +25,7 @@ export function AppShell({ user, children }: { user: AdminUser; children: ReactN
         {t("nav.skipToContent")}
       </a>
 
-      <aside className="fixed inset-y-0 start-0 z-30 hidden w-rail flex-col gap-5 border-e-[1.5px] border-line-strong bg-sheet p-4 lg:flex">
+      <aside className="fixed inset-y-0 start-0 z-30 hidden w-rail flex-col gap-5 border-e-[1.5px] border-line-strong bg-sheet p-4 lg:flex print:lg:hidden">
         <BrandBlock />
         <nav aria-label={t("nav.label")} className="flex-1 overflow-y-auto">
           <NavList />
@@ -36,9 +36,9 @@ export function AppShell({ user, children }: { user: AdminUser; children: ReactN
         </div>
       </aside>
 
-      <div className="flex min-h-dvh flex-col lg:ps-rail">
+      <div className="flex min-h-dvh flex-col lg:ps-rail print:lg:ps-0">
         <MockBanner />
-        <header className="sticky top-0 z-20 flex h-topbar items-center gap-2 border-b border-line bg-sheet px-4 lg:hidden">
+        <header className="sticky top-0 z-20 flex h-topbar items-center gap-2 border-b border-line bg-sheet px-4 lg:hidden print:hidden">
           <MobileNav user={user} />
           {/* The page h1 sits right below, so the bar names the product, not the page. */}
           <span className="flex min-w-0 flex-1 items-center gap-2">
@@ -56,7 +56,7 @@ export function AppShell({ user, children }: { user: AdminUser; children: ReactN
         <main
           id="main"
           tabIndex={-1}
-          className="mx-auto w-full max-w-content flex-1 px-4 py-6 outline-none sm:px-6 lg:px-8 lg:py-8"
+          className="mx-auto w-full max-w-content flex-1 px-4 py-6 outline-none sm:px-6 lg:px-8 lg:py-8 print:max-w-none print:p-0"
         >
           {children}
         </main>

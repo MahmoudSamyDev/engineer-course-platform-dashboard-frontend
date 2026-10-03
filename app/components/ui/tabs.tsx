@@ -34,7 +34,10 @@ export function UrlTabs<T extends string>({
         )
       }
     >
-      <RadixTabs.List aria-label={label} className="mb-6 flex gap-1 overflow-x-auto border-b border-line [scrollbar-width:none]">
+      <RadixTabs.List
+        aria-label={label}
+        className="mb-6 flex [scrollbar-width:none] gap-1 overflow-x-auto border-b border-line"
+      >
         {tabs.map((tab) => (
           <RadixTabs.Trigger
             key={tab.value}

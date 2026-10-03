@@ -69,7 +69,9 @@ export const api = createApi({
 });
 
 /** Query string from a filter object, skipping empty values (URL-safe, stable order). */
-export function toQueryString(params: Record<string, string | number | boolean | undefined | null>): string {
+export function toQueryString(
+  params: Record<string, string | number | boolean | undefined | null>,
+): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params).sort(([a], [b]) => a.localeCompare(b))) {
     if (value === undefined || value === null || value === "") continue;

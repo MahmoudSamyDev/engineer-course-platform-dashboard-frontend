@@ -47,13 +47,22 @@ export default function Student() {
     return (
       <>
         <PageHeader title={tp("student.title")} back={back} />
-        <EmptyState title={t("notFound")} action={<Button asChild variant="secondary"><Link to="/students">{tp("students.title")}</Link></Button>} />
+        <EmptyState
+          title={t("notFound")}
+          action={
+            <Button asChild variant="secondary">
+              <Link to="/students">{tp("students.title")}</Link>
+            </Button>
+          }
+        />
       </>
     );
   }
   if (error || !data) return <ErrorState error={error} onRetry={refetch} />;
 
-  const paid = data.payments.filter((p) => p.status === "SUCCEEDED" || p.status === "REFUNDED").reduce((sum, p) => sum + p.amount - p.refundedAmount, 0);
+  const paid = data.payments
+    .filter((p) => p.status === "SUCCEEDED" || p.status === "REFUNDED")
+    .reduce((sum, p) => sum + p.amount - p.refundedAmount, 0);
 
   return (
     <>
@@ -82,13 +91,28 @@ export default function Student() {
       <div className="flex flex-col gap-6">
         <TitleBlock>
           <TitleCell size="fact" label={t("phone")} value={<Phone e164={data.phoneE164} />} />
-          <TitleCell size="fact" label={t("email")} value={<Ltr className="break-all">{data.email}</Ltr>} />
+          <TitleCell
+            size="fact"
+            label={t("email")}
+            value={<Ltr className="break-all">{data.email}</Ltr>}
+          />
           <TitleCell size="fact" label={t("registrations")} value={data.registrations.length} />
-          <TitleCell size="fact" label={t("netPaid")} value={<Money amount={paid} />} note={<>{t("firstRegistered")} <DateTime iso={data.createdAt} withTime={false} /></>} />
+          <TitleCell
+            size="fact"
+            label={t("netPaid")}
+            value={<Money amount={paid} />}
+            note={
+              <>
+                {t("firstRegistered")} <DateTime iso={data.createdAt} withTime={false} />
+              </>
+            }
+          />
         </TitleBlock>
 
         <section aria-labelledby="registrations-title" className="flex flex-col gap-3">
-          <h2 id="registrations-title" className="font-display text-heading font-semibold">{t("registrationsTitle")}</h2>
+          <h2 id="registrations-title" className="font-display text-heading font-semibold">
+            {t("registrationsTitle")}
+          </h2>
           {data.registrations.length === 0 ? (
             <EmptyState title={t("noRegistrations")} />
           ) : (
@@ -97,7 +121,10 @@ export default function Student() {
                 <header className="flex flex-col gap-2 border-b border-line p-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <h3 className="text-subheading font-semibold">
-                      <Link to={`/courses/${r.course.id}/sessions/${r.session.id}`} className="hover:text-cyan hover:underline">
+                      <Link
+                        to={`/courses/${r.course.id}/sessions/${r.session.id}`}
+                        className="hover:text-cyan hover:underline"
+                      >
                         {r.course.title[locale]}
                       </Link>
                     </h3>
@@ -121,11 +148,15 @@ export default function Student() {
                   </div>
                   <div>
                     <dt className="text-caption text-graphite">{t("registeredAt")}</dt>
-                    <dd><DateTime iso={r.registeredAt} /></dd>
+                    <dd>
+                      <DateTime iso={r.registeredAt} wrap />
+                    </dd>
                   </div>
                   <div>
                     <dt className="text-caption text-graphite">{t("amount")}</dt>
-                    <dd><Money amount={r.amount} /></dd>
+                    <dd>
+                      <Money amount={r.amount} />
+                    </dd>
                   </div>
                 </dl>
                 <div className="p-4">
@@ -144,13 +175,22 @@ export default function Student() {
             <ul className="divide-y divide-line">
               {data.payments.map((p) => (
                 <li key={p.id}>
-                  <Link to={`/payments?payment=${p.id}`} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 hover:bg-paper">
+                  <Link
+                    to={`/payments?payment=${p.id}`}
+                    className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 hover:bg-paper"
+                  >
                     <span className="flex flex-col">
-                      <span className="text-body font-medium"><Ltr>{p.reference}</Ltr> · <Ltr>{p.course.code}</Ltr></span>
-                      <span className="text-caption text-graphite"><DateTime iso={p.createdAt} /></span>
+                      <span className="text-body font-medium">
+                        <Ltr>{p.reference}</Ltr> · <Ltr>{p.course.code}</Ltr>
+                      </span>
+                      <span className="text-caption text-graphite">
+                        <DateTime iso={p.createdAt} wrap />
+                      </span>
                     </span>
                     <span className="flex items-center gap-3">
-                      <span className="font-semibold"><Money amount={p.amount} /></span>
+                      <span className="font-semibold">
+                        <Money amount={p.amount} />
+                      </span>
                       <PaymentBadge status={p.status} />
                     </span>
                   </Link>
@@ -160,7 +200,7 @@ export default function Student() {
           )}
         </Panel>
         <p className="text-caption text-graphite">
-          {t("consent")} <DateTime iso={data.consentAt} />
+          {t("consent")} <DateTime iso={data.consentAt} wrap />
         </p>
       </div>
     </>

@@ -28,7 +28,13 @@ export function usePaymentFilters() {
   );
   const clear = () => {
     setQ("");
-    url.set({ status: undefined, method: undefined, course: undefined, needsAction: undefined, range: undefined });
+    url.set({
+      status: undefined,
+      method: undefined,
+      course: undefined,
+      needsAction: undefined,
+      range: undefined,
+    });
   };
   return { filters, q, setQ, url, range: isDateRange(range) ? range : undefined, clear };
 }

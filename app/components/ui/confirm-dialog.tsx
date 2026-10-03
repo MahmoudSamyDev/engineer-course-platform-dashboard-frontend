@@ -32,10 +32,14 @@ export function ConfirmDialog({
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-40 bg-overlay animate-overlay-in" />
-        <AlertDialog.Content className="fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-[27.5rem] -translate-x-1/2 -translate-y-1/2 rounded-md bg-sheet p-5 shadow-float animate-dialog-in">
-          <AlertDialog.Title className="font-display text-heading font-semibold">{title}</AlertDialog.Title>
-          <AlertDialog.Description className="mt-2 text-body text-graphite">{description}</AlertDialog.Description>
+        <AlertDialog.Overlay className="fixed inset-0 z-40 animate-overlay-in bg-overlay" />
+        <AlertDialog.Content className="fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-[27.5rem] -translate-x-1/2 -translate-y-1/2 animate-dialog-in rounded-md bg-sheet p-5 shadow-float">
+          <AlertDialog.Title className="font-display text-heading font-semibold">
+            {title}
+          </AlertDialog.Title>
+          <AlertDialog.Description className="mt-2 text-body text-graphite">
+            {description}
+          </AlertDialog.Description>
           {children ? <div className="mt-4">{children}</div> : null}
           <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <AlertDialog.Cancel asChild>

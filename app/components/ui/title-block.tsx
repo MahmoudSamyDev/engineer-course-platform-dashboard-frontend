@@ -5,8 +5,18 @@ import { cn } from "~/lib/cn";
  * The signature component (DESIGN_SYSTEM §1): facts in labelled cells inside one ruled frame.
  * Cells wrap to 2 columns on phones.
  */
-export function TitleBlock({ children, className, columns = 4 }: { children: ReactNode; className?: string; columns?: 2 | 3 | 4 }) {
-  const cols = { 2: "sm:grid-cols-2", 3: "sm:grid-cols-3", 4: "sm:grid-cols-2 lg:grid-cols-4" }[columns];
+export function TitleBlock({
+  children,
+  className,
+  columns = 4,
+}: {
+  children: ReactNode;
+  className?: string;
+  columns?: 2 | 3 | 4;
+}) {
+  const cols = { 2: "sm:grid-cols-2", 3: "sm:grid-cols-3", 4: "sm:grid-cols-2 lg:grid-cols-4" }[
+    columns
+  ];
   return (
     <dl
       className={cn(
@@ -39,12 +49,14 @@ export function TitleCell({
       <dd
         className={cn(
           "tabular min-w-0 break-words text-ink",
-          size === "kpi" ? "font-display text-[1.375rem] leading-7 font-semibold sm:text-kpi" : "text-subheading font-semibold",
+          size === "kpi"
+            ? "font-display text-[1.375rem] leading-7 font-semibold sm:text-kpi"
+            : "text-subheading font-semibold",
         )}
       >
         {value}
       </dd>
-      {note ? <dd className="text-caption text-graphite">{note}</dd> : null}
+      {note ? <dd className="min-w-0 text-caption text-wrap text-graphite">{note}</dd> : null}
     </div>
   );
 }

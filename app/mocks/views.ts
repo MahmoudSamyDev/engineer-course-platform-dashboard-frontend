@@ -26,7 +26,14 @@ import { getCourseStatus, getSessionAvailability, upcomingSessions } from "~/dom
 import { readinessIssues } from "~/domain/course-rules";
 import { cairoMonthKey, lastMonthKeys } from "~/domain/months";
 import type { Session, TicketStatus } from "~/domain/types";
-import { db, mockNow, type MockBooking, type MockCourse, type MockPayment, type MockSession } from "./db";
+import {
+  db,
+  mockNow,
+  type MockBooking,
+  type MockCourse,
+  type MockPayment,
+  type MockSession,
+} from "./db";
 
 const COUNTED_SEAT: MockBooking["status"][] = ["PAID"];
 
@@ -41,7 +48,8 @@ function findStudent(id: string) {
 }
 
 export function soldSeats(sessionId: string): number {
-  return db.bookings.filter((b) => b.sessionId === sessionId && COUNTED_SEAT.includes(b.status)).length;
+  return db.bookings.filter((b) => b.sessionId === sessionId && COUNTED_SEAT.includes(b.status))
+    .length;
 }
 
 export function heldSeats(sessionId: string, now = mockNow()): number {
@@ -68,12 +76,22 @@ export function courseState(course: MockCourse) {
 }
 
 export function courseStatus(course: MockCourse, now = mockNow()) {
-  const sessions = db.sessions.filter((s) => s.courseId === course.id).map((s) => asDomainSession(s, now));
+  const sessions = db.sessions
+    .filter((s) => s.courseId === course.id)
+    .map((s) => asDomainSession(s, now));
   return getCourseStatus(course, sessions, now);
 }
 
-const courseRef = (course: MockCourse): CourseRef => ({ id: course.id, code: course.code, title: course.title });
-const sessionRef = (session: MockSession): SessionRef => ({ id: session.id, code: session.code, label: session.label });
+const courseRef = (course: MockCourse): CourseRef => ({
+  id: course.id,
+  code: course.code,
+  title: course.title,
+});
+const sessionRef = (session: MockSession): SessionRef => ({
+  id: session.id,
+  code: session.code,
+  label: session.label,
+});
 
 function studentRef(studentId: string): StudentRef {
   const student = findStudent(studentId);
@@ -89,24 +107,34 @@ function studentRef(studentId: string): StudentRef {
 
 function meetingAttendance(booking: MockBooking, session: MockSession): MeetingAttendance[] {
   return session.meetings.map((meeting) => {
-    const checkIn = db.checkIns.find((c) => c.bookingId === booking.id && c.meetingId === meeting.id);
+    const checkIn = db.checkIns.find(
+      (c) => c.bookingId === booking.id && c.meetingId === meeting.id,
+    );
     return {
       meetingId: meeting.id,
       order: meeting.order,
       startsAt: meeting.startsAt,
       endsAt: meeting.endsAt,
-      checkIn: checkIn ? { id: checkIn.id, at: checkIn.at, by: checkIn.by, source: checkIn.source } : null,
+      checkIn: checkIn
+        ? { id: checkIn.id, at: checkIn.at, by: checkIn.by, source: checkIn.source }
+        : null,
     };
   });
 }
 
 /** Website §6.3 ticket state machine, derived. */
-function ticketStatus(booking: MockBooking, session: MockSession, meetings: MeetingAttendance[], now: Date): TicketStatus | null {
+function ticketStatus(
+  booking: MockBooking,
+  session: MockSession,
+  meetings: MeetingAttendance[],
+  now: Date,
+): TicketStatus | null {
   if (booking.status === "CANCELLED" || booking.status === "REFUNDED") return "CANCELLED";
   if (booking.status !== "PAID") return null;
   const lastEnd = Date.parse(session.meetings[session.meetings.length - 1]!.endsAt);
   const checked = meetings.some((m) => m.checkIn);
-  if (now.getTime() > lastEnd) return checked ? "USED" : now.getTime() > lastEnd + 24 * 3_600_000 ? "EXPIRED" : "VALID";
+  if (now.getTime() > lastEnd)
+    return checked ? "USED" : now.getTime() > lastEnd + 24 * 3_600_000 ? "EXPIRED" : "VALID";
   return checked ? "CHECKED_IN" : "VALID";
 }
 
@@ -164,7 +192,9 @@ export function paymentDetail(payment: MockPayment): PaymentDetail {
 
 export function studentDetail(studentId: string, now = mockNow()): StudentDetail {
   const student = findStudent(studentId);
-  const own = db.bookings.filter((b) => b.studentId === studentId && b.status !== "PENDING_PAYMENT" && b.status !== "EXPIRED");
+  const own = db.bookings.filter(
+    (b) => b.studentId === studentId && b.status !== "PENDING_PAYMENT" && b.status !== "EXPIRED",
+  );
   const registrations: StudentRegistration[] = own
     .map((booking) => {
       const session = findSession(booking.sessionId)!;
@@ -218,7 +248,11 @@ export function sessionRow(session: MockSession, now = mockNow()): SessionRow {
 export function sessionDetail(session: MockSession, now = mockNow()): SessionDetail {
   const course = findCourse(session.courseId)!;
   const roster: RosterEntry[] = db.bookings
-    .filter((b) => b.sessionId === session.id && ["PAID", "REFUND_REQUIRED", "CANCELLED", "REFUNDED"].includes(b.status))
+    .filter(
+      (b) =>
+        b.sessionId === session.id &&
+        ["PAID", "REFUND_REQUIRED", "CANCELLED", "REFUNDED"].includes(b.status),
+    )
     .map((booking) => {
       const row = registrationRow(booking, now);
       return {
@@ -232,12 +266,20 @@ export function sessionDetail(session: MockSession, now = mockNow()): SessionDet
       };
     })
     .sort((a, b) => a.student.fullName.localeCompare(b.student.fullName));
-  return { ...sessionRow(session, now), course: { ...courseRef(course), basePrice: course.basePrice }, roster };
+  return {
+    ...sessionRow(session, now),
+    course: { ...courseRef(course), basePrice: course.basePrice },
+    roster,
+  };
 }
 
 export function courseCard(course: MockCourse, now = mockNow()): CourseCard {
-  const sessions = db.sessions.filter((s) => s.courseId === course.id).map((s) => asDomainSession(s, now));
-  const upcoming = upcomingSessions(sessions, now).filter((s) => Date.parse(s.meetings[0]!.startsAt) > now.getTime());
+  const sessions = db.sessions
+    .filter((s) => s.courseId === course.id)
+    .map((s) => asDomainSession(s, now));
+  const upcoming = upcomingSessions(sessions, now).filter(
+    (s) => Date.parse(s.meetings[0]!.startsAt) > now.getTime(),
+  );
   const next = upcoming[0];
   return {
     id: course.id,
@@ -249,7 +291,13 @@ export function courseCard(course: MockCourse, now = mockNow()): CourseCard {
     status: courseStatus(course, now),
     basePrice: course.basePrice,
     nextSession: next
-      ? { id: next.id, code: next.code, startsAt: next.meetings[0]!.startsAt, sold: next.paidCount, capacity: next.capacity }
+      ? {
+          id: next.id,
+          code: next.code,
+          startsAt: next.meetings[0]!.startsAt,
+          sold: next.paidCount,
+          capacity: next.capacity,
+        }
       : null,
     upcomingSessionsCount: upcoming.length,
     sortOrder: course.sortOrder,
@@ -316,17 +364,23 @@ function upcomingSummary(session: MockSession, now: Date): UpcomingSessionSummar
   };
 }
 
-const netOf = (p: MockPayment) => (p.status === "SUCCEEDED" || p.status === "REFUNDED" ? p.amount - p.refundedAmount : 0);
+const netOf = (p: MockPayment) =>
+  p.status === "SUCCEEDED" || p.status === "REFUNDED" ? p.amount - p.refundedAmount : 0;
 
 export function overview(now = mockNow()): Overview {
   const nowMs = now.getTime();
   const [lastMonth, thisMonth] = lastMonthKeys(now, 2) as [string, string];
   const months = lastMonthKeys(now, 6);
-  const settled = db.payments.filter((p) => p.processedAt && (p.status === "SUCCEEDED" || p.status === "REFUNDED"));
+  const settled = db.payments.filter(
+    (p) => p.processedAt && (p.status === "SUCCEEDED" || p.status === "REFUNDED"),
+  );
   const revenueIn = (month: string) =>
-    settled.filter((p) => cairoMonthKey(p.processedAt!) === month).reduce((sum, p) => sum + netOf(p), 0);
+    settled
+      .filter((p) => cairoMonthKey(p.processedAt!) === month)
+      .reduce((sum, p) => sum + netOf(p), 0);
   const paidIn = (month: string) =>
-    db.bookings.filter((b) => b.status === "PAID" && b.paidAt && cairoMonthKey(b.paidAt) === month).length;
+    db.bookings.filter((b) => b.status === "PAID" && b.paidAt && cairoMonthKey(b.paidAt) === month)
+      .length;
 
   const live = db.sessions
     .filter((s) => s.isPublished && findCourse(s.courseId)?.archivedAt === null)
@@ -348,7 +402,9 @@ export function overview(now = mockNow()): Overview {
     needsAction: {
       refundRequired: db.bookings.filter((b) => b.status === "REFUND_REQUIRED").length,
       newMessages: db.messages.filter((m) => m.status === "NEW").length,
-      emptySessionsSoon: summaries.filter((s) => s.sold === 0 && Date.parse(s.startsAt) <= nowMs + 7 * 86_400_000),
+      emptySessionsSoon: summaries.filter(
+        (s) => s.sold === 0 && Date.parse(s.startsAt) <= nowMs + 7 * 86_400_000,
+      ),
       closingSoon: live
         .filter((s) => {
           const closes = Date.parse(s.registrationClosesAt);

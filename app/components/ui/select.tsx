@@ -49,7 +49,7 @@ export function Select({
         className={cn(
           "inline-flex h-10 w-full items-center justify-between gap-2 rounded-sm border-[1.5px] border-line-strong bg-sheet px-3 text-start text-body text-ink touch:h-11 touch:text-body-touch",
           "hover:border-graphite focus-visible:border-cyan focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-cyan",
-          "aria-invalid:border-danger disabled:bg-paper disabled:text-graphite data-[placeholder]:text-graphite",
+          "disabled:bg-paper disabled:text-graphite aria-invalid:border-danger data-[placeholder]:text-graphite",
           className,
         )}
       >

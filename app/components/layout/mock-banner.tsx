@@ -7,7 +7,7 @@ export function MockBanner() {
   const t = useTranslations("app");
   if (!MOCKING_ENABLED) return null;
   return (
-    <p className="border-b border-warning/25 bg-warning-wash px-4 py-1 text-center text-caption font-medium text-warning">
+    <p className="border-b border-warning/25 bg-warning-wash px-4 py-1 text-center text-caption font-medium text-warning print:hidden">
       {t("mockBanner")}
     </p>
   );

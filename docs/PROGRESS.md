@@ -1,6 +1,6 @@
 # Progress Tracker — Dashboard
 
-**Current phase:** D9 — Courses, sessions & attendance (🔄 in progress — see “Handoff” below)
+**Current phase:** D10 — Assistants & profile (next). D9 finished; **review point** — the owner can now publish a course end to end.
 **Last updated:** 2026-10-03
 
 Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definitions: `docs/PHASES.md`.
@@ -18,7 +18,7 @@ Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definit
 | D6 | Home | ✅ | KPI title block, needs action, revenue chart, latest lists, upcoming sessions |
 | D7 | Students | ✅ | Table, filters, search, paging, CSV, student page |
 | D8 | Payments | ✅ | Summary, filters, details sheet, refund / move / cancel (independent review still pending) |
-| D9 | Courses, sessions & attendance | 🔄 | Cards, Add course dialog, 4 of 6 course tabs done; sessions, publishing, session page left |
+| D9 | Courses, sessions & attendance | ✅ | Cards, Add course dialog, 6 tabs, sessions + meetings, roster, attendance, print. DAC-02/03/06 pass |
 | D10 | Assistants & profile | ⬜ | |
 | D11 | Messages & polish | ⬜ | |
 | D12 | QA & hardening | ⬜ | |
@@ -29,31 +29,28 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 
 ## Handoff — where to continue (2026-10-03)
 
-**State:** `npm run typecheck`, `npm run lint` (1 known warning, below) and `npm test` (5 files, 30 tests) pass. Pages verified with screenshots at 360/1280 px (AR/EN): Home, Students, Student, Payments, Courses.
+**State:** typecheck, lint, Prettier, 30 unit/component tests and 12 Playwright tests (desktop + mobile) all pass. Production build contains no mock code. Every page verified at 360 px in Arabic and English with no horizontal page scroll.
 
-**Done in D5–D8 (code map)**
-- UI kit — `app/components/ui/`: dialog, sheet, confirm-dialog, menu, tabs (`UrlTabs`), select, switch, textarea, toast, skeleton, title-block, seat-bar, data-table (stacked rows on phones), filter-bar (filters move into a dialog on phones), pagination, error-state, icon-button, bilingual-field, panel. Shared: `components/format.tsx` (Money, DateTime, Phone, Ltr), `components/status.tsx` (all status badges), `section-form.tsx`, `ordered-list-editor.tsx`, `unsaved-changes.tsx`, `use-discard-guard.tsx`, `export-button.tsx`, `copy-button.tsx`.
-- Data: `app/domain/api.ts` (all API payload types), pure rules with tests (`attendance.ts`, `months.ts`, `course-rules.ts`, `session-rules.ts`, `status-tone.ts`, `money.ts`).
-- Mock API — `app/mocks/`: seeded database (`db.ts`: ~28 sessions incl. 5 months of history, ~550 bookings, payments with refund-required/refunded/failed/cancelled, check-ins, assistants, messages), payload builders (`views.ts`), handlers for **every** SRS §7.2 endpoint (`handlers/*.ts`).
-- RTK Query endpoints for every feature: `app/features/*/api.ts` (overview, students, payments, courses, assistants, profile, messages).
-- Pages: `routes/home.tsx`, `students.tsx`, `student.tsx`, `payments.tsx`, `courses.tsx`.
+**Done (code map)**
+- **D5 UI kit** — `app/components/ui/`: dialog, sheet, confirm-dialog, menu, tabs (`UrlTabs`), select, switch, textarea, toast, skeleton, title-block, seat-bar, data-table, filter-bar, pagination, error-state, icon-button, bilingual-field, panel, amount-input. Shared: `components/format.tsx`, `components/status.tsx`, `section-form.tsx`, `ordered-list-editor.tsx`, `unsaved-changes.tsx`, `use-discard-guard.tsx`, `export-button.tsx`, `copy-button.tsx`.
+- **Data** — `app/domain/api.ts` (all payload types) + pure rules with tests: `attendance.ts`, `months.ts`, `course-rules.ts`, `session-rules.ts`, `status-tone.ts`, `money.ts`.
+- **Mock API** — `app/mocks/`: seeded database, payload builders (`views.ts`), handlers for every SRS §7.2 endpoint.
+- **Pages** — Home, Students, Student, Payments (with refund / move / cancel), Courses, Course (6 tabs), Session (roster, attendance, print).
 
-**D9 — remaining tasks, in order**
-1. `features/courses/tabs/sessions-tab.tsx` — list sessions (`useGetCourseSessionsQuery`), row → `/courses/:courseId/sessions/:id`, row menu: edit, close/reopen (`useSetSessionClosedMutation`), unpublish, delete (only without bookings).
-2. `features/courses/session-dialog.tsx` — add/edit session (SRS DSH-SES-02…04): location (`useGetLocationsQuery`), label AR/EN, capacity (min = sold + held, `minimumCapacity`), price (default course price), meetings rows (date + start + end, Cairo time via `zonedLocalToUtcIso`), "repeat weekly × N" (add 7 days to the *local date string*, not to UTC), registration closes (default `defaultRegistrationClose`), published switch; validate with `checkMeetings`; map API errors `CAPACITY_BELOW_SOLD`, meetings codes.
-3. `features/courses/tabs/publishing-tab.tsx` — readiness checklist from `course.readiness` with links to the tab that fixes each item; switches: published (blocked while not ready), featured, coming soon + note, registration closed; SEO title/description AR/EN (60/160 counters). `useUpdateCourseMutation`.
-4. `routes/course.tsx` — replace the placeholder: `PageHeader` (title, back to `/courses`, "View on website" when published), `UrlTabs` with overview · content · curriculum · sessions · faq · publishing (tab components exist for 4 of them in `features/courses/tabs/`), loading/404/error states, `clientLoader` prefetch.
-5. `routes/session.tsx` — facts `TitleBlock`, roster table with a column per meeting: ✓ (click → confirm undo, `useUndoCheckInMutation`), "Mark" button when the meeting has started (from 60 min before) and the booking is PAID (`useCheckInMutation`), — otherwise; Edit (session dialog), Close/Reopen, Export CSV (`/sessions/:id/roster.csv`), Print (add `print:hidden` to the shell's rail/top bar/banner and a print stylesheet).
-6. Messages (EN + AR) for the new screens, screenshots at 360/768/1280/1440 in both languages, phase report, local commit `feat(dashboard-d9): courses and sessions`.
+**D10 — Assistants & profile, in order**
+1. `routes/assistants.tsx` — replace the placeholder: cards in a 1/2/3-column grid (avatar, name, phone + WhatsApp link, active badge, "Scanner app — coming soon", notes), filter Active/Inactive/All + search, row menu: edit, activate/deactivate, delete (only with no check-ins). APIs ready in `features/assistants/api.ts`.
+2. `features/assistants/assistant-dialog.tsx` — add/edit (full name, Egyptian phone → E.164, optional email, photo via `useUploadImageMutation`, notes). Map the API's `phoneE164: "TAKEN"` to a field error (DAC-07).
+3. `routes/profile.tsx` — `UrlTabs`: personal · contact · bio · stats · certifications · journey · account. Reuse `SectionForm` + `useDraft` (see `features/courses/tabs/overview-tab.tsx`) and `OrderedListEditor` for certifications and journey. APIs ready in `features/profile/api.ts`.
+4. Messages (EN + AR), screenshots at 360/1280 in both languages, an e2e for DAC-07, phase report, commit.
 
-**Then:** D10 assistants & profile (APIs and mocks exist: `features/assistants/api.ts`, `features/profile/api.ts`) → D11 messages (`features/messages/api.ts`) → D12 QA → D13 real API → D14 review (`docs/PHASES.md`).
+**Then:** D11 messages (`features/messages/api.ts` ready) → D12 QA → D13 real API → D14 review (`docs/PHASES.md`).
 
-**Known issues / polish backlog**
-- Payments filter bar wraps to a second line at 1280 px (6 controls) — consider moving method + date into a "More filters" popover.
-- Course card "next session" date truncates in Arabic — use a shorter date format there (no weekday).
-- ESLint warning `react-hooks/incompatible-library` on `form.watch` in `add-course-dialog.tsx` (React Compiler can't memoize RHF's `watch`; harmless) — switch to `useWatch` to silence.
-- Independent review of refund/move/cancel (CLAUDE.md asks for one in D8) not run yet.
-- `/admin/counts` was added to the API contract (DD-026) — the Website backend must implement it.
+**Notes for whoever continues**
+- Follow the existing patterns: tab components in `features/<x>/tabs/`, one `SectionForm` per tab, `useDraft` for editable copies, `getApiError` to map server field errors.
+- Keep the Cairo-time rule in mind: date/time inputs are wall-clock and go through `zonedLocalToUtcIso`; weekly repeats step the local date (DD-029).
+- A wide table goes in a `.scroll-x` container (DD-030), and timestamps in narrow cells use `<DateTime wrap />`.
+- Independent review of the money actions (refund/move/cancel) is still outstanding — CLAUDE.md asks for one in D8.
+- `/admin/counts` is an addition to the API contract (DD-026) the Website backend must implement.
 
 ## Page briefs
 
@@ -117,3 +114,30 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 **API contract:** added `GET /admin/counts` (DD-026).
 **Decisions:** DD-025…DD-028.
 **Next:** D9 tasks 1–6 above.
+
+### Phase D9 — Courses, sessions & attendance: ✅ complete
+
+**Delivered:** DSH-CRS-01…09 (cards, state tabs, search, Add course dialog, 6 independently saved tabs, publishing checklist, archive/restore/delete), DSH-SES-01…08 (sessions list, add/edit with meetings in Cairo time, weekly repeat, close/reopen, publish/unpublish, delete guard, roster, CSV, A4 print), DSH-ATT-01…03 (attendance grid, manual check-in from 60 min before a meeting, undo with confirmation). DUS-12…19.
+
+**Verified:** typecheck ✅ · lint ✅ · Prettier ✅ · 30 unit/component tests ✅ · 12 Playwright tests ✅ (desktop + mobile), including **DAC-02** (publish only when complete, then bookable), **DAC-03** (capacity can't drop below sold) and **DAC-06** (mark and undo attendance). Build ✅ with no mock code. Screenshots at 360/1280 in AR and EN.
+
+**Fixed during review:**
+- Editing a session silently reset a custom registration-close time to the 24 h default.
+- In Arabic, the EGP suffix sat opposite the input's padding so the number overlapped it — fixed centrally in a new `AmountInput` (DD-031).
+- A wide roster table grew the document's scroll width, so the whole page scrolled sideways on phones even though the table had its own scroller — fixed with a `.scroll-x` utility using `contain: paint` (DD-030).
+- Long timestamps overflowed narrow cells on the student page — added `<DateTime wrap />`.
+- Meeting time inputs clipped the AM/PM in English.
+- Remaining lint warning from D8 (`form.watch`) removed by switching to `useWatch` and state.
+
+**Decisions:** DD-029…DD-031.
+
+**Known issues / backlog:** Payments filter bar wraps to a second line at 1280 px; course card "next session" date truncates in Arabic; independent review of the money actions still to run.
+
+**Next:** D10 — Assistants & profile (tasks above).
+
+**🎓 Claude ecosystem lesson — Subagents for an independent review**
+- **Concept:** `Agent` runs a task in a *separate context*. It reads only what you give it, so it can't be biased by the reasoning that produced the code — and its context doesn't fill up yours.
+- **How we used it here:** not yet — D8's money actions (refund, move, cancel) still need one. The intended prompt: "Read `docs/SRS.md` §4.5 and DBR-11/12, then review `app/features/payments/*` and `app/mocks/handlers/payments.ts`. List every way a refund or move could produce a wrong seat count or leave a valid ticket on a refunded booking." A fresh agent checks the code against the spec rather than against what the author meant.
+- **Why it matters:** the author's context is the worst place to catch an assumption the author made. For money and seats, that bias is expensive.
+- **Try it yourself:** in Claude Code, run `/agents` to see the built-in agents, then ask for "an Explore agent to find every place the dashboard changes a booking's status" — note that its findings come back without the file dumps.
+- **Docs:** https://code.claude.com/docs/en/sub-agents

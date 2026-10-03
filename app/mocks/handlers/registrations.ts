@@ -20,13 +20,28 @@ function filteredRegistrations(url: URL): RegistrationRow[] {
     .map((b) => registrationRow(b, now))
     .filter((r) => !p.get("courseId") || r.course.id === p.get("courseId"))
     .filter((r) => !p.get("sessionId") || r.session.id === p.get("sessionId"))
-    .filter((r) => !p.get("attendance") || r.attendance.status === (p.get("attendance") as AttendanceStatus))
+    .filter(
+      (r) =>
+        !p.get("attendance") || r.attendance.status === (p.get("attendance") as AttendanceStatus),
+    )
     .filter((r) => inRange(r.registeredAt, p.get("from"), p.get("to")))
-    .filter((r) => matchesQuery(p.get("q"), r.student.fullName, r.student.phoneE164, r.student.email, r.reference));
+    .filter((r) =>
+      matchesQuery(
+        p.get("q"),
+        r.student.fullName,
+        r.student.phoneE164,
+        r.student.email,
+        r.reference,
+      ),
+    );
   return sortBy(
     rows,
     p.get("sort"),
-    { registeredAt: (r) => r.registeredAt, name: (r) => r.student.fullName, course: (r) => r.course.code + r.session.code },
+    {
+      registeredAt: (r) => r.registeredAt,
+      name: (r) => r.student.fullName,
+      course: (r) => r.course.code + r.session.code,
+    },
     "-registeredAt",
   );
 }
@@ -44,7 +59,18 @@ export const registrationHandlers = [
     const rows = filteredRegistrations(new URL(request.url)).slice(0, 10_000);
     return csvResponse(
       "registrations.csv",
-      ["reference", "name", "phone", "email", "department", "course", "session", "registered_at_utc", "status", "attendance"],
+      [
+        "reference",
+        "name",
+        "phone",
+        "email",
+        "department",
+        "course",
+        "session",
+        "registered_at_utc",
+        "status",
+        "attendance",
+      ],
       rows.map((r) => [
         r.reference,
         r.student.fullName,
@@ -63,7 +89,8 @@ export const registrationHandlers = [
   http.get(`${MOCK_API}/students/:id`, async ({ params }) => {
     await latency();
     const id = String(params.id);
-    if (!db.students.some((s) => s.id === id)) return apiError(404, "NOT_FOUND", "Student not found.");
+    if (!db.students.some((s) => s.id === id))
+      return apiError(404, "NOT_FOUND", "Student not found.");
     return itemResponse(studentDetail(id));
   }),
 

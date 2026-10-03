@@ -5,7 +5,11 @@ import { Select } from "~/components/ui/select";
 import { DATE_RANGES } from "~/lib/date-ranges";
 import { toQueryString } from "~/store/api";
 import { useCourseOptions, useSessionOptions } from "../courses/options";
-import { ATTENDANCE_FILTERS, BOOKING_FILTERS, type useRegistrationFilters } from "./use-registration-filters";
+import {
+  ATTENDANCE_FILTERS,
+  BOOKING_FILTERS,
+  type useRegistrationFilters,
+} from "./use-registration-filters";
 
 type State = ReturnType<typeof useRegistrationFilters>;
 
@@ -24,7 +28,11 @@ export function StudentsFilters({ state }: { state: State }) {
       label: courses.find((c) => c.value === filters.courseId)?.label ?? filters.courseId,
       onRemove: () => url.set({ course: undefined, session: undefined }),
     },
-    filters.sessionId && { key: "session", label: filters.sessionId, onRemove: () => url.set({ session: undefined }) },
+    filters.sessionId && {
+      key: "session",
+      label: filters.sessionId,
+      onRemove: () => url.set({ session: undefined }),
+    },
     status !== "PAID" && {
       key: "status",
       label: status === "ALL" ? t("allStatuses") : ts(`booking.${status}`),
@@ -43,9 +51,22 @@ export function StudentsFilters({ state }: { state: State }) {
   return (
     <>
       <FilterBar
-        search={<SearchInput label={t("searchLabel")} placeholder={t("searchPlaceholder")} value={q} onSearch={setQ} />}
+        search={
+          <SearchInput
+            label={t("searchLabel")}
+            placeholder={t("searchPlaceholder")}
+            value={q}
+            onSearch={setQ}
+          />
+        }
         activeCount={chips.length}
-        actions={<ExportButton path="/registrations/export.csv" query={toQueryString(exportFilters)} filename="registrations.csv" />}
+        actions={
+          <ExportButton
+            path="/registrations/export.csv"
+            query={toQueryString(exportFilters)}
+            filename="registrations.csv"
+          />
+        }
       >
         <Select
           aria-label={t("course")}
@@ -67,7 +88,10 @@ export function StudentsFilters({ state }: { state: State }) {
           aria-label={t("status")}
           value={status}
           onValueChange={(value) => url.set({ status: value === "PAID" ? undefined : value })}
-          options={BOOKING_FILTERS.map((s) => ({ value: s, label: s === "ALL" ? t("allStatuses") : ts(`booking.${s}`) }))}
+          options={BOOKING_FILTERS.map((s) => ({
+            value: s,
+            label: s === "ALL" ? t("allStatuses") : ts(`booking.${s}`),
+          }))}
         />
         <Select
           aria-label={t("attendance")}
@@ -87,10 +111,19 @@ export function StudentsFilters({ state }: { state: State }) {
           allLabel={tr("all")}
         />
       </FilterBar>
-      <FilterChips chips={chips} onClearAll={() => {
-        setQ("");
-        url.set({ course: undefined, session: undefined, status: undefined, attendance: undefined, range: undefined });
-      }} />
+      <FilterChips
+        chips={chips}
+        onClearAll={() => {
+          setQ("");
+          url.set({
+            course: undefined,
+            session: undefined,
+            status: undefined,
+            attendance: undefined,
+            range: undefined,
+          });
+        }}
+      />
     </>
   );
 }

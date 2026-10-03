@@ -235,8 +235,49 @@
 }
 
 @layer utilities {
+  /*
+   * A horizontally scrolling table still grows the document's scrollable width in
+   * Chromium, which makes the whole page scroll sideways on phones. `contain: paint`
+   * keeps that overflow inside the scroller (design.md §4).
+   */
+  .scroll-x {
+    overflow-x: auto;
+    contain: paint;
+  }
+
   /* Numbers that line up in tables and title blocks. */
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Print: ink on white, no chrome — the session roster goes to the door on paper (§10). */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff;
+    font-size: 11pt;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  table {
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
   }
 }

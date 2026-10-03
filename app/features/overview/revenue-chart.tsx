@@ -39,27 +39,42 @@ export function RevenueChart({ data }: { data: Overview["revenueByMonth"] }) {
           {data.slice(-2).map((d) => (
             <div key={d.month}>
               <dt className="text-label text-graphite">{monthLabel(d.month, locale, "long")}</dt>
-              <dd className="tabular font-display text-heading font-semibold">{tc("money", { amount: formatAmount(d.amount) })}</dd>
+              <dd className="tabular font-display text-heading font-semibold">
+                {tc("money", { amount: formatAmount(d.amount) })}
+              </dd>
             </div>
           ))}
         </dl>
       ) : (
         <div className="p-4">
-          <p className="mb-4 text-caption text-graphite">{t("summary", { total: tc("money", { amount: formatAmount(total) }) })}</p>
+          <p className="mb-4 text-caption text-graphite">
+            {t("summary", { total: tc("money", { amount: formatAmount(total) }) })}
+          </p>
           <div className="relative" style={{ height: CHART_HEIGHT }}>
             {[1, 0.5, 0].map((fraction) => (
-              <div key={fraction} aria-hidden="true" className="absolute inset-x-0 flex items-center gap-2" style={{ bottom: fraction * CHART_HEIGHT }}>
+              <div
+                key={fraction}
+                aria-hidden="true"
+                className="absolute inset-x-0 flex items-center gap-2"
+                style={{ bottom: fraction * CHART_HEIGHT }}
+              >
                 <span className="h-px flex-1 bg-line" />
                 <span className="tabular w-14 shrink-0 text-end text-[0.75rem] leading-none text-graphite">
                   {fraction === 0 ? "0" : `${formatAmount((top * fraction) / 1000)}k`}
                 </span>
               </div>
             ))}
-            <ul className="absolute inset-y-0 start-0 end-16 flex items-end justify-around" aria-hidden="true">
+            <ul
+              className="absolute inset-y-0 start-0 end-16 flex items-end justify-around"
+              aria-hidden="true"
+            >
               {data.map((d) => {
                 const label = d === peak || d === data[data.length - 1];
                 return (
-                  <li key={d.month} className="relative flex h-full w-full items-end justify-center">
+                  <li
+                    key={d.month}
+                    className="relative flex h-full w-full items-end justify-center"
+                  >
                     <Tooltip.Root>
                       <Tooltip.Trigger asChild>
                         <button
@@ -76,8 +91,12 @@ export function RevenueChart({ data }: { data: Overview["revenueByMonth"] }) {
                         </button>
                       </Tooltip.Trigger>
                       <Tooltip.Portal>
-                        <Tooltip.Content sideOffset={6} className="z-50 rounded-sm bg-ink px-2 py-1 text-caption text-sheet">
-                          {monthLabel(d.month, locale, "long")}: {tc("money", { amount: formatAmount(d.amount) })}
+                        <Tooltip.Content
+                          sideOffset={6}
+                          className="z-50 rounded-sm bg-ink px-2 py-1 text-caption text-sheet"
+                        >
+                          {monthLabel(d.month, locale, "long")}:{" "}
+                          {tc("money", { amount: formatAmount(d.amount) })}
                         </Tooltip.Content>
                       </Tooltip.Portal>
                     </Tooltip.Root>

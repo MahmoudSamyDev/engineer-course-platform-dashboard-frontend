@@ -15,7 +15,10 @@ function addDays(date: string, days: number): string {
 }
 
 /** Preset → inclusive `from`/`to` dates in Cairo time. The Egyptian week starts on Saturday. */
-export function rangeDates(range: DateRange | undefined, now: Date): { from?: string; to?: string } {
+export function rangeDates(
+  range: DateRange | undefined,
+  now: Date,
+): { from?: string; to?: string } {
   if (!range) return {};
   const today = cairoDate(now);
   switch (range) {

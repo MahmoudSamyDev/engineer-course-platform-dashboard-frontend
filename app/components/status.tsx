@@ -1,5 +1,10 @@
 import { useTranslations } from "use-intl";
-import type { Attendance, CoursePublicationState, MessageStatus, PaymentStatus } from "~/domain/api";
+import type {
+  Attendance,
+  CoursePublicationState,
+  MessageStatus,
+  PaymentStatus,
+} from "~/domain/api";
 import {
   ATTENDANCE_TONE,
   BOOKING_TONE,

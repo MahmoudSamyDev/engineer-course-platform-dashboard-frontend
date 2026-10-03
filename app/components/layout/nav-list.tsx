@@ -11,9 +11,16 @@ import { NAV_ITEMS } from "./nav-items";
 export function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslations("nav");
   // Counts that need attention (DSH-NAV-04), refreshed every minute while the tab is visible.
-  const { data: counts } = useGetCountsQuery(undefined, { pollingInterval: 60_000, skipPollingIfUnfocused: true });
+  const { data: counts } = useGetCountsQuery(undefined, {
+    pollingInterval: 60_000,
+    skipPollingIfUnfocused: true,
+  });
   const badgeFor = (key: string) =>
-    key === "payments" ? counts?.refundRequired : key === "messages" ? counts?.newMessages : undefined;
+    key === "payments"
+      ? counts?.refundRequired
+      : key === "messages"
+        ? counts?.newMessages
+        : undefined;
   return (
     <ul className="flex flex-col gap-0.5">
       {NAV_ITEMS.map(({ key, to, icon: Icon }) => (

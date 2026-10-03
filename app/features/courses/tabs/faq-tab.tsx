@@ -21,7 +21,8 @@ export function FaqTab({ course }: { course: CourseDetail }) {
 
   async function save() {
     const complete = (v: { ar: string; en: string }) => v.ar.trim() && v.en.trim();
-    if (draft.some((f) => !complete(f.question) || !complete(f.answer))) return setError(t("incomplete"));
+    if (draft.some((f) => !complete(f.question) || !complete(f.answer)))
+      return setError(t("incomplete"));
     setError(null);
     try {
       await replace({ id: course.id, faq: draft }).unwrap();
@@ -42,8 +43,21 @@ export function FaqTab({ course }: { course: CourseDetail }) {
         emptyText={t("empty")}
         renderItem={(item, update) => (
           <>
-            <BilingualField label={t("questionLabel")} value={item.question} onChange={(question) => update({ ...item, question })} maxLength={160} required />
-            <BilingualField label={t("answer")} value={item.answer} onChange={(answer) => update({ ...item, answer })} multiline rows={3} required />
+            <BilingualField
+              label={t("questionLabel")}
+              value={item.question}
+              onChange={(question) => update({ ...item, question })}
+              maxLength={160}
+              required
+            />
+            <BilingualField
+              label={t("answer")}
+              value={item.answer}
+              onChange={(answer) => update({ ...item, answer })}
+              multiline
+              rows={3}
+              required
+            />
           </>
         )}
       />

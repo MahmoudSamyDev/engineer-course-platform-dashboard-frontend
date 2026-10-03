@@ -15,8 +15,15 @@ export const assistantsApi = api.injectEndpoints({
       transformResponse: (r: ItemResponse<Assistant>) => r.data,
       invalidatesTags: [{ type: "Assistant", id: "LIST" }],
     }),
-    updateAssistant: build.mutation<Assistant, { id: string } & Partial<AssistantInput> & { isActive?: boolean }>({
-      query: ({ id, ...body }) => ({ url: `/assistants/${encodeURIComponent(id)}`, method: "PATCH", body }),
+    updateAssistant: build.mutation<
+      Assistant,
+      { id: string } & Partial<AssistantInput> & { isActive?: boolean }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/assistants/${encodeURIComponent(id)}`,
+        method: "PATCH",
+        body,
+      }),
       transformResponse: (r: ItemResponse<Assistant>) => r.data,
       invalidatesTags: [{ type: "Assistant", id: "LIST" }],
     }),

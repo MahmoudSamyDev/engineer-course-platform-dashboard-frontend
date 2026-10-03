@@ -12,7 +12,17 @@ import type { LocalizedText } from "~/domain/types";
 import { MOCK_API } from "../config";
 import { db, mockNow, type MockCourse, type MockSession } from "../db";
 import { apiError, currentAdmin, latency } from "../http";
-import { courseCard, courseDetail, courseState, findCourse, findSession, heldSeats, sessionDetail, sessionRow, soldSeats } from "../views";
+import {
+  courseCard,
+  courseDetail,
+  courseState,
+  findCourse,
+  findSession,
+  heldSeats,
+  sessionDetail,
+  sessionRow,
+  soldSeats,
+} from "../views";
 import { csvResponse, itemResponse, matchesQuery } from "./helpers";
 
 const filled = (t?: LocalizedText) => Boolean(t?.ar?.trim() && t?.en?.trim());
@@ -20,13 +30,21 @@ const empty = (): LocalizedText => ({ ar: "", en: "" });
 
 function validateMeetings(input: SessionInput, isNew: boolean) {
   const problem = checkMeetings(input.meetings, mockNow(), isNew);
-  if (input.meetings.length === 0) return apiError(422, "VALIDATION_FAILED", "Add at least one meeting.", { meetings: "REQUIRED" });
+  if (input.meetings.length === 0)
+    return apiError(422, "VALIDATION_FAILED", "Add at least one meeting.", {
+      meetings: "REQUIRED",
+    });
   if (problem.kind !== "none") {
-    return apiError(422, "VALIDATION_FAILED", "Check the meeting times.", { meetings: problem.kind.toUpperCase(), meetingIndex: String("index" in problem ? problem.index : 0) });
+    return apiError(422, "VALIDATION_FAILED", "Check the meeting times.", {
+      meetings: problem.kind.toUpperCase(),
+      meetingIndex: String("index" in problem ? problem.index : 0),
+    });
   }
   const first = [...input.meetings].sort((a, b) => a.startsAt.localeCompare(b.startsAt))[0]!;
   if (!(Date.parse(input.registrationClosesAt) < Date.parse(first.startsAt))) {
-    return apiError(422, "VALIDATION_FAILED", "Registration must close before the first meeting.", { registrationClosesAt: "AFTER_FIRST_MEETING" });
+    return apiError(422, "VALIDATION_FAILED", "Registration must close before the first meeting.", {
+      registrationClosesAt: "AFTER_FIRST_MEETING",
+    });
   }
   return null;
 }
@@ -34,7 +52,12 @@ function validateMeetings(input: SessionInput, isNew: boolean) {
 function buildMeetings(code: string, meetings: SessionInput["meetings"]) {
   return [...meetings]
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
-    .map((m, i) => ({ id: `${code}-M${i + 1}`, order: i + 1, startsAt: m.startsAt, endsAt: m.endsAt }));
+    .map((m, i) => ({
+      id: `${code}-M${i + 1}`,
+      order: i + 1,
+      startsAt: m.startsAt,
+      endsAt: m.endsAt,
+    }));
 }
 
 /** SRS §7.2 — courses, sessions, meetings, check-ins, locations (DSH-CRS, DSH-SES, DSH-ATT). */
@@ -57,7 +80,10 @@ export const courseHandlers = [
     const items = cards
       .filter((c) => (state ? c.state === state.toUpperCase() : c.state !== "ARCHIVED"))
       .sort((a, b) => a.sortOrder - b.sortOrder);
-    return HttpResponse.json({ data: items, meta: { page: 1, pageSize: items.length, total: items.length, counts } });
+    return HttpResponse.json({
+      data: items,
+      meta: { page: 1, pageSize: items.length, total: items.length, counts },
+    });
   }),
 
   http.post(`${MOCK_API}/courses`, async ({ request }) => {
@@ -70,7 +96,8 @@ export const courseHandlers = [
     if (!SLUG_PATTERN.test(body.slug ?? "")) fields.slug = "INVALID";
     else if (db.courses.some((c) => c.slug === body.slug)) fields.slug = "TAKEN";
     if (!filled(body.title)) fields.title = "REQUIRED";
-    if (Object.keys(fields).length) return apiError(422, "VALIDATION_FAILED", "Check the course details.", fields);
+    if (Object.keys(fields).length)
+      return apiError(422, "VALIDATION_FAILED", "Check the course details.", fields);
 
     const id = `C${Date.now().toString(36)}`;
     const course: MockCourse = {
@@ -102,7 +129,10 @@ export const courseHandlers = [
       registrationClosed: false,
       comingSoonNote: empty(),
       sortOrder: Math.max(0, ...db.courses.map((c) => c.sortOrder)) + 1,
-      seo: { title: structuredClone(body.title), description: structuredClone(body.shortDescription ?? empty()) },
+      seo: {
+        title: structuredClone(body.title),
+        description: structuredClone(body.shortDescription ?? empty()),
+      },
       archivedAt: null,
       createdAt: mockNow().toISOString(),
     };
@@ -126,24 +156,36 @@ export const courseHandlers = [
     const fields: Record<string, string> = {};
 
     if (body.code !== undefined && body.code !== course.code) {
-      if (detail.codeLocked) return apiError(409, "CONFLICT", "The course code can't change once sessions exist.", { code: "COURSE_CODE_LOCKED" });
+      if (detail.codeLocked)
+        return apiError(409, "CONFLICT", "The course code can't change once sessions exist.", {
+          code: "COURSE_CODE_LOCKED",
+        });
       if (!COURSE_CODE_PATTERN.test(body.code)) fields.code = "INVALID";
       else if (db.courses.some((c) => c.code === body.code)) fields.code = "TAKEN";
     }
     if (body.slug !== undefined && body.slug !== course.slug) {
-      if (detail.slugLocked) return apiError(409, "CONFLICT", "The link can't change after publishing.", { slug: "SLUG_LOCKED" });
+      if (detail.slugLocked)
+        return apiError(409, "CONFLICT", "The link can't change after publishing.", {
+          slug: "SLUG_LOCKED",
+        });
       if (!SLUG_PATTERN.test(body.slug)) fields.slug = "INVALID";
       else if (db.courses.some((c) => c.slug === body.slug)) fields.slug = "TAKEN";
     }
     if (body.title !== undefined && !filled(body.title)) fields.title = "REQUIRED";
-    if (Object.keys(fields).length) return apiError(422, "VALIDATION_FAILED", "Check the course details.", fields);
+    if (Object.keys(fields).length)
+      return apiError(422, "VALIDATION_FAILED", "Check the course details.", fields);
 
     const { isPublished, ...rest } = body;
     Object.assign(course, rest);
     if (isPublished === true) {
       const issues = readinessIssues(courseDetail(course));
       if (issues.length) {
-        return apiError(409, "CONFLICT", "Complete the course before publishing.", Object.fromEntries(issues.map((i) => [i, "MISSING"])));
+        return apiError(
+          409,
+          "CONFLICT",
+          "Complete the course before publishing.",
+          Object.fromEntries(issues.map((i) => [i, "MISSING"])),
+        );
       }
       course.isPublished = true;
     } else if (isPublished === false) {
@@ -157,8 +199,16 @@ export const courseHandlers = [
     const course = findCourse(String(params.id));
     if (!course) return apiError(404, "NOT_FOUND", "Course not found.");
     const modules = (await request.json()) as CourseModuleInput[];
-    if (modules.some((m) => !filled(m.title))) return apiError(422, "VALIDATION_FAILED", "Every module needs a title in both languages.", { modules: "TITLE_REQUIRED" });
-    course.modules = modules.map((m, i) => ({ order: i + 1, title: m.title, durationHours: m.durationHours, topics: m.topics }));
+    if (modules.some((m) => !filled(m.title)))
+      return apiError(422, "VALIDATION_FAILED", "Every module needs a title in both languages.", {
+        modules: "TITLE_REQUIRED",
+      });
+    course.modules = modules.map((m, i) => ({
+      order: i + 1,
+      title: m.title,
+      durationHours: m.durationHours,
+      topics: m.topics,
+    }));
     return itemResponse(courseDetail(course));
   }),
 
@@ -168,7 +218,12 @@ export const courseHandlers = [
     if (!course) return apiError(404, "NOT_FOUND", "Course not found.");
     const faq = (await request.json()) as FaqInput[];
     if (faq.some((f) => !filled(f.question) || !filled(f.answer))) {
-      return apiError(422, "VALIDATION_FAILED", "Every question needs a question and an answer in both languages.", { faq: "INCOMPLETE" });
+      return apiError(
+        422,
+        "VALIDATION_FAILED",
+        "Every question needs a question and an answer in both languages.",
+        { faq: "INCOMPLETE" },
+      );
     }
     course.faq = faq;
     return itemResponse(courseDetail(course));
@@ -196,7 +251,12 @@ export const courseHandlers = [
     const course = findCourse(String(params.id));
     if (!course) return apiError(404, "NOT_FOUND", "Course not found.");
     if (courseState(course) !== "DRAFT" || db.sessions.some((s) => s.courseId === course.id)) {
-      return apiError(409, "CONFLICT", "Only drafts without sessions can be deleted. Archive it instead.", { course: "HAS_SESSIONS" });
+      return apiError(
+        409,
+        "CONFLICT",
+        "Only drafts without sessions can be deleted. Archive it instead.",
+        { course: "HAS_SESSIONS" },
+      );
     }
     db.courses = db.courses.filter((c) => c.id !== course.id);
     return new HttpResponse(null, { status: 204 });
@@ -208,7 +268,8 @@ export const courseHandlers = [
     if (!course) return apiError(404, "NOT_FOUND", "Course not found.");
     const now = mockNow();
     const rows = db.sessions.filter((s) => s.courseId === course.id).map((s) => sessionRow(s, now));
-    const isPast = (r: (typeof rows)[number]) => Date.parse(r.meetings[r.meetings.length - 1]!.endsAt) < now.getTime();
+    const isPast = (r: (typeof rows)[number]) =>
+      Date.parse(r.meetings[r.meetings.length - 1]!.endsAt) < now.getTime();
     rows.sort((a, b) => {
       if (isPast(a) !== isPast(b)) return isPast(a) ? 1 : -1;
       const order = a.meetings[0]!.startsAt.localeCompare(b.meetings[0]!.startsAt);
@@ -222,14 +283,23 @@ export const courseHandlers = [
     const course = findCourse(String(params.id));
     if (!course) return apiError(404, "NOT_FOUND", "Course not found.");
     const body = (await request.json()) as SessionInput;
-    if (!(body.capacity >= 1 && body.capacity <= 500)) return apiError(422, "VALIDATION_FAILED", "Capacity must be between 1 and 500.", { capacity: "OUT_OF_RANGE" });
-    if (!(body.price > 0)) return apiError(422, "VALIDATION_FAILED", "Enter a price.", { price: "REQUIRED" });
-    if (!db.locations.some((l) => l.id === body.locationId)) return apiError(422, "VALIDATION_FAILED", "Choose a location.", { locationId: "REQUIRED" });
+    if (!(body.capacity >= 1 && body.capacity <= 500))
+      return apiError(422, "VALIDATION_FAILED", "Capacity must be between 1 and 500.", {
+        capacity: "OUT_OF_RANGE",
+      });
+    if (!(body.price > 0))
+      return apiError(422, "VALIDATION_FAILED", "Enter a price.", { price: "REQUIRED" });
+    if (!db.locations.some((l) => l.id === body.locationId))
+      return apiError(422, "VALIDATION_FAILED", "Choose a location.", { locationId: "REQUIRED" });
     const invalid = validateMeetings(body, true);
     if (invalid) return invalid;
 
     const meetings = [...body.meetings].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
-    const code = nextSessionCode(course.code, meetings[0]!.startsAt, db.sessions.map((s) => s.code));
+    const code = nextSessionCode(
+      course.code,
+      meetings[0]!.startsAt,
+      db.sessions.map((s) => s.code),
+    );
     const session: MockSession = {
       id: code,
       code,
@@ -263,14 +333,22 @@ export const courseHandlers = [
     const sold = soldSeats(session.id);
     const held = heldSeats(session.id);
     if (body.capacity !== undefined && body.capacity < minimumCapacity(sold, held)) {
-      return apiError(409, "CONFLICT", `Capacity can't be less than the ${sold + held} seats already sold or held.`, {
-        capacity: "CAPACITY_BELOW_SOLD",
-        minimum: String(minimumCapacity(sold, held)),
-      });
+      return apiError(
+        409,
+        "CONFLICT",
+        `Capacity can't be less than the ${sold + held} seats already sold or held.`,
+        {
+          capacity: "CAPACITY_BELOW_SOLD",
+          minimum: String(minimumCapacity(sold, held)),
+        },
+      );
     }
     if (body.meetings) {
       const invalid = validateMeetings(
-        { ...(body as SessionInput), registrationClosesAt: body.registrationClosesAt ?? session.registrationClosesAt },
+        {
+          ...(body as SessionInput),
+          registrationClosesAt: body.registrationClosesAt ?? session.registrationClosesAt,
+        },
         false,
       );
       if (invalid) return invalid;
@@ -280,7 +358,8 @@ export const courseHandlers = [
     if (body.label !== undefined) session.label = body.label;
     if (body.capacity !== undefined) session.capacity = body.capacity;
     if (body.price !== undefined) session.price = body.price;
-    if (body.registrationClosesAt !== undefined) session.registrationClosesAt = body.registrationClosesAt;
+    if (body.registrationClosesAt !== undefined)
+      session.registrationClosesAt = body.registrationClosesAt;
     if (body.isPublished !== undefined) session.isPublished = body.isPublished;
     return itemResponse(sessionRow(session));
   }),
@@ -300,7 +379,9 @@ export const courseHandlers = [
     const session = findSession(String(params.id));
     if (!session) return apiError(404, "NOT_FOUND", "Session not found.");
     if (db.bookings.some((b) => b.sessionId === session.id)) {
-      return apiError(409, "CONFLICT", "This session has bookings. Unpublish it instead.", { session: "HAS_BOOKINGS" });
+      return apiError(409, "CONFLICT", "This session has bookings. Unpublish it instead.", {
+        session: "HAS_BOOKINGS",
+      });
     }
     db.sessions = db.sessions.filter((s) => s.id !== session.id);
     return new HttpResponse(null, { status: 204 });
@@ -313,7 +394,14 @@ export const courseHandlers = [
     const detail = sessionDetail(session);
     return csvResponse(
       `roster-${session.code}.csv`,
-      ["reference", "name", "phone", "department", "status", ...detail.meetings.map((m) => `meeting_${m.order}`)],
+      [
+        "reference",
+        "name",
+        "phone",
+        "department",
+        "status",
+        ...detail.meetings.map((m) => `meeting_${m.order}`),
+      ],
       detail.roster.map((r) => [
         r.reference,
         r.student.fullName,
@@ -327,17 +415,32 @@ export const courseHandlers = [
 
   http.post(`${MOCK_API}/checkins`, async ({ request }) => {
     await latency();
-    const { bookingId, meetingId } = (await request.json()) as { bookingId: string; meetingId: string };
+    const { bookingId, meetingId } = (await request.json()) as {
+      bookingId: string;
+      meetingId: string;
+    };
     const booking = db.bookings.find((b) => b.id === bookingId);
     const session = booking ? findSession(booking.sessionId) : undefined;
     const meeting = session?.meetings.find((m) => m.id === meetingId);
-    if (!booking || !session || !meeting) return apiError(404, "NOT_FOUND", "Booking or meeting not found.");
-    if (booking.status !== "PAID") return apiError(409, "CONFLICT", "Only paid registrations can be checked in.", { checkin: "NOT_PAID" });
+    if (!booking || !session || !meeting)
+      return apiError(404, "NOT_FOUND", "Booking or meeting not found.");
+    if (booking.status !== "PAID")
+      return apiError(409, "CONFLICT", "Only paid registrations can be checked in.", {
+        checkin: "NOT_PAID",
+      });
     if (Date.parse(meeting.startsAt) - 60 * 60_000 > mockNow().getTime()) {
-      return apiError(409, "CONFLICT", "This meeting hasn't started yet.", { checkin: "MEETING_NOT_STARTED" });
+      return apiError(409, "CONFLICT", "This meeting hasn't started yet.", {
+        checkin: "MEETING_NOT_STARTED",
+      });
     }
-    const existing = db.checkIns.find((c) => c.bookingId === bookingId && c.meetingId === meetingId);
-    if (existing) return apiError(409, "CONFLICT", "Already checked in for this meeting.", { checkin: "ALREADY_CHECKED_IN", at: existing.at });
+    const existing = db.checkIns.find(
+      (c) => c.bookingId === bookingId && c.meetingId === meetingId,
+    );
+    if (existing)
+      return apiError(409, "CONFLICT", "Already checked in for this meeting.", {
+        checkin: "ALREADY_CHECKED_IN",
+        at: existing.at,
+      });
     const checkIn = {
       id: `chk_${Date.now().toString(36)}`,
       bookingId,
@@ -360,6 +463,8 @@ export const courseHandlers = [
 
   http.get(`${MOCK_API}/locations`, async () => {
     await latency();
-    return itemResponse(db.locations.map((l) => ({ id: l.id, name: l.name, shortName: l.shortName })));
+    return itemResponse(
+      db.locations.map((l) => ({ id: l.id, name: l.name, shortName: l.shortName })),
+    );
   }),
 ];

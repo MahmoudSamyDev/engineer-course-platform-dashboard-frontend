@@ -12,7 +12,12 @@ import { useToast } from "~/components/ui/toast";
 import type { CourseCard as CourseCardData } from "~/domain/api";
 import type { Locale } from "~/domain/types";
 import { AddCourseDialog } from "~/features/courses/add-course-dialog";
-import { coursesApi, useDeleteCourseMutation, useGetCoursesQuery, useSetCourseArchivedMutation } from "~/features/courses/api";
+import {
+  coursesApi,
+  useDeleteCourseMutation,
+  useGetCoursesQuery,
+  useSetCourseArchivedMutation,
+} from "~/features/courses/api";
 import { CourseCard } from "~/features/courses/course-card";
 import { cn } from "~/lib/cn";
 import { useUrlParams } from "~/lib/use-url-params";
@@ -36,11 +41,19 @@ export default function Courses() {
   const toast = useToast();
   const url = useUrlParams();
   const [q, setQ] = useState("");
-  const tab = (STATES as readonly string[]).includes(url.get("state") ?? "") ? (url.get("state") as StateTab) : "all";
-  const { data, error, isLoading, refetch } = useGetCoursesQuery({ state: tab === "all" ? undefined : tab, q: q || undefined });
+  const tab = (STATES as readonly string[]).includes(url.get("state") ?? "")
+    ? (url.get("state") as StateTab)
+    : "all";
+  const { data, error, isLoading, refetch } = useGetCoursesQuery({
+    state: tab === "all" ? undefined : tab,
+    q: q || undefined,
+  });
   const [archive, archiveState] = useSetCourseArchivedMutation();
   const [remove, removeState] = useDeleteCourseMutation();
-  const [confirm, setConfirm] = useState<{ kind: "archive" | "delete"; course: CourseCardData } | null>(null);
+  const [confirm, setConfirm] = useState<{
+    kind: "archive" | "delete";
+    course: CourseCardData;
+  } | null>(null);
   const adding = url.get("new") === "1";
 
   async function runConfirm() {
@@ -73,7 +86,10 @@ export default function Courses() {
       />
 
       <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <nav aria-label={t("stateTabs")} className="flex gap-1 overflow-x-auto border-b border-line md:border-0">
+        <nav
+          aria-label={t("stateTabs")}
+          className="flex gap-1 overflow-x-auto border-b border-line md:border-0"
+        >
           {STATES.map((state) => (
             <button
               key={state}
@@ -82,15 +98,26 @@ export default function Courses() {
               onClick={() => url.set({ state: state === "all" ? undefined : state })}
               className={cn(
                 "relative h-10 shrink-0 px-3 text-body whitespace-nowrap text-graphite hover:text-ink",
-                tab === state && "font-semibold text-ink after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:bg-cyan",
+                tab === state &&
+                  "font-semibold text-ink after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:bg-cyan",
               )}
             >
               {t(`states.${state}`)}
-              {data ? <span className="tabular ms-1.5 text-caption text-graphite">{data.counts[state]}</span> : null}
+              {data ? (
+                <span className="tabular ms-1.5 text-caption text-graphite">
+                  {data.counts[state]}
+                </span>
+              ) : null}
             </button>
           ))}
         </nav>
-        <SearchInput label={t("searchLabel")} placeholder={t("searchPlaceholder")} value={q} onSearch={setQ} className="md:w-72" />
+        <SearchInput
+          label={t("searchLabel")}
+          placeholder={t("searchPlaceholder")}
+          value={q}
+          onSearch={setQ}
+          className="md:w-72"
+        />
       </div>
 
       {isLoading ? (
@@ -103,13 +130,30 @@ export default function Courses() {
         <ErrorState error={error} onRetry={refetch} />
       ) : data.items.length === 0 ? (
         q || tab !== "all" ? (
-          <EmptyState title={t("noResults")} action={<Button variant="secondary" onClick={() => { setQ(""); url.set({ state: undefined }); }}>{tc("clearAll")}</Button>} />
+          <EmptyState
+            title={t("noResults")}
+            action={
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setQ("");
+                  url.set({ state: undefined });
+                }}
+              >
+                {tc("clearAll")}
+              </Button>
+            }
+          />
         ) : (
           <EmptyState
             icon={<BookOpenText strokeWidth={1.5} />}
             title={t("empty")}
             description={t("emptyHint")}
-            action={<Button variant="primary" onClick={() => url.set({ new: 1 })}>{t("add.open")}</Button>}
+            action={
+              <Button variant="primary" onClick={() => url.set({ new: 1 })}>
+                {t("add.open")}
+              </Button>
+            }
           />
         )
       ) : (
@@ -132,7 +176,10 @@ export default function Courses() {
         </ul>
       )}
 
-      <AddCourseDialog open={adding} onOpenChange={(open) => url.set({ new: open ? 1 : undefined })} />
+      <AddCourseDialog
+        open={adding}
+        onOpenChange={(open) => url.set({ new: open ? 1 : undefined })}
+      />
       <ConfirmDialog
         open={Boolean(confirm)}
         onOpenChange={(open) => !open && setConfirm(null)}

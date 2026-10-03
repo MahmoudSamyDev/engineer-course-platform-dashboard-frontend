@@ -6,9 +6,10 @@ import { lastMonthKeys } from "~/domain/months";
 import { appNow } from "~/lib/clock";
 
 function monthName(key: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-GB", { month: "long", timeZone: "UTC" }).format(
-    new Date(`${key}-15T12:00:00Z`),
-  );
+  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-GB", {
+    month: "long",
+    timeZone: "UTC",
+  }).format(new Date(`${key}-15T12:00:00Z`));
 }
 
 /**
@@ -22,8 +23,12 @@ export function KpiStrip({ kpis }: { kpis: Overview["kpis"] }) {
 
   const revenueNote = (() => {
     if (kpis.revenueLastMonth === 0) return t("noRevenueLastMonth", { month: lastMonth });
-    const change = Math.round(((kpis.revenueThisMonth - kpis.revenueLastMonth) / kpis.revenueLastMonth) * 100);
-    return change >= 0 ? t("revenueUp", { percent: change, month: lastMonth }) : t("revenueDown", { percent: -change, month: lastMonth });
+    const change = Math.round(
+      ((kpis.revenueThisMonth - kpis.revenueLastMonth) / kpis.revenueLastMonth) * 100,
+    );
+    return change >= 0
+      ? t("revenueUp", { percent: change, month: lastMonth })
+      : t("revenueDown", { percent: -change, month: lastMonth });
   })();
 
   const diff = kpis.paidThisMonth - kpis.paidLastMonth;
@@ -38,7 +43,11 @@ export function KpiStrip({ kpis }: { kpis: Overview["kpis"] }) {
 
   return (
     <TitleBlock>
-      <TitleCell label={t("revenue")} value={<Money amount={kpis.revenueThisMonth} wrap />} note={revenueNote} />
+      <TitleCell
+        label={t("revenue")}
+        value={<Money amount={kpis.revenueThisMonth} wrap />}
+        note={revenueNote}
+      />
       <TitleCell label={t("paid")} value={kpis.paidThisMonth} note={paidNote} />
       <TitleCell
         label={t("seats")}

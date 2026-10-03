@@ -15,7 +15,15 @@ import { useGetCourseSessionsQuery } from "../courses/api";
 import { useMoveBookingMutation } from "./api";
 
 /** Resolve a refund-required booking by moving the student to another session with seats (DSH-PAY-06, DBR-12). */
-export function MoveDialog({ payment, open, onOpenChange }: { payment: PaymentDetail; open: boolean; onOpenChange: (open: boolean) => void }) {
+export function MoveDialog({
+  payment,
+  open,
+  onOpenChange,
+}: {
+  payment: PaymentDetail;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const t = useTranslations("payments.move");
   const tc = useTranslations("common");
   const locale = useLocale() as Locale;
@@ -28,10 +36,20 @@ export function MoveDialog({ payment, open, onOpenChange }: { payment: PaymentDe
   const now = appNow().getTime();
 
   const options = (sessions ?? [])
-    .filter((s) => s.id !== payment.session.id && s.isPublished && Date.parse(s.meetings[0]!.startsAt) > now && s.capacity - s.sold - s.held > 0)
+    .filter(
+      (s) =>
+        s.id !== payment.session.id &&
+        s.isPublished &&
+        Date.parse(s.meetings[0]!.startsAt) > now &&
+        s.capacity - s.sold - s.held > 0,
+    )
     .map((s) => ({
       value: s.id,
-      label: t("option", { code: s.code, date: formatDateTime(s.meetings[0]!.startsAt, locale), left: s.capacity - s.sold - s.held }),
+      label: t("option", {
+        code: s.code,
+        date: formatDateTime(s.meetings[0]!.startsAt, locale),
+        left: s.capacity - s.sold - s.held,
+      }),
       price: s.price,
     }));
   const chosen = options.find((o) => o.value === target);
@@ -39,12 +57,20 @@ export function MoveDialog({ payment, open, onOpenChange }: { payment: PaymentDe
   async function submit() {
     if (!target) return setError(t("chooseError"));
     try {
-      await move({ bookingId: payment.bookingId, targetSessionId: target, idempotencyKey }).unwrap();
+      await move({
+        bookingId: payment.bookingId,
+        targetSessionId: target,
+        idempotencyKey,
+      }).unwrap();
       toast({ title: t("done"), description: payment.reference });
       onOpenChange(false);
     } catch (e) {
       const apiError = getApiError(e);
-      setError(apiError?.fields?.targetSessionId === "NO_SEATS" ? t("noSeats") : (apiError?.message ?? tc("save")));
+      setError(
+        apiError?.fields?.targetSessionId === "NO_SEATS"
+          ? t("noSeats")
+          : (apiError?.message ?? tc("save")),
+      );
     }
   }
 
@@ -57,8 +83,17 @@ export function MoveDialog({ payment, open, onOpenChange }: { payment: PaymentDe
       size="sm"
       footer={
         <>
-          <Button variant="secondary" onClick={() => onOpenChange(false)}>{tc("cancel")}</Button>
-          <Button variant="primary" onClick={submit} loading={isLoading} disabled={options.length === 0}>{t("submit")}</Button>
+          <Button variant="secondary" onClick={() => onOpenChange(false)}>
+            {tc("cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={submit}
+            loading={isLoading}
+            disabled={options.length === 0}
+          >
+            {t("submit")}
+          </Button>
         </>
       }
     >
@@ -68,12 +103,22 @@ export function MoveDialog({ payment, open, onOpenChange }: { payment: PaymentDe
         <div className="flex flex-col gap-4">
           <Field label={t("session")} error={error} required>
             {(control) => (
-              <Select {...control} value={target} onValueChange={(v) => { setTarget(v); setError(undefined); }} options={options} placeholder={t("placeholder")} />
+              <Select
+                {...control}
+                value={target}
+                onValueChange={(v) => {
+                  setTarget(v);
+                  setError(undefined);
+                }}
+                options={options}
+                placeholder={t("placeholder")}
+              />
             )}
           </Field>
           {chosen && chosen.price !== payment.amount ? (
             <p className="rounded-sm bg-info-wash px-3 py-2 text-body text-info">
-              {t("priceDifference")} <Money amount={chosen.price} /> / <Money amount={payment.amount} />
+              {t("priceDifference")} <Money amount={chosen.price} /> /{" "}
+              <Money amount={payment.amount} />
             </p>
           ) : null}
           <p className="text-caption text-graphite">{t("consequence")}</p>

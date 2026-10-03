@@ -66,14 +66,18 @@ export function DataTable<T>({
 
   return (
     <>
-      <div className="hidden overflow-x-auto rounded-sm border border-line bg-sheet md:block">
+      <div className="md:scroll-x hidden min-w-0 rounded-sm border border-line bg-sheet md:block">
         <table className="w-full border-collapse text-body">
           <caption className="sr-only">{caption}</caption>
           <thead className="bg-paper">
             <tr>
               {columns.map((column) => {
                 const active = sort?.replace(/^-/, "") === column.sortKey;
-                const direction = active ? (sort!.startsWith("-") ? "descending" : "ascending") : "none";
+                const direction = active
+                  ? sort!.startsWith("-")
+                    ? "descending"
+                    : "ascending"
+                  : "none";
                 return (
                   <th
                     key={column.key}
@@ -88,8 +92,17 @@ export function DataTable<T>({
                     {column.sortKey && onSortChange ? (
                       <button
                         type="button"
-                        onClick={() => onSortChange(active && !sort!.startsWith("-") ? `-${column.sortKey}` : column.sortKey!)}
-                        className={cn("-mx-1 inline-flex items-center gap-1 rounded-xs px-1 hover:text-ink", active && "text-ink")}
+                        onClick={() =>
+                          onSortChange(
+                            active && !sort!.startsWith("-")
+                              ? `-${column.sortKey}`
+                              : column.sortKey!,
+                          )
+                        }
+                        className={cn(
+                          "-mx-1 inline-flex items-center gap-1 rounded-xs px-1 hover:text-ink",
+                          active && "text-ink",
+                        )}
                       >
                         {column.header}
                         {direction === "ascending" ? (
@@ -114,7 +127,9 @@ export function DataTable<T>({
                   <tr key={i} className="border-b border-line last:border-0">
                     {columns.map((column) => (
                       <td key={column.key} className="h-14 px-3">
-                        <Skeleton className={cn("h-3.5", column.align === "end" ? "ms-auto w-16" : "w-3/4")} />
+                        <Skeleton
+                          className={cn("h-3.5", column.align === "end" ? "ms-auto w-16" : "w-3/4")}
+                        />
                       </td>
                     ))}
                   </tr>
@@ -123,7 +138,11 @@ export function DataTable<T>({
                   <tr
                     key={getRowId(row)}
                     onClick={(event) => {
-                      if (!interactive || (event.target as HTMLElement).closest("a,button,[role=menuitem]")) return;
+                      if (
+                        !interactive ||
+                        (event.target as HTMLElement).closest("a,button,[role=menuitem]")
+                      )
+                        return;
                       activate(row);
                     }}
                     className={cn(
@@ -134,7 +153,11 @@ export function DataTable<T>({
                     {columns.map((column) => (
                       <td
                         key={column.key}
-                        className={cn("px-3 py-3", column.align === "end" ? "text-end tabular" : "text-start", column.className)}
+                        className={cn(
+                          "px-3 py-3",
+                          column.align === "end" ? "tabular text-end" : "text-start",
+                          column.className,
+                        )}
                       >
                         {column.cell(row)}
                       </td>
@@ -145,7 +168,10 @@ export function DataTable<T>({
         </table>
       </div>
 
-      <ul aria-label={caption} className="divide-y divide-line overflow-hidden rounded-sm border border-line bg-sheet md:hidden">
+      <ul
+        aria-label={caption}
+        className="divide-y divide-line overflow-hidden rounded-sm border border-line bg-sheet md:hidden"
+      >
         {loading || !rows
           ? Array.from({ length: 6 }, (_, i) => (
               <li key={i} className="flex flex-col gap-2 p-4">
@@ -156,11 +182,19 @@ export function DataTable<T>({
           : rows.map((row) => (
               <li key={getRowId(row)}>
                 {rowHref ? (
-                  <Link to={rowHref(row)} state={rowState} className="block p-4 transition-colors duration-150 hover:bg-paper">
+                  <Link
+                    to={rowHref(row)}
+                    state={rowState}
+                    className="block p-4 transition-colors duration-150 hover:bg-paper"
+                  >
                     {mobileRow(row)}
                   </Link>
                 ) : onRowClick ? (
-                  <button type="button" onClick={() => onRowClick(row)} className="block w-full p-4 text-start hover:bg-paper">
+                  <button
+                    type="button"
+                    onClick={() => onRowClick(row)}
+                    className="block w-full p-4 text-start hover:bg-paper"
+                  >
                     {mobileRow(row)}
                   </button>
                 ) : (
