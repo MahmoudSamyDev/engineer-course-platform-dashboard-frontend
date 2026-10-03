@@ -1,0 +1,113 @@
+{
+  "app": {
+    "name": "Course office",
+    "documentTitle": "{page} · Course office",
+    "loading": "Loading your dashboard…",
+    "mockBanner": "Mock data — changes reset when you reload"
+  },
+  "brand": {
+    "owner": "Eng. Karim Mostafa",
+    "product": "Course office"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "home": "Home",
+    "students": "Students",
+    "payments": "Payments",
+    "courses": "Courses",
+    "assistants": "Assistants",
+    "messages": "Messages",
+    "profile": "Profile",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "account": "Account menu",
+    "skipToContent": "Skip to content"
+  },
+  "roles": {
+    "OWNER": "Owner",
+    "ADMIN": "Admin"
+  },
+  "language": {
+    "label": "Language",
+    "ar": "العربية",
+    "en": "English"
+  },
+  "auth": {
+    "title": "Sign in",
+    "description": "Manage your courses, students and payments.",
+    "email": "Email",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Sign in",
+    "forgot": "Forgot your password? Contact the administrator.",
+    "signOut": "Sign out",
+    "signedOut": "You're signed out.",
+    "sessionEnded": "Your session has ended. Sign in again.",
+    "mockAccounts": "Mock accounts: {accounts} — password {password}",
+    "errors": {
+      "invalidCredentials": "Email or password is incorrect.",
+      "locked": "Too many attempts. Try again in 15 minutes.",
+      "network": "Couldn't reach the server. Check your connection and try again.",
+      "emailRequired": "Enter your email.",
+      "passwordRequired": "Enter your password.",
+      "emailInvalid": "Enter a valid email address, like name@example.com."
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Home",
+      "description": "How the business is doing and what needs you."
+    },
+    "students": {
+      "title": "Students",
+      "description": "Everyone registered in your sessions."
+    },
+    "student": {
+      "title": "Student"
+    },
+    "payments": {
+      "title": "Payments",
+      "description": "Payments from the website, refunds and totals."
+    },
+    "courses": {
+      "title": "Courses",
+      "description": "Your courses and their sessions."
+    },
+    "course": {
+      "title": "Course"
+    },
+    "session": {
+      "title": "Session"
+    },
+    "assistants": {
+      "title": "Assistants",
+      "description": "The people who scan tickets at the door."
+    },
+    "messages": {
+      "title": "Messages",
+      "description": "Messages from the website's contact form."
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "What students see about you on the website."
+    }
+  },
+  "actions": {
+    "addCourse": "Add course",
+    "addAssistant": "Add assistant"
+  },
+  "placeholder": {
+    "title": "This page is next on the plan",
+    "description": "It's built in phase {phase}. The navigation, sign-in and data layer are ready for it."
+  },
+  "errors": {
+    "notFoundTitle": "This page doesn't exist",
+    "notFoundDescription": "The link may be old or mistyped.",
+    "backHome": "Go to Home",
+    "genericTitle": "This page couldn't load",
+    "genericDescription": "Try again. If it keeps happening, sign out and back in.",
+    "retry": "Try again",
+    "forbiddenTitle": "You don't have access to this"
+  }
+}

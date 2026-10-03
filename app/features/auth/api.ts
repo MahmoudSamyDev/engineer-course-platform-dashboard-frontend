@@ -1,0 +1,58 @@
+import type { AdminUser, ItemResponse } from "~/domain/admin";
+import type { Locale } from "~/domain/types";
+import { api } from "~/store/api";
+import type { LoginInput } from "./schema";
+
+/** SRS §7.2 — /admin/auth/*. */
+export const authApi = api.injectEndpoints({
+  endpoints: (build) => ({
+    me: build.query<AdminUser, void>({
+      query: () => "/auth/me",
+      transformResponse: (response: ItemResponse<AdminUser>) => response.data,
+      providesTags: ["Me"],
+    }),
+    login: build.mutation<AdminUser, LoginInput>({
+      query: (body) => ({ url: "/auth/login", method: "POST", body }),
+      transformResponse: (response: ItemResponse<AdminUser>) => response.data,
+      // Seed the `me` cache so the app layout doesn't refetch right after sign-in.
+      async onQueryStarted(_input, { dispatch, queryFulfilled }) {
+        try {
+          const { data: user } = await queryFulfilled;
+          dispatch(authApi.util.upsertQueryData("me", undefined, user));
+        } catch {
+          // A failed sign-in is handled by the form (mutation result); nothing to cache.
+        }
+      },
+    }),
+    logout: build.mutation<void, void>({
+      query: () => ({ url: "/auth/logout", method: "POST" }),
+      // Sign-out clears every cached record (SRS DSH-AUTH-06, DNFR-PRIV-03).
+      async onQueryStarted(_input, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } finally {
+          dispatch(api.util.resetApiState());
+        }
+      },
+    }),
+    updateMyLocale: build.mutation<AdminUser, Locale>({
+      query: (locale) => ({ url: "/auth/me", method: "PATCH", body: { locale } }),
+      transformResponse: (response: ItemResponse<AdminUser>) => response.data,
+      async onQueryStarted(locale, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          authApi.util.updateQueryData("me", undefined, (draft) => {
+            draft.locale = locale;
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
+    }),
+  }),
+});
+
+export const { useMeQuery, useLoginMutation, useLogoutMutation, useUpdateMyLocaleMutation } =
+  authApi;

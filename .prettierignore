@@ -1,0 +1,10 @@
+build
+.react-router
+node_modules
+public
+.claude
+coverage
+playwright-report
+test-results
+docs
+*.md
