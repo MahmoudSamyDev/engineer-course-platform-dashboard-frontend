@@ -1,6 +1,6 @@
 # Progress Tracker — Dashboard
 
-**Current phase:** D5 — UI kit & states (next)
+**Current phase:** D9 — Courses, sessions & attendance (🔄 in progress — see “Handoff” below)
 **Last updated:** 2026-10-03
 
 Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definitions: `docs/PHASES.md`.
@@ -14,11 +14,11 @@ Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definit
 | D2 | Market research | ✅ | `docs/MARKET_RESEARCH.md` (gaps G1–G13) |
 | D3 | Requirements & design system | ✅ | SRS, PRD, `../SYSTEM.md`, DESIGN_SYSTEM — **awaiting product-owner review** |
 | D4 | Foundation (boilerplate) | ✅ | Shell, sign-in, store, RTK Query, i18n, MSW, tests |
-| D5 | UI kit & states | ⬜ | Review point at the end |
-| D6 | Home | ⬜ | |
-| D7 | Students | ⬜ | |
-| D8 | Payments | ⬜ | |
-| D9 | Courses, sessions & attendance | ⬜ | Review point at the end |
+| D5 | UI kit & states | ✅ | Kit built and reviewed through the real pages (no separate /dev/ui route, DD-027) |
+| D6 | Home | ✅ | KPI title block, needs action, revenue chart, latest lists, upcoming sessions |
+| D7 | Students | ✅ | Table, filters, search, paging, CSV, student page |
+| D8 | Payments | ✅ | Summary, filters, details sheet, refund / move / cancel (independent review still pending) |
+| D9 | Courses, sessions & attendance | 🔄 | Cards, Add course dialog, 4 of 6 course tabs done; sessions, publishing, session page left |
 | D10 | Assistants & profile | ⬜ | |
 | D11 | Messages & polish | ⬜ | |
 | D12 | QA & hardening | ⬜ | |
@@ -26,6 +26,34 @@ Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definit
 | D14 | Final review | ⬜ | |
 
 Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with notes · ⛔ blocked
+
+## Handoff — where to continue (2026-10-03)
+
+**State:** `npm run typecheck`, `npm run lint` (1 known warning, below) and `npm test` (5 files, 30 tests) pass. Pages verified with screenshots at 360/1280 px (AR/EN): Home, Students, Student, Payments, Courses.
+
+**Done in D5–D8 (code map)**
+- UI kit — `app/components/ui/`: dialog, sheet, confirm-dialog, menu, tabs (`UrlTabs`), select, switch, textarea, toast, skeleton, title-block, seat-bar, data-table (stacked rows on phones), filter-bar (filters move into a dialog on phones), pagination, error-state, icon-button, bilingual-field, panel. Shared: `components/format.tsx` (Money, DateTime, Phone, Ltr), `components/status.tsx` (all status badges), `section-form.tsx`, `ordered-list-editor.tsx`, `unsaved-changes.tsx`, `use-discard-guard.tsx`, `export-button.tsx`, `copy-button.tsx`.
+- Data: `app/domain/api.ts` (all API payload types), pure rules with tests (`attendance.ts`, `months.ts`, `course-rules.ts`, `session-rules.ts`, `status-tone.ts`, `money.ts`).
+- Mock API — `app/mocks/`: seeded database (`db.ts`: ~28 sessions incl. 5 months of history, ~550 bookings, payments with refund-required/refunded/failed/cancelled, check-ins, assistants, messages), payload builders (`views.ts`), handlers for **every** SRS §7.2 endpoint (`handlers/*.ts`).
+- RTK Query endpoints for every feature: `app/features/*/api.ts` (overview, students, payments, courses, assistants, profile, messages).
+- Pages: `routes/home.tsx`, `students.tsx`, `student.tsx`, `payments.tsx`, `courses.tsx`.
+
+**D9 — remaining tasks, in order**
+1. `features/courses/tabs/sessions-tab.tsx` — list sessions (`useGetCourseSessionsQuery`), row → `/courses/:courseId/sessions/:id`, row menu: edit, close/reopen (`useSetSessionClosedMutation`), unpublish, delete (only without bookings).
+2. `features/courses/session-dialog.tsx` — add/edit session (SRS DSH-SES-02…04): location (`useGetLocationsQuery`), label AR/EN, capacity (min = sold + held, `minimumCapacity`), price (default course price), meetings rows (date + start + end, Cairo time via `zonedLocalToUtcIso`), "repeat weekly × N" (add 7 days to the *local date string*, not to UTC), registration closes (default `defaultRegistrationClose`), published switch; validate with `checkMeetings`; map API errors `CAPACITY_BELOW_SOLD`, meetings codes.
+3. `features/courses/tabs/publishing-tab.tsx` — readiness checklist from `course.readiness` with links to the tab that fixes each item; switches: published (blocked while not ready), featured, coming soon + note, registration closed; SEO title/description AR/EN (60/160 counters). `useUpdateCourseMutation`.
+4. `routes/course.tsx` — replace the placeholder: `PageHeader` (title, back to `/courses`, "View on website" when published), `UrlTabs` with overview · content · curriculum · sessions · faq · publishing (tab components exist for 4 of them in `features/courses/tabs/`), loading/404/error states, `clientLoader` prefetch.
+5. `routes/session.tsx` — facts `TitleBlock`, roster table with a column per meeting: ✓ (click → confirm undo, `useUndoCheckInMutation`), "Mark" button when the meeting has started (from 60 min before) and the booking is PAID (`useCheckInMutation`), — otherwise; Edit (session dialog), Close/Reopen, Export CSV (`/sessions/:id/roster.csv`), Print (add `print:hidden` to the shell's rail/top bar/banner and a print stylesheet).
+6. Messages (EN + AR) for the new screens, screenshots at 360/768/1280/1440 in both languages, phase report, local commit `feat(dashboard-d9): courses and sessions`.
+
+**Then:** D10 assistants & profile (APIs and mocks exist: `features/assistants/api.ts`, `features/profile/api.ts`) → D11 messages (`features/messages/api.ts`) → D12 QA → D13 real API → D14 review (`docs/PHASES.md`).
+
+**Known issues / polish backlog**
+- Payments filter bar wraps to a second line at 1280 px (6 controls) — consider moving method + date into a "More filters" popover.
+- Course card "next session" date truncates in Arabic — use a shorter date format there (no weekday).
+- ESLint warning `react-hooks/incompatible-library` on `form.watch` in `add-course-dialog.tsx` (React Compiler can't memoize RHF's `watch`; harmless) — switch to `useWatch` to silence.
+- Independent review of refund/move/cancel (CLAUDE.md asks for one in D8) not run yet.
+- `/admin/counts` was added to the API contract (DD-026) — the Website backend must implement it.
 
 ## Page briefs
 
@@ -81,3 +109,11 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 - **Why it matters:** one well-structured memory file per app keeps every session consistent, and selective skills keep context small.
 - **Try it yourself:** open the Dashboard folder in Claude Code and type `/` — you'll see `react-router`, `ui-ux-pro-max` and the others. Run `/react-router` and ask "how does SPA mode pre-render the root route?"
 - **Docs:** https://code.claude.com/docs/en/skills · https://code.claude.com/docs/en/memory
+
+### Phases D5–D8 — UI kit, Home, Students, Payments: ✅ complete (D8 review pending)
+
+**Delivered:** DSH-NAV-04 (badges), DSH-GEN-04/05/08/09/11, DSH-HOME-01…08, DSH-STU-01…08, DSH-PAY-01…09, DSH-EXP-01 (CSV via API); mock API for all of SRS §7.2.
+**Verified:** typecheck ✅ · lint ✅ (1 warning) · 30 unit/component tests ✅ · screenshots Home/Students/Student/Payments at 360 + 1280 in AR/EN, no console errors. Fixed during review: phone overflow on Home (grid min-content), students table too wide at 1280 (phone moved under the name, department/reference only ≥ 1440), filters behind a dialog on phones, sign-in language choice being overridden by the saved preference (DD-025), browser `confirm()` replaced by our dialog.
+**API contract:** added `GET /admin/counts` (DD-026).
+**Decisions:** DD-025…DD-028.
+**Next:** D9 tasks 1–6 above.

@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import { useTranslations } from "use-intl";
+import { useGetCountsQuery } from "~/features/overview/api";
 import { cn } from "~/lib/cn";
 import { NAV_ITEMS } from "./nav-items";
 
@@ -9,6 +10,10 @@ import { NAV_ITEMS } from "./nav-items";
  */
 export function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslations("nav");
+  // Counts that need attention (DSH-NAV-04), refreshed every minute while the tab is visible.
+  const { data: counts } = useGetCountsQuery(undefined, { pollingInterval: 60_000, skipPollingIfUnfocused: true });
+  const badgeFor = (key: string) =>
+    key === "payments" ? counts?.refundRequired : key === "messages" ? counts?.newMessages : undefined;
   return (
     <ul className="flex flex-col gap-0.5">
       {NAV_ITEMS.map(({ key, to, icon: Icon }) => (
@@ -28,7 +33,13 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
             }
           >
             <Icon aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.5} />
-            <span>{t(key)}</span>
+            <span className="flex-1">{t(key)}</span>
+            {badgeFor(key) ? (
+              <span className="tabular inline-flex h-5 min-w-5 items-center justify-center rounded-xs bg-warning-wash px-1.5 text-caption font-semibold text-warning">
+                {badgeFor(key)}
+                <span className="sr-only"> {t("needsAttention")}</span>
+              </span>
+            ) : null}
           </NavLink>
         </li>
       ))}

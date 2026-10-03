@@ -2,6 +2,11 @@ import { http } from "msw";
 import { MOCK_API } from "../config";
 import { apiError, currentAdmin, forcedError } from "../http";
 import { authHandlers } from "./auth";
+import { courseHandlers } from "./courses";
+import { overviewHandlers } from "./overview";
+import { paymentHandlers } from "./payments";
+import { peopleHandlers } from "./people";
+import { registrationHandlers } from "./registrations";
 
 /**
  * Runs before every non-auth admin endpoint: 401 without a mock session (DBR-01),
@@ -15,8 +20,15 @@ const guard = http.all(`${MOCK_API}/*`, ({ request }) => {
 });
 
 /**
- * Order matters: auth endpoints, then the guard, then feature handlers (added as each
- * phase lands: D6 overview, D7 registrations…). A request the guard lets through falls
- * through to the matching feature handler.
+ * Order matters: auth endpoints, then the guard, then feature handlers. A request the
+ * guard lets through falls through to the matching feature handler.
  */
-export const handlers = [...authHandlers, guard];
+export const handlers = [
+  ...authHandlers,
+  guard,
+  ...overviewHandlers,
+  ...registrationHandlers,
+  ...paymentHandlers,
+  ...courseHandlers,
+  ...peopleHandlers,
+];

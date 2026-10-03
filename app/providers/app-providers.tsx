@@ -1,6 +1,7 @@
 import { Direction, Tooltip } from "radix-ui";
 import type { ReactNode } from "react";
 import { IntlProvider } from "use-intl";
+import { ToastProvider } from "~/components/ui/toast";
 import type { Locale } from "~/domain/types";
 import { directionOf, messages, TIME_ZONE } from "~/i18n/config";
 
@@ -12,7 +13,9 @@ export function AppProviders({ locale, children }: { locale: Locale; children: R
   return (
     <IntlProvider locale={locale} messages={messages[locale]} timeZone={TIME_ZONE}>
       <Direction.DirectionProvider dir={directionOf(locale)}>
-        <Tooltip.Provider delayDuration={300}>{children}</Tooltip.Provider>
+        <Tooltip.Provider delayDuration={300}>
+          <ToastProvider>{children}</ToastProvider>
+        </Tooltip.Provider>
       </Direction.DirectionProvider>
     </IntlProvider>
   );

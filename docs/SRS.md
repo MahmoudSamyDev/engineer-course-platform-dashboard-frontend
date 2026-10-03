@@ -20,6 +20,7 @@
 | Version | Date | Author | Change |
 | --- | --- | --- | --- |
 | 1.0 | 2026-10-03 | Mahmoud Samy | Initial Dashboard SRS: routes, functional requirements, admin API contract, data additions, NFRs, acceptance criteria |
+| 1.1 | 2026-10-03 | Mahmoud Samy | Added `GET /admin/counts` for navigation badges (DD-026) |
 
 ---
 
@@ -516,6 +517,7 @@ Implemented by the shared backend (Website app). The Dashboard's RTK Query endpo
 | PATCH | `/admin/auth/me` | Update own name/locale | DSH-PRO-08 |
 | POST | `/admin/auth/password` | Change own password | DSH-AUTH-08 |
 | GET | `/admin/overview` | KPIs, needs-action counts, revenue by month, upcoming sessions | DSH-HOME-01…07 |
+| GET | `/admin/counts` | `{ refundRequired, newMessages }` for navigation badges | DSH-NAV-04 |
 | GET | `/admin/registrations` | Students table (filters: `courseId`, `sessionId`, `bookingStatus`, `attendance`, `from`, `to`) | DSH-STU-01…04 |
 | GET | `/admin/registrations/export.csv` | CSV of the same filter | DSH-STU-06 |
 | GET | `/admin/students/:id` | Student details with registrations, attendance, payments | DSH-STU-05 |

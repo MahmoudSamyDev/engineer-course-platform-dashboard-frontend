@@ -21,7 +21,8 @@
     "openMenu": "فتح القائمة",
     "closeMenu": "إغلاق القائمة",
     "account": "قائمة الحساب",
-    "skipToContent": "تخطَّ إلى المحتوى"
+    "skipToContent": "تخطَّ إلى المحتوى",
+    "needsAttention": "تحتاج إلى متابعة"
   },
   "roles": {
     "OWNER": "المالك",
@@ -108,6 +109,444 @@
     "genericTitle": "تعذّر تحميل هذه الصفحة",
     "genericDescription": "حاول مرة أخرى. إذا تكرر ذلك، سجّل الخروج ثم الدخول.",
     "retry": "حاول مرة أخرى",
-    "forbiddenTitle": "ليست لديك صلاحية للوصول إلى هذا"
+    "forbiddenTitle": "ليست لديك صلاحية للوصول إلى هذا",
+    "networkTitle": "أنت غير متصل أو يتعذّر الوصول إلى الخادم",
+    "networkDescription": "تحقّق من اتصالك ثم حاول مرة أخرى.",
+    "loadTitle": "تعذّر التحميل",
+    "loadDescription": "ردّ الخادم بخطأ. حاول مرة أخرى بعد لحظات.",
+    "saveFailed": "تعذّر حفظ التغييرات. حاول مرة أخرى.",
+    "conflict": "لا يمكن تنفيذ ذلك الآن.",
+    "notFoundItem": "هذا العنصر لم يعد موجودًا."
+  },
+  "common": {
+    "close": "إغلاق",
+    "cancel": "إلغاء",
+    "save": "حفظ التغييرات",
+    "saving": "جارٍ الحفظ…",
+    "required": "مطلوب",
+    "arabic": "العربية",
+    "english": "الإنجليزية",
+    "charactersLeft": "{count, plural, zero {لم يتبقَّ أي حرف} one {تبقّى حرف واحد} two {تبقّى حرفان} few {تبقّى # أحرف} many {تبقّى # حرفًا} other {تبقّى # حرف}}",
+    "seatsOf": "{sold} من {capacity}",
+    "pagination": "التنقل بين الصفحات",
+    "showing": "عرض {from}–{to} من {total}",
+    "rowsPerPage": "عدد الصفوف في الصفحة",
+    "perPage": "{size} في الصفحة",
+    "previous": "السابق",
+    "next": "التالي",
+    "clearSearch": "مسح البحث",
+    "removeFilter": "إزالة الفلتر: {filter}",
+    "clearAll": "مسح الكل",
+    "money": "{amount} ج.م",
+    "viewAll": "عرض الكل",
+    "export": "تصدير CSV",
+    "exporting": "جارٍ التصدير…",
+    "exportFailed": "تعذّر إنشاء ملف التصدير. حاول مرة أخرى.",
+    "moreActions": "إجراءات أخرى",
+    "copy": "نسخ",
+    "copied": "تم النسخ",
+    "whatsapp": "واتساب",
+    "email": "البريد الإلكتروني",
+    "none": "لا يوجد",
+    "unsavedTitle": "تجاهل التغييرات؟",
+    "unsavedDescription": "لديك تغييرات لم تُحفظ بعد. إذا غادرت ستضيع.",
+    "discard": "تجاهل التغييرات",
+    "keepEditing": "متابعة التعديل",
+    "back": "رجوع",
+    "filters": "الفلاتر",
+    "filtersCount": "الفلاتر ({count})",
+    "showResults": "عرض النتائج",
+    "saved": "تم حفظ التغييرات",
+    "unsavedHint": "لديك تغييرات غير محفوظة",
+    "moveUp": "نقل {item} لأعلى",
+    "moveDown": "نقل {item} لأسفل",
+    "remove": "حذف {item}",
+    "saveFailed": "تعذّر حفظ التغييرات. حاول مرة أخرى."
+  },
+  "status": {
+    "booking": {
+      "PAID": "مدفوع",
+      "PENDING_PAYMENT": "بانتظار الدفع",
+      "REFUND_REQUIRED": "يتطلب استردادًا",
+      "EXPIRED": "منتهي",
+      "CANCELLED": "ملغى",
+      "REFUNDED": "مُسترد"
+    },
+    "payment": {
+      "SUCCEEDED": "مدفوع",
+      "INITIATED": "قيد الانتظار",
+      "FAILED": "فشل",
+      "REFUNDED": "مُسترد"
+    },
+    "session": {
+      "AVAILABLE": "متاح",
+      "ALMOST_FULL": "أوشك على الاكتمال",
+      "FULLY_BOOKED": "مكتمل",
+      "CLOSED": "مغلق"
+    },
+    "course": {
+      "AVAILABLE": "متاح",
+      "ALMOST_FULL": "أوشك على الاكتمال",
+      "FULLY_BOOKED": "مكتمل",
+      "COMING_SOON": "قريبًا",
+      "CLOSED": "مغلق"
+    },
+    "publication": {
+      "PUBLISHED": "منشورة",
+      "DRAFT": "مسودة",
+      "ARCHIVED": "مؤرشفة"
+    },
+    "ticket": {
+      "VALID": "صالحة",
+      "CHECKED_IN": "تم الحضور",
+      "USED": "مستخدمة",
+      "EXPIRED": "منتهية",
+      "CANCELLED": "ملغاة"
+    },
+    "message": {
+      "NEW": "جديدة",
+      "READ": "مقروءة",
+      "ARCHIVED": "مؤرشفة"
+    },
+    "attendance": {
+      "UPCOMING": "لم تبدأ",
+      "ATTENDED": "حضر {attended} من {total}",
+      "ABSENT": "غائب",
+      "COMPLETED": "أنهى {attended} من {total}",
+      "NONE": "—"
+    },
+    "method": {
+      "CARD": "بطاقة",
+      "WALLET": "محفظة"
+    },
+    "attendanceFilter": {
+      "UPCOMING": "لم تبدأ",
+      "ATTENDED": "يحضر",
+      "ABSENT": "غائب",
+      "COMPLETED": "أنهى الدورة"
+    }
+  },
+  "home": {
+    "kpi": {
+      "revenue": "إيرادات هذا الشهر",
+      "paid": "التسجيلات المدفوعة هذا الشهر",
+      "seats": "المقاعد المحجوزة",
+      "upcoming": "المواعيد القادمة",
+      "revenueUp": "أكثر من {month} بنسبة {percent}%",
+      "revenueDown": "أقل من {month} بنسبة {percent}%",
+      "noRevenueLastMonth": "لا إيرادات في {month}",
+      "paidMore": "{count, plural, one {تسجيل واحد أكثر} two {تسجيلان أكثر} few {# تسجيلات أكثر} many {# تسجيلًا أكثر} other {# تسجيل أكثر}} من {month}",
+      "paidFewer": "أقل من {month} بـ {count}",
+      "paidSame": "مثل {month}",
+      "seatsValue": "{sold} من {capacity}",
+      "seatsNote": "{percent}% من مقاعد المواعيد القادمة",
+      "upcomingNote": "تبدأ خلال 30 يومًا"
+    },
+    "needs": {
+      "title": "يحتاج إلى قرارك",
+      "titleCount": "يحتاج إلى قرارك ({count})",
+      "empty": "لا شيء يحتاج إلى قرارك الآن.",
+      "refunds": "{count, plural, one {حجز واحد يحتاج قرار استرداد} two {حجزان يحتاجان قرار استرداد} few {# حجوزات تحتاج قرار استرداد} many {# حجزًا يحتاج قرار استرداد} other {# حجز يحتاج قرار استرداد}}",
+      "refundsDetail": "دُفع بعد اكتمال الموعد. انقل الطالب أو سجّل الاسترداد.",
+      "messages": "{count, plural, one {رسالة جديدة} two {رسالتان جديدتان} few {# رسائل جديدة} many {# رسالة جديدة} other {# رسالة جديدة}}",
+      "messagesDetail": "من نموذج التواصل في الموقع.",
+      "emptySession": "لا تسجيلات بعد: {course}",
+      "closingSoon": "التسجيل يُغلق قريبًا: {course} (متبقٍّ {left} مقاعد)",
+      "closesAt": "يُغلق {time}"
+    },
+    "revenue": {
+      "title": "صافي الإيرادات، آخر 6 أشهر",
+      "summary": "الإجمالي {total}",
+      "month": "الشهر",
+      "net": "صافي الإيرادات"
+    },
+    "latestPayments": "أحدث المدفوعات",
+    "latestRegistrations": "أحدث التسجيلات",
+    "upcomingSessions": "المواعيد القادمة",
+    "noPayments": "تظهر المدفوعات هنا بعد أن يدفع الطلاب في الموقع.",
+    "noRegistrations": "تظهر التسجيلات هنا بعد أن يدفع الطلاب في الموقع.",
+    "noUpcoming": "لا مواعيد قادمة. أضف موعدًا لدورة ليتمكن الطلاب من الحجز.",
+    "start": {
+      "title": "احصل على أول حجز",
+      "one": "أضف دورة ببياناتها الأساسية.",
+      "two": "أضف موعدًا: التواريخ والمكان والمقاعد والسعر.",
+      "three": "انشر الدورة — يستطيع الطلاب حجزها من الموقع.",
+      "action": "أضف أول دورة"
+    }
+  },
+  "ranges": {
+    "all": "أي تاريخ",
+    "today": "اليوم",
+    "this-week": "هذا الأسبوع",
+    "this-month": "هذا الشهر",
+    "last-30": "آخر 30 يومًا"
+  },
+  "attendance": {
+    "meeting": "اللقاء {order}",
+    "attendedAt": "حضر {time}",
+    "missed": "غاب",
+    "upcoming": "قادم"
+  },
+  "students": {
+    "caption": "الطلاب المسجلون",
+    "filters": {
+      "searchLabel": "البحث في التسجيلات",
+      "searchPlaceholder": "الاسم أو الهاتف أو البريد أو رقم الحجز",
+      "course": "الدورة",
+      "allCourses": "كل الدورات",
+      "session": "الموعد",
+      "allSessions": "كل المواعيد",
+      "status": "حالة الحجز",
+      "allStatuses": "كل الحالات",
+      "attendance": "الحضور",
+      "anyAttendance": "أي حضور",
+      "date": "تاريخ التسجيل"
+    },
+    "columns": {
+      "student": "الطالب",
+      "phone": "الهاتف",
+      "course": "الدورة",
+      "registered": "تاريخ التسجيل",
+      "status": "الحالة",
+      "attendance": "الحضور",
+      "reference": "رقم الحجز",
+      "department": "القسم"
+    },
+    "empty": "لا تسجيلات بعد",
+    "emptyHint": "تظهر التسجيلات هنا بعد أن يدفع الطلاب في الموقع.",
+    "noResults": "لا تسجيلات تطابق هذه الفلاتر",
+    "noResultsHint": "غيّر الفلاتر أو امسحها لعرض الجميع."
+  },
+  "student": {
+    "notFound": "هذا الطالب غير موجود",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "registrations": "التسجيلات",
+    "netPaid": "صافي المدفوع",
+    "firstRegistered": "أول تسجيل",
+    "registrationsTitle": "التسجيلات",
+    "noRegistrations": "لا تسجيلات.",
+    "reference": "رقم الحجز",
+    "registeredAt": "تاريخ التسجيل",
+    "amount": "المبلغ",
+    "attendance": "الحضور",
+    "paymentsTitle": "سجل المدفوعات",
+    "noPayments": "لا مدفوعات.",
+    "consent": "وافق على السياسات في"
+  },
+  "payments": {
+    "caption": "المدفوعات",
+    "refundedAmount": "مُسترد",
+    "filters": {
+      "searchLabel": "البحث في المدفوعات",
+      "searchPlaceholder": "رقم الحجز أو المعاملة أو الهاتف أو البريد",
+      "needsAction": "يحتاج إلى قرار",
+      "needsActionCount": "يحتاج إلى قرار ({count})",
+      "status": "حالة الدفع",
+      "allStatuses": "كل الحالات",
+      "method": "طريقة الدفع",
+      "allMethods": "كل الطرق",
+      "course": "الدورة",
+      "allCourses": "كل الدورات",
+      "date": "تاريخ الدفع"
+    },
+    "columns": {
+      "date": "التاريخ",
+      "student": "الطالب",
+      "course": "الدورة",
+      "method": "الطريقة",
+      "amount": "المبلغ",
+      "status": "الحالة"
+    },
+    "summary": {
+      "label": "إجماليات الفلتر الحالي",
+      "gross": "إجمالي المدفوع",
+      "refunded": "المُسترد",
+      "net": "الصافي",
+      "count": "عدد المدفوعات",
+      "filtered": "المطابقة للفلاتر",
+      "all": "كل المدفوعات"
+    },
+    "empty": "لا مدفوعات بعد",
+    "emptyHint": "تظهر المدفوعات هنا عندما يدفع الطلاب في الموقع.",
+    "noResults": "لا مدفوعات تطابق هذه الفلاتر",
+    "noResultsHint": "غيّر الفلاتر أو امسحها لعرض كل المدفوعات.",
+    "detail": {
+      "title": "الدفعة",
+      "move": "النقل إلى موعد آخر",
+      "refund": "تسجيل استرداد",
+      "cancel": "إلغاء الحجز",
+      "refundRequiredHint": "دفع هذا الطالب بعد اكتمال الموعد. انقله إلى موعد آخر لنفس الدورة، أو ردّ المبلغ من Paymob وسجّله هنا.",
+      "money": "الدفع",
+      "amount": "المبلغ",
+      "refunded": "المُسترد",
+      "method": "الطريقة",
+      "transaction": "رقم معاملة Paymob",
+      "order": "رقم طلب Paymob",
+      "refundTransaction": "رقم معاملة الاسترداد",
+      "booking": "الحجز",
+      "course": "الدورة",
+      "session": "الموعد",
+      "student": "الطالب",
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني",
+      "timeline": "السجل",
+      "events": {
+        "INITIATED": "بدأ الدفع",
+        "SUCCEEDED": "تأكّد الدفع",
+        "FAILED": "فشل الدفع",
+        "REFUNDED": "سُجّل الاسترداد",
+        "MOVED": "نُقل إلى موعد آخر",
+        "CANCELLED": "أُلغي الحجز"
+      }
+    },
+    "refund": {
+      "title": "تسجيل استرداد",
+      "description": "للحجز {reference}. ردّ المبلغ من بوابة Paymob أولًا ثم سجّله هنا.",
+      "consequence": "تسجيل الاسترداد يجعل الحجز «مُسترد» ويلغي تذكرة الطالب، ويصبح المقعد متاحًا.",
+      "amount": "مبلغ الاسترداد",
+      "currency": "ج.م",
+      "amountHint": "حتى",
+      "amountError": "أدخل مبلغًا بين 1 و{max} ج.م.",
+      "transaction": "رقم معاملة الاسترداد في Paymob",
+      "transactionHint": "يظهر في Paymob بعد الاسترداد.",
+      "transactionError": "أدخل رقم معاملة الاسترداد من Paymob.",
+      "note": "ملاحظة (اختياري)",
+      "noteHint": "تظهر في لوحة التحكم فقط.",
+      "submit": "تسجيل الاسترداد",
+      "done": "تم تسجيل الاسترداد"
+    },
+    "move": {
+      "title": "النقل إلى موعد آخر",
+      "description": "اختر موعدًا به مقاعد متاحة لـ {name}.",
+      "session": "الموعد",
+      "placeholder": "اختر موعدًا",
+      "option": "{code} · {date} · متبقٍّ {left} مقاعد",
+      "none": "لا يوجد موعد آخر لهذه الدورة به مقاعد. أضف موعدًا أو سجّل استردادًا.",
+      "priceDifference": "السعر مختلف (الجديد / المدفوع). سوِّ الفرق مع الطالب مباشرة:",
+      "consequence": "يصبح الحجز «مدفوعًا» في الموعد الجديد ويحتفظ الطالب بنفس رقم الحجز.",
+      "chooseError": "اختر موعدًا.",
+      "noSeats": "اكتمل هذا الموعد للتو. اختر موعدًا آخر.",
+      "submit": "نقل الطالب",
+      "done": "تم نقل الطالب"
+    },
+    "cancel": {
+      "title": "إلغاء هذا الحجز؟",
+      "description": "سيُلغى حجز {name} رقم {reference}، وتتوقف التذكرة ويصبح المقعد متاحًا. ردّ المبلغ من Paymob بشكل منفصل.",
+      "reason": "السبب",
+      "reasonError": "اذكر سبب الإلغاء.",
+      "submit": "إلغاء الحجز",
+      "done": "تم إلغاء الحجز"
+    }
+  },
+  "courses": {
+    "stateTabs": "التصفية حسب الحالة",
+    "searchLabel": "البحث في الدورات",
+    "searchPlaceholder": "العنوان أو الكود",
+    "noResults": "لا دورات مطابقة",
+    "empty": "لا دورات بعد",
+    "emptyHint": "أضف أول دورة. يستطيع الطلاب حجزها بعد إضافة موعد منشور.",
+    "archived": "تمت أرشفة الدورة",
+    "deleted": "تم حذف الدورة",
+    "restored": "أُعيدت الدورة إلى المسودات",
+    "archiveTitle": "أرشفة هذه الدورة؟",
+    "archiveDescription": "ستُخفى «{title}» من الموقع. يحتفظ من حجزوا بتذاكرهم. يمكنك استعادتها لاحقًا.",
+    "deleteTitle": "حذف هذه المسودة؟",
+    "deleteDescription": "ستُحذف «{title}» نهائيًا. لا يمكن التراجع عن ذلك.",
+    "states": {
+      "all": "الكل",
+      "published": "منشورة",
+      "draft": "مسودات",
+      "archived": "مؤرشفة"
+    },
+    "levels": {
+      "BEGINNER": "مبتدئ",
+      "INTERMEDIATE": "متوسط",
+      "ADVANCED": "متقدم"
+    },
+    "card": {
+      "edit": "تعديل الدورة",
+      "viewOnWebsite": "عرض في الموقع",
+      "archive": "أرشفة",
+      "restore": "استعادة",
+      "delete": "حذف المسودة",
+      "upcomingCount": "{count, plural, =0 {لا مواعيد قادمة} one {موعد قادم واحد} two {موعدان قادمان} few {# مواعيد قادمة} many {# موعدًا قادمًا} other {# موعد قادم}}",
+      "nextSession": "الموعد القادم",
+      "seats": "المقاعد",
+      "price": "السعر"
+    },
+    "add": {
+      "open": "إضافة دورة",
+      "title": "إضافة دورة",
+      "description": "ابدأ بالبيانات الأساسية، ثم أضف المحتوى والمنهج والمواعيد.",
+      "submit": "إنشاء مسودة",
+      "done": "تم إنشاء المسودة",
+      "titleLabel": "عنوان الدورة",
+      "code": "كود الدورة",
+      "codeHint": "3 أحرف لاتينية تُستخدم في أكواد المواعيد (مثل ETB).",
+      "slug": "رابط الموقع",
+      "slugHint": "أحرف لاتينية صغيرة وأرقام وشرطات.",
+      "level": "المستوى",
+      "price": "السعر الأساسي",
+      "priceHint": "تستخدم المواعيد هذا السعر ما لم تغيّره.",
+      "currency": "ج.م",
+      "hours": "إجمالي الساعات",
+      "meetings": "عدد اللقاءات",
+      "shortDescription": "وصف مختصر",
+      "shortDescriptionHint": "جملة أو جملتان تظهران على بطاقة الدورة.",
+      "errors": {
+        "both": "أدخل العنوان بالعربية والإنجليزية.",
+        "code": "استخدم 3 أحرف لاتينية بالضبط، مثل ETB.",
+        "codeTaken": "دورة أخرى تستخدم هذا الكود.",
+        "slug": "استخدم أحرفًا لاتينية صغيرة وأرقامًا وشرطات فقط.",
+        "slugTaken": "دورة أخرى تستخدم هذا الرابط.",
+        "price": "أدخل سعرًا أكبر من 0.",
+        "hours": "أدخل إجمالي الساعات (رقم صحيح).",
+        "meetings": "أدخل عدد اللقاءات (رقم صحيح)."
+      }
+    }
+  },
+  "course": {
+    "overview": {
+      "codeLocked": "مقفل: توجد مواعيد تستخدم هذا الكود.",
+      "slugLocked": "مقفل بعد النشر حتى تظل الروابط المشتركة تعمل.",
+      "priceHint": "تغييره لا يؤثر على المواعيد أو الحجوزات الحالية.",
+      "cover": "غلاف الدورة",
+      "discipline": "التخصص على الغلاف",
+      "disciplineHint": "يظهر تحت الكود على الغلاف المُولَّد.",
+      "coverAlt": "وصف الغلاف",
+      "coverAltHint": "تقرؤه قارئات الشاشة في الموقع."
+    },
+    "content": {
+      "perLine": "عنصر واحد في كل سطر.",
+      "about": "عن الدورة",
+      "aboutHint": "ما هي الدورة وكيف تُدرَّس.",
+      "outcomes": "المخرجات",
+      "outcomesHint": "{min} على الأقل، مكتوبة كأشياء سيستطيع الطالب فعلها.",
+      "audience": "لمن هذه الدورة",
+      "problemSolved": "المشكلة التي تحلها",
+      "expectations": "ماذا تتوقع",
+      "requirements": "المتطلبات",
+      "whatToBring": "ماذا تُحضر"
+    },
+    "curriculum": {
+      "summary": "{count, plural, =0 {لا وحدات} one {وحدة واحدة} two {وحدتان} few {# وحدات} many {# وحدة} other {# وحدة}} · {hours} من {planned} ساعة مخططة",
+      "module": "الوحدة {order}",
+      "add": "إضافة وحدة",
+      "empty": "لا وحدات بعد. يعرض الموقع المنهج من هذه الوحدات.",
+      "title": "عنوان الوحدة",
+      "hours": "الساعات",
+      "topics": "الموضوعات",
+      "perLine": "موضوع واحد في كل سطر.",
+      "titleError": "كل وحدة تحتاج عنوانًا بالعربية والإنجليزية."
+    },
+    "faq": {
+      "question": "السؤال {order}",
+      "add": "إضافة سؤال",
+      "empty": "لا أسئلة خاصة بالدورة بعد. الأسئلة العامة تظهر في الموقع.",
+      "questionLabel": "السؤال",
+      "answer": "الإجابة",
+      "incomplete": "كل سؤال يحتاج سؤالًا وإجابة بالعربية والإنجليزية."
+    }
   }
 }

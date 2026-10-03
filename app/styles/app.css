@@ -147,6 +147,7 @@
   --animate-overlay-in: overlay-in 200ms var(--ease-out-quart);
   --animate-drawer-in-start: drawer-in-start 250ms var(--ease-out-quart);
   --animate-dialog-in: dialog-in 200ms var(--ease-out-quart);
+  --animate-sheet-in-end: sheet-in-end 250ms var(--ease-out-quart);
 
   @keyframes overlay-in {
     from {
@@ -156,6 +157,11 @@
   @keyframes drawer-in-start {
     from {
       translate: calc(-100% * var(--dir-sign, 1)) 0;
+    }
+  }
+  @keyframes sheet-in-end {
+    from {
+      translate: calc(100% * var(--dir-sign, 1)) 0;
     }
   }
   @keyframes dialog-in {

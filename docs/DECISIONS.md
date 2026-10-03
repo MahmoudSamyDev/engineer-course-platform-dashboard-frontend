@@ -28,3 +28,8 @@ Append-only. Each entry: ID, date, decision, reason, source/impact. Agents add e
 | DD-022 | 2026-10-03 | ESLint flat config with `typescript-eslint`, `react-hooks`, `jsx-a11y`, and a rule that rejects raw hex colors in code | Enforce tokens and accessibility instead of relying on review | DESIGN_SYSTEM §3 |
 | DD-023 | 2026-10-03 | Light theme only in V1; all components use semantic tokens | Scope; dark mode can be added without touching components | SRS §10.2 |
 | DD-024 | 2026-10-03 | Mock credentials are shown on the sign-in page only in development, inlined under `import.meta.env.DEV` so production builds drop them | Convenience without leaking mock details | Verified: `grep dashboard-demo build/client` → none |
+| DD-025 | 2026-10-03 | The language chosen on the sign-in page is saved as the user's preference at sign-in | It's the most recent explicit choice; before, the saved preference silently switched it back | DSH-GEN-02; found in screenshots |
+| DD-026 | 2026-10-03 | New endpoint `GET /admin/counts` → `{ refundRequired, newMessages }` for navigation badges | `/admin/overview` is too heavy to poll from every page | SRS §7.2 rev 1.1; Website backend must implement it |
+| DD-027 | 2026-10-03 | No separate `/dev/ui` preview route; the UI kit is reviewed through the real pages | Same coverage with less code to maintain | PHASES D5 |
+| DD-028 | 2026-10-03 | Students table: phone (with WhatsApp link) sits under the student's name; department and reference columns appear only at ≥ 1440 px; filters move into a dialog below 768 px | Fit all required columns at 1280 px without sideways scrolling; keep the list visible on phones | DSH-STU-01/07; screenshots |
+

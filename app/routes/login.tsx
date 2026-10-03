@@ -11,11 +11,13 @@ import { StatusScreen } from "~/components/layout/status-screen";
 import { Button } from "~/components/ui/button";
 import { Field } from "~/components/ui/field";
 import { Input, inputClasses } from "~/components/ui/input";
-import { authApi, useLoginMutation } from "~/features/auth/api";
+import { authApi, useLoginMutation, useUpdateMyLocaleMutation } from "~/features/auth/api";
 import { safeNextPath } from "~/features/auth/redirect";
 import { loginSchema, type LoginInput } from "~/features/auth/schema";
 import { cn } from "~/lib/cn";
 import { getApiError, isNetworkError } from "~/store/api";
+import { useAppSelector } from "~/store/hooks";
+import { selectLocale } from "~/store/ui-slice";
 import { store } from "~/store/store";
 import type { Route } from "./+types/login";
 
@@ -36,6 +38,8 @@ export default function Login() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [login, { isLoading }] = useLoginMutation();
+  const [saveLocale] = useUpdateMyLocaleMutation();
+  const uiLocale = useAppSelector(selectLocale);
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -65,7 +69,9 @@ export default function Login() {
   async function onSubmit(values: LoginInput) {
     setFormError(null);
     try {
-      await login(values).unwrap();
+      const user = await login(values).unwrap();
+      // The language chosen on this page is the latest explicit choice: keep it (DSH-GEN-02).
+      if (user.locale !== uiLocale) await saveLocale(uiLocale).unwrap().catch(() => undefined);
       navigate(safeNextPath(params.get("next")), { replace: true });
     } catch (error) {
       const apiError = getApiError(error);

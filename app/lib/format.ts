@@ -54,3 +54,18 @@ export function initials(name: string): string {
     .join("")
     .toUpperCase();
 }
+
+/** Compact table timestamp: "2 Oct, 11:41 PM" — the year only when it isn't the current one. */
+export function formatShortDateTime(iso: string, locale: Locale, now: Date = new Date()): string {
+  const date = new Date(iso);
+  const sameYear =
+    new Intl.DateTimeFormat("en", { timeZone: BUSINESS_TIMEZONE, year: "numeric" }).format(date) ===
+    new Intl.DateTimeFormat("en", { timeZone: BUSINESS_TIMEZONE, year: "numeric" }).format(now);
+  const day = new Intl.DateTimeFormat(DATE_LOCALE[locale], {
+    timeZone: BUSINESS_TIMEZONE,
+    day: "numeric",
+    month: "short",
+    ...(sameYear ? {} : { year: "numeric" }),
+  }).format(date);
+  return `${day}${locale === "ar" ? "، " : ", "}${formatTime(iso, locale)}`;
+}

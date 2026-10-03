@@ -21,7 +21,8 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "account": "Account menu",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "needsAttention": "need attention"
   },
   "roles": {
     "OWNER": "Owner",
@@ -108,6 +109,444 @@
     "genericTitle": "This page couldn't load",
     "genericDescription": "Try again. If it keeps happening, sign out and back in.",
     "retry": "Try again",
-    "forbiddenTitle": "You don't have access to this"
+    "forbiddenTitle": "You don't have access to this",
+    "networkTitle": "You're offline or the server can't be reached",
+    "networkDescription": "Check your connection, then try again.",
+    "loadTitle": "This couldn't load",
+    "loadDescription": "The server answered with an error. Try again in a moment.",
+    "saveFailed": "The changes couldn't be saved. Try again.",
+    "conflict": "This can't be done right now.",
+    "notFoundItem": "This item doesn't exist anymore."
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "required": "required",
+    "arabic": "Arabic",
+    "english": "English",
+    "charactersLeft": "{count, plural, one {# character left} other {# characters left}}",
+    "seatsOf": "{sold} of {capacity}",
+    "pagination": "Pagination",
+    "showing": "Showing {from}–{to} of {total}",
+    "rowsPerPage": "Rows per page",
+    "perPage": "{size} per page",
+    "previous": "Previous",
+    "next": "Next",
+    "clearSearch": "Clear search",
+    "removeFilter": "Remove filter: {filter}",
+    "clearAll": "Clear all",
+    "money": "{amount} EGP",
+    "viewAll": "View all",
+    "export": "Export CSV",
+    "exporting": "Exporting…",
+    "exportFailed": "The export couldn't be created. Try again.",
+    "moreActions": "More actions",
+    "copy": "Copy",
+    "copied": "Copied",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "none": "None",
+    "unsavedTitle": "Discard your changes?",
+    "unsavedDescription": "You have changes that aren't saved yet. If you leave, they'll be lost.",
+    "discard": "Discard changes",
+    "keepEditing": "Keep editing",
+    "back": "Back",
+    "filters": "Filters",
+    "filtersCount": "Filters ({count})",
+    "showResults": "Show results",
+    "saved": "Changes saved",
+    "unsavedHint": "You have unsaved changes",
+    "moveUp": "Move {item} up",
+    "moveDown": "Move {item} down",
+    "remove": "Remove {item}",
+    "saveFailed": "The changes couldn't be saved. Try again."
+  },
+  "status": {
+    "booking": {
+      "PAID": "Paid",
+      "PENDING_PAYMENT": "Pending payment",
+      "REFUND_REQUIRED": "Refund required",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled",
+      "REFUNDED": "Refunded"
+    },
+    "payment": {
+      "SUCCEEDED": "Paid",
+      "INITIATED": "Pending",
+      "FAILED": "Failed",
+      "REFUNDED": "Refunded"
+    },
+    "session": {
+      "AVAILABLE": "Available",
+      "ALMOST_FULL": "Almost full",
+      "FULLY_BOOKED": "Fully booked",
+      "CLOSED": "Closed"
+    },
+    "course": {
+      "AVAILABLE": "Available",
+      "ALMOST_FULL": "Almost full",
+      "FULLY_BOOKED": "Fully booked",
+      "COMING_SOON": "Coming soon",
+      "CLOSED": "Closed"
+    },
+    "publication": {
+      "PUBLISHED": "Published",
+      "DRAFT": "Draft",
+      "ARCHIVED": "Archived"
+    },
+    "ticket": {
+      "VALID": "Valid",
+      "CHECKED_IN": "Checked in",
+      "USED": "Used",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled"
+    },
+    "message": {
+      "NEW": "New",
+      "READ": "Read",
+      "ARCHIVED": "Archived"
+    },
+    "attendance": {
+      "UPCOMING": "Upcoming",
+      "ATTENDED": "Attended {attended} of {total}",
+      "ABSENT": "Absent",
+      "COMPLETED": "Completed {attended} of {total}",
+      "NONE": "—"
+    },
+    "method": {
+      "CARD": "Card",
+      "WALLET": "Wallet"
+    },
+    "attendanceFilter": {
+      "UPCOMING": "Not started",
+      "ATTENDED": "Attending",
+      "ABSENT": "Absent",
+      "COMPLETED": "Completed"
+    }
+  },
+  "home": {
+    "kpi": {
+      "revenue": "Revenue this month",
+      "paid": "Paid registrations this month",
+      "seats": "Seats filled",
+      "upcoming": "Upcoming sessions",
+      "revenueUp": "{percent}% more than {month}",
+      "revenueDown": "{percent}% less than {month}",
+      "noRevenueLastMonth": "No revenue in {month}",
+      "paidMore": "{count, plural, one {# more} other {# more}} than {month}",
+      "paidFewer": "{count} fewer than {month}",
+      "paidSame": "Same as {month}",
+      "seatsValue": "{sold} of {capacity}",
+      "seatsNote": "{percent}% of seats in upcoming sessions",
+      "upcomingNote": "Starting in the next 30 days"
+    },
+    "needs": {
+      "title": "Needs action",
+      "titleCount": "Needs action ({count})",
+      "empty": "Nothing needs your attention.",
+      "refunds": "{count, plural, one {# booking needs a refund decision} other {# bookings need a refund decision}}",
+      "refundsDetail": "Paid after the session filled up. Move the student or record a refund.",
+      "messages": "{count, plural, one {# new message} other {# new messages}}",
+      "messagesDetail": "From the website's contact form.",
+      "emptySession": "No registrations yet: {course}",
+      "closingSoon": "Registration closes soon: {course} ({left} seats left)",
+      "closesAt": "Closes {time}"
+    },
+    "revenue": {
+      "title": "Net revenue, last 6 months",
+      "summary": "{total} in total",
+      "month": "Month",
+      "net": "Net revenue"
+    },
+    "latestPayments": "Latest payments",
+    "latestRegistrations": "Latest registrations",
+    "upcomingSessions": "Upcoming sessions",
+    "noPayments": "Payments appear here after students pay on the website.",
+    "noRegistrations": "Registrations appear here after students pay on the website.",
+    "noUpcoming": "No upcoming sessions. Add a session to a course so students can book.",
+    "start": {
+      "title": "Get your first booking",
+      "one": "Add a course with its essentials.",
+      "two": "Add a session: dates, place, seats and price.",
+      "three": "Publish the course — students can book it on the website.",
+      "action": "Add your first course"
+    }
+  },
+  "ranges": {
+    "all": "Any date",
+    "today": "Today",
+    "this-week": "This week",
+    "this-month": "This month",
+    "last-30": "Last 30 days"
+  },
+  "attendance": {
+    "meeting": "Meeting {order}",
+    "attendedAt": "Attended {time}",
+    "missed": "Missed",
+    "upcoming": "Upcoming"
+  },
+  "students": {
+    "caption": "Registered students",
+    "filters": {
+      "searchLabel": "Search registrations",
+      "searchPlaceholder": "Name, phone, email or reference",
+      "course": "Course",
+      "allCourses": "All courses",
+      "session": "Session",
+      "allSessions": "All sessions",
+      "status": "Booking status",
+      "allStatuses": "All statuses",
+      "attendance": "Attendance",
+      "anyAttendance": "Any attendance",
+      "date": "Registration date"
+    },
+    "columns": {
+      "student": "Student",
+      "phone": "Phone",
+      "course": "Course",
+      "registered": "Registered",
+      "status": "Status",
+      "attendance": "Attendance",
+      "reference": "Reference",
+      "department": "Department"
+    },
+    "empty": "No registrations yet",
+    "emptyHint": "Registrations appear here after students pay on the website.",
+    "noResults": "No registrations match these filters",
+    "noResultsHint": "Change the filters or clear them to see everyone."
+  },
+  "student": {
+    "notFound": "This student doesn't exist",
+    "phone": "Phone",
+    "email": "Email",
+    "registrations": "Registrations",
+    "netPaid": "Net paid",
+    "firstRegistered": "First registered",
+    "registrationsTitle": "Registrations",
+    "noRegistrations": "No registrations.",
+    "reference": "Booking reference",
+    "registeredAt": "Registered",
+    "amount": "Amount",
+    "attendance": "Attendance",
+    "paymentsTitle": "Payment history",
+    "noPayments": "No payments.",
+    "consent": "Agreed to the policies on"
+  },
+  "payments": {
+    "caption": "Payments",
+    "refundedAmount": "Refunded",
+    "filters": {
+      "searchLabel": "Search payments",
+      "searchPlaceholder": "Reference, transaction ID, phone or email",
+      "needsAction": "Needs action",
+      "needsActionCount": "Needs action ({count})",
+      "status": "Payment status",
+      "allStatuses": "All statuses",
+      "method": "Method",
+      "allMethods": "All methods",
+      "course": "Course",
+      "allCourses": "All courses",
+      "date": "Payment date"
+    },
+    "columns": {
+      "date": "Date",
+      "student": "Student",
+      "course": "Course",
+      "method": "Method",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "summary": {
+      "label": "Totals for the current filter",
+      "gross": "Gross paid",
+      "refunded": "Refunded",
+      "net": "Net",
+      "count": "Payments",
+      "filtered": "Matching the filters",
+      "all": "All payments"
+    },
+    "empty": "No payments yet",
+    "emptyHint": "Payments appear here when students pay on the website.",
+    "noResults": "No payments match these filters",
+    "noResultsHint": "Change the filters or clear them to see all payments.",
+    "detail": {
+      "title": "Payment",
+      "move": "Move to another session",
+      "refund": "Record refund",
+      "cancel": "Cancel booking",
+      "refundRequiredHint": "This student paid after the session filled up. Move them to another session of the same course, or refund them in Paymob and record it here.",
+      "money": "Payment",
+      "amount": "Amount",
+      "refunded": "Refunded",
+      "method": "Method",
+      "transaction": "Paymob transaction ID",
+      "order": "Paymob order ID",
+      "refundTransaction": "Refund transaction ID",
+      "booking": "Booking",
+      "course": "Course",
+      "session": "Session",
+      "student": "Student",
+      "phone": "Phone",
+      "email": "Email",
+      "timeline": "History",
+      "events": {
+        "INITIATED": "Checkout started",
+        "SUCCEEDED": "Payment confirmed",
+        "FAILED": "Payment failed",
+        "REFUNDED": "Refund recorded",
+        "MOVED": "Moved to another session",
+        "CANCELLED": "Booking cancelled"
+      }
+    },
+    "refund": {
+      "title": "Record refund",
+      "description": "For booking {reference}. Refund the money in the Paymob portal first, then record it here.",
+      "consequence": "Recording a refund marks the booking as Refunded and cancels the student's ticket. The seat becomes free.",
+      "amount": "Refund amount",
+      "currency": "EGP",
+      "amountHint": "Up to",
+      "amountError": "Enter an amount between 1 and {max} EGP.",
+      "transaction": "Paymob refund transaction ID",
+      "transactionHint": "Shown in Paymob after you refund.",
+      "transactionError": "Enter the refund transaction ID from Paymob.",
+      "note": "Note (optional)",
+      "noteHint": "Only visible in the dashboard.",
+      "submit": "Record refund",
+      "done": "Refund recorded"
+    },
+    "move": {
+      "title": "Move to another session",
+      "description": "Choose a session with free seats for {name}.",
+      "session": "Session",
+      "placeholder": "Choose a session",
+      "option": "{code} · {date} · {left} seats left",
+      "none": "No other session of this course has free seats. Add a session, or record a refund instead.",
+      "priceDifference": "The prices differ (new / paid). Settle the difference with the student directly:",
+      "consequence": "The booking becomes Paid in the new session and the student keeps the same ticket reference.",
+      "chooseError": "Choose a session.",
+      "noSeats": "That session just filled up. Choose another one.",
+      "submit": "Move student",
+      "done": "Student moved"
+    },
+    "cancel": {
+      "title": "Cancel this booking?",
+      "description": "{name}'s booking {reference} will be cancelled, the ticket stops working and the seat becomes free. Refund the money in Paymob separately.",
+      "reason": "Reason",
+      "reasonError": "Give a reason for the cancellation.",
+      "submit": "Cancel booking",
+      "done": "Booking cancelled"
+    }
+  },
+  "courses": {
+    "stateTabs": "Filter by state",
+    "searchLabel": "Search courses",
+    "searchPlaceholder": "Title or code",
+    "noResults": "No courses match",
+    "empty": "No courses yet",
+    "emptyHint": "Add your first course. Students can book it once it has a published session.",
+    "archived": "Course archived",
+    "deleted": "Course deleted",
+    "restored": "Course restored to drafts",
+    "archiveTitle": "Archive this course?",
+    "archiveDescription": "\"{title}\" will be hidden from the website. Students who already booked keep their tickets. You can restore it later.",
+    "deleteTitle": "Delete this draft?",
+    "deleteDescription": "\"{title}\" will be deleted permanently. This can't be undone.",
+    "states": {
+      "all": "All",
+      "published": "Published",
+      "draft": "Drafts",
+      "archived": "Archived"
+    },
+    "levels": {
+      "BEGINNER": "Beginner",
+      "INTERMEDIATE": "Intermediate",
+      "ADVANCED": "Advanced"
+    },
+    "card": {
+      "edit": "Edit course",
+      "viewOnWebsite": "View on website",
+      "archive": "Archive",
+      "restore": "Restore",
+      "delete": "Delete draft",
+      "upcomingCount": "{count, plural, =0 {No upcoming sessions} one {# upcoming session} other {# upcoming sessions}}",
+      "nextSession": "Next session",
+      "seats": "Seats",
+      "price": "Price"
+    },
+    "add": {
+      "open": "Add course",
+      "title": "Add course",
+      "description": "Start with the essentials. You'll add the content, curriculum and sessions next.",
+      "submit": "Create draft",
+      "done": "Draft created",
+      "titleLabel": "Course title",
+      "code": "Course code",
+      "codeHint": "3 letters, used in session codes (e.g. ETB).",
+      "slug": "Website link",
+      "slugHint": "Lowercase letters, numbers and hyphens.",
+      "level": "Level",
+      "price": "Base price",
+      "priceHint": "Sessions use this price unless you change it.",
+      "currency": "EGP",
+      "hours": "Total hours",
+      "meetings": "Meetings",
+      "shortDescription": "Short description",
+      "shortDescriptionHint": "One or two sentences shown on the course card.",
+      "errors": {
+        "both": "Enter the title in Arabic and English.",
+        "code": "Use exactly 3 letters, like ETB.",
+        "codeTaken": "Another course already uses this code.",
+        "slug": "Use lowercase letters, numbers and hyphens only.",
+        "slugTaken": "Another course already uses this link.",
+        "price": "Enter a price above 0.",
+        "hours": "Enter the total hours (a whole number).",
+        "meetings": "Enter the number of meetings (a whole number)."
+      }
+    }
+  },
+  "course": {
+    "overview": {
+      "codeLocked": "Locked: sessions already use this code.",
+      "slugLocked": "Locked after publishing, so shared links keep working.",
+      "priceHint": "Changing it doesn't affect existing sessions or bookings.",
+      "cover": "Course cover",
+      "discipline": "Discipline on the cover",
+      "disciplineHint": "Shown under the code on the generated cover.",
+      "coverAlt": "Cover description",
+      "coverAltHint": "Read by screen readers on the website."
+    },
+    "content": {
+      "perLine": "One item per line.",
+      "about": "About the course",
+      "aboutHint": "What the course is and how it's taught.",
+      "outcomes": "Outcomes",
+      "outcomesHint": "At least {min}, written as things the student will be able to do.",
+      "audience": "Who it's for",
+      "problemSolved": "The problem it solves",
+      "expectations": "What to expect",
+      "requirements": "Requirements",
+      "whatToBring": "What to bring"
+    },
+    "curriculum": {
+      "summary": "{count, plural, =0 {No modules} one {# module} other {# modules}} · {hours} of {planned} hours planned",
+      "module": "Module {order}",
+      "add": "Add module",
+      "empty": "No modules yet. The website shows the curriculum from these modules.",
+      "title": "Module title",
+      "hours": "Hours",
+      "topics": "Topics",
+      "perLine": "One topic per line.",
+      "titleError": "Every module needs a title in Arabic and English."
+    },
+    "faq": {
+      "question": "Question {order}",
+      "add": "Add question",
+      "empty": "No course questions yet. General questions still show on the website.",
+      "questionLabel": "Question",
+      "answer": "Answer",
+      "incomplete": "Every question needs a question and an answer in Arabic and English."
+    }
   }
 }

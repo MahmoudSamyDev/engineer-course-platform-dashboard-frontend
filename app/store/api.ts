@@ -60,12 +60,24 @@ export const api = createApi({
     "Instructor",
     "Message",
     "Location",
+    "Counts",
   ],
   keepUnusedDataFor: 60,
   refetchOnFocus: true,
   refetchOnReconnect: true,
   endpoints: () => ({}),
 });
+
+/** Query string from a filter object, skipping empty values (URL-safe, stable order). */
+export function toQueryString(params: Record<string, string | number | boolean | undefined | null>): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params).sort(([a], [b]) => a.localeCompare(b))) {
+    if (value === undefined || value === null || value === "") continue;
+    search.set(key, String(value));
+  }
+  const text = search.toString();
+  return text ? `?${text}` : "";
+}
 
 /** Narrows an RTK Query error to the API's `{ error: { code, message } }` shape. */
 export function getApiError(error: unknown): ApiError["error"] | null {
