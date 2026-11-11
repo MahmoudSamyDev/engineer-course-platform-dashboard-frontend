@@ -98,16 +98,22 @@ export function HydrateFallback() {
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   const t = useTranslations("errors");
   const notFound = isRouteErrorResponse(error) && error.status === 404;
+  // Thrown by the auth guard when `me` fails for a reason other than 401 (offline, API down).
+  const unreachable = isRouteErrorResponse(error) && error.status === 503;
   const details = import.meta.env.DEV && error instanceof Error ? error.stack : undefined;
 
   return (
     <StatusScreen>
       <div className="flex flex-col gap-4 rounded-sm border border-line bg-sheet p-6">
         <h1 className="font-display text-title font-semibold">
-          {notFound ? t("notFoundTitle") : t("genericTitle")}
+          {notFound ? t("notFoundTitle") : unreachable ? t("networkTitle") : t("genericTitle")}
         </h1>
         <p className="text-body text-graphite">
-          {notFound ? t("notFoundDescription") : t("genericDescription")}
+          {notFound
+            ? t("notFoundDescription")
+            : unreachable
+              ? t("networkDescription")
+              : t("genericDescription")}
         </p>
         <div className="flex gap-2">
           <Button asChild variant="secondary">

@@ -8,13 +8,13 @@ Severity: **High** = wrong behavior or risk before go-live · **Medium** = spec/
 
 | # | Severity | Area | Issue |
 |---|---|---|---|
-| 1 | High | Auth | A network or server failure on `me` looks like a sign-out |
+| 1 | High | Auth | ~~A network or server failure on `me` looks like a sign-out~~ — **resolved** (DD-044) |
 | 2 | High | Process | Independent review of the money actions (refund/move/cancel) is still outstanding |
 | 3 | Medium | Payments | Mock refund sets `REFUNDED` on a partial refund |
 | 4 | Medium | Mocks | Mock move/cancel/refund ignore the `Idempotency-Key`; price difference on move isn't recorded |
 | 5 | Medium | API contract | ~~`POST /admin/auth/password` not mocked or built~~ — **resolved in D10** (DD-036) |
 | 6 | Medium | Conventions | `clientLoader` prefetching is not used consistently — D10 routes prefetch; **`payments.tsx` still doesn't** |
-| 7 | Medium | Tests | Thin UI test coverage — improved in D10 (+26 unit/component, +6 e2e); **payments and students still have no e2e** |
+| 7 | Medium | Tests | Thin UI test coverage — **mostly resolved**: payments, students and session-expiry now have e2e and component tests; remaining: both-locale runs and axe (D12) |
 | 8 | Low | Tests | `futureDate()` in the e2e tests uses UTC dates |
 | 9 | Low | Mocks | `inRange` ignores the Cairo timezone |
 | 10 | Low | Tooling | ~~`.npmrc` sets `legacy-peer-deps=true`~~ — **resolved**, switched to pnpm (DD-032) |
@@ -32,6 +32,8 @@ Severity: **High** = wrong behavior or risk before go-live · **Medium** = spec/
 **Impact:** The owner is sent to the sign-in page with no explanation and may think the session or password is wrong. After signing in again, the same outage makes things worse.
 
 **Fix:** Redirect only when the error status is 401. For any other error, throw (or render) an error screen with a retry button, so the root `ErrorBoundary` or a layout error state explains it. Add a test for both branches.
+
+**Resolved (2026-11-11, DD-044):** 401 → sign-in; anything else → 503 → "You're offline or the server can't be reached" with Try again. `tests/unit/auth-guard.test.ts` covers signed in, 401, 500 and a network error.
 
 ---
 
@@ -95,7 +97,9 @@ Mutation `changePassword` in `features/auth/api.ts`, MSW handler in `mocks/handl
 
 **What:** 5 unit files, 1 component test and 2 e2e specs (auth, courses). Payments, students, attendance and the refund/move/cancel dialogs have no automated tests. The money rules in the mock handlers are not unit-tested.
 
-**Fix:** Add e2e or component tests for: refund validation, move with no free seats, cancel without a reason, attendance mark/undo (DAC-06), and the student search/filter flow. Add a test for DSH-AUTH-05 (listed as in progress in the traceability table).
+**Update (2026-11-11):** added `money-dialogs.test.tsx` (refund validation and full refund, move with no seats / no choice / success / seat taken meanwhile, cancel with and without a reason), `session-expiry.test.ts`, `auth-guard.test.ts`, and e2e `payments.spec.ts` (DAC-04, cancel), `students.spec.ts` (DAC-05) and DSH-AUTH-05 in `auth.spec.ts`. Attendance (DAC-06) was already covered in `courses.spec.ts`. Still to do in D12: run the suite in Arabic too, and axe checks.
+
+**Original fix:** Add e2e or component tests for: refund validation, move with no free seats, cancel without a reason, attendance mark/undo (DAC-06), and the student search/filter flow. Add a test for DSH-AUTH-05 (listed as in progress in the traceability table).
 
 ---
 
@@ -150,3 +154,9 @@ After installing with pnpm: typecheck ✅, lint ✅, 30 unit/component tests ✅
 - **Mock counted an assistant's check-ins by display name**, so a rename allowed deleting someone with history (DBR-14). Now by assistant id (DD-040).
 - **Bidi in Arabic:** spaced phone examples rendered reversed; user-typed Latin text misplaced its punctuation (DD-041).
 
+## Found and fixed while adding tests (2026-11-11)
+
+- **Expired session bounced back instead of signing in** (DSH-AUTH-05): RTK Query keeps the last `data` after a failed refetch, so the sign-in page thought the user was still signed in and sent them back to a page full of errors. Checks now use `isSuccess`; the sign-in page clears the cache when it opens.
+- **Signing in from the English sign-in page showed Arabic until a reload** (DAC-09): an un-awaited cache write with the account's old language overwrote the choice. The form now writes the final user and waits for it.
+- **The guard only worked after sign-in through a hidden extra redirect** (guard → `/login` → back) because `me` was still being written. Fixed by the same awaited write.
+- **The mock seed has no second upcoming session for the refund-required course**, so "move" can't succeed in the demo as seeded. The tests add one; consider seeding one for demos.

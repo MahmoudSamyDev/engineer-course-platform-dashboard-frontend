@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, redirect, useLocation, useNavigate } from "react-router";
+import { data, Outlet, redirect, useLocation, useNavigate } from "react-router";
 import { AppShell } from "~/components/layout/app-shell";
 import { authApi, useMeQuery } from "~/features/auth/api";
 import { userContext } from "~/features/auth/context";
@@ -17,10 +17,16 @@ const requireUser: Route.ClientMiddlewareFunction = async ({ request, context })
   const result = await store.dispatch(
     authApi.endpoints.me.initiate(undefined, { subscribe: false }),
   );
-  if (!result.data) {
+  if (result.isSuccess) {
+    context.set(userContext, result.data);
+    return;
+  }
+  // Only a 401 means "not signed in". A backend that is down, a timeout or an offline
+  // browser is not a sign-out: the root ErrorBoundary explains it with a retry (ISSUES #1).
+  if (result.error && "status" in result.error && result.error.status === 401) {
     throw redirect(loginPathFor(new URL(request.url)));
   }
-  context.set(userContext, result.data);
+  throw data(null, { status: 503, statusText: "API unreachable" });
 };
 
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [requireUser];

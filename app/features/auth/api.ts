@@ -2,6 +2,7 @@ import type { AdminUser, ItemResponse } from "~/domain/admin";
 import type { ChangePasswordInput } from "~/domain/api";
 import type { Locale } from "~/domain/types";
 import { api } from "~/store/api";
+import { sessionRestored } from "~/store/ui-slice";
 import type { LoginInput } from "./schema";
 
 /** SRS §7.2 — /admin/auth/*. */
@@ -15,13 +16,14 @@ export const authApi = api.injectEndpoints({
     login: build.mutation<AdminUser, LoginInput>({
       query: (body) => ({ url: "/auth/login", method: "POST", body }),
       transformResponse: (response: ItemResponse<AdminUser>) => response.data,
-      // Seed the `me` cache so the app layout doesn't refetch right after sign-in.
+      // A late 401 from the previous session may have raised "session ended" while on the
+      // sign-in page: clear it. (The form seeds `me` itself and waits for it, see login.tsx.)
       async onQueryStarted(_input, { dispatch, queryFulfilled }) {
         try {
-          const { data: user } = await queryFulfilled;
-          dispatch(authApi.util.upsertQueryData("me", undefined, user));
+          await queryFulfilled;
+          dispatch(sessionRestored());
         } catch {
-          // A failed sign-in is handled by the form (mutation result); nothing to cache.
+          // A failed sign-in is handled by the form (mutation result).
         }
       },
     }),

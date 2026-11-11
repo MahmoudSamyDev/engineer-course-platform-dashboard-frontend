@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { redirect, useNavigate, useSearchParams } from "react-router";
 import { useTranslations } from "use-intl";
@@ -15,7 +15,7 @@ import { authApi, useLoginMutation, useUpdateMyLocaleMutation } from "~/features
 import { safeNextPath } from "~/features/auth/redirect";
 import { loginSchema, type LoginInput } from "~/features/auth/schema";
 import { cn } from "~/lib/cn";
-import { getApiError, isNetworkError } from "~/store/api";
+import { api, getApiError, isNetworkError } from "~/store/api";
 import { useAppSelector } from "~/store/hooks";
 import { selectLocale } from "~/store/ui-slice";
 import { store } from "~/store/store";
@@ -28,7 +28,9 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const result = await store.dispatch(
     authApi.endpoints.me.initiate(undefined, { subscribe: false, forceRefetch: true }),
   );
-  if (result.data) throw redirect(safeNextPath(url.searchParams.get("next")));
+  // `isSuccess`, not `data`: a failed refetch keeps the last user in `data`, which would
+  // bounce an expired session straight back to the page it came from (DSH-AUTH-05).
+  if (result.isSuccess) throw redirect(safeNextPath(url.searchParams.get("next")));
   return null;
 }
 
@@ -42,6 +44,12 @@ export default function Login() {
   const uiLocale = useAppSelector(selectLocale);
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
+  // Nothing from a previous session (expired, signed out elsewhere) stays in memory for the
+  // next person to sign in. Safe here: the signed-in pages are unmounted, nothing is loading.
+  useEffect(() => {
+    store.dispatch(api.util.resetApiState());
+  }, []);
 
   const reason = params.get("reason");
   const notice =
@@ -69,12 +77,15 @@ export default function Login() {
   async function onSubmit(values: LoginInput) {
     setFormError(null);
     try {
-      const user = await login(values).unwrap();
+      let user = await login(values).unwrap();
       // The language chosen on this page is the latest explicit choice: keep it (DSH-GEN-02).
       if (user.locale !== uiLocale)
-        await saveLocale(uiLocale)
+        user = await saveLocale(uiLocale)
           .unwrap()
-          .catch(() => undefined);
+          .catch(() => user);
+      // Seed `me` with the final user and wait for it, so the app layout's guard finds them at
+      // once (not a pending entry) and in the language just chosen (DAC-09).
+      await store.dispatch(authApi.util.upsertQueryData("me", undefined, user));
       navigate(safeNextPath(params.get("next")), { replace: true });
     } catch (error) {
       const apiError = getApiError(error);

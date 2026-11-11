@@ -73,8 +73,8 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 | DSH-NAV-01/02/03 | signed-in | `AppShell`, `NavList`, `MobileNav`, `UserMenu` | — | 360/768/1280/1440, AR/EN, drawer, menu | visual | ✅ |
 | DSH-NAV-05 | all pages | `PageHeader` | — | one h1, one primary | visual | ✅ |
 | DSH-AUTH-01/02/03 | `/login` | `Login`, `Field`, `Input`, `Button` | `POST /admin/auth/login` | empty, invalid, wrong credentials, locked, loading | `login.test.tsx`, e2e | ✅ (mock) |
-| DSH-AUTH-04 | layout | `requireUser` middleware | `GET /admin/auth/me` | redirect with `next`, return after sign-in | e2e `redirects to sign-in` | ✅ (mock) |
-| DSH-AUTH-05 | layout | base query 401 → `sessionEnded` | any | redirect with `reason=expired` | — (D5 test) | 🔄 |
+| DSH-AUTH-04 | layout | `requireUser` middleware | `GET /admin/auth/me` | redirect with `next` on 401 only; outage → error screen with retry (DD-044) | e2e `redirects to sign-in`, `auth-guard.test.ts` | ✅ (mock) |
+| DSH-AUTH-05 | layout, `/login` | base query 401 → `sessionEnded`; login loader checks `isSuccess` | any | redirect with `reason=expired`, notice, back to the same page and filters | `session-expiry.test.ts`, e2e `DSH-AUTH-05` | ✅ (mock) |
 | DSH-AUTH-06 | user menu | `UserMenu` | `POST /admin/auth/logout` | cache reset, signed-out notice | visual | ✅ (mock) |
 | DSH-AUTH-07 | `/login` | note | — | "Contact the administrator" | visual | ✅ |
 | DMK-01…05 | — | `app/mocks/*` | auth | dev + tests; no mock code in build | build grep | ✅ (auth only) |

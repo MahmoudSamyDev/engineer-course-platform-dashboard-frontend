@@ -22,6 +22,40 @@ test.describe("sign-in and shell", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Sign in" })).toBeVisible();
   });
 
+  test("DSH-AUTH-05: a 401 mid-session explains it and keeps the way back", async ({ page }) => {
+    await page.goto("/login");
+    await page.evaluate(() => localStorage.setItem("dashboard.locale", "en"));
+    await page.reload();
+    await page.getByLabel("Email").fill("owner@example.com");
+    await page.getByLabel("Password", { exact: true }).fill("dashboard-demo");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.waitForURL("/");
+
+    await page.goto("/students?status=ALL");
+    await expect(page.getByRole("heading", { level: 1, name: "Students" })).toBeVisible();
+
+    // The server ends the session behind the app's back (idle or absolute timeout)...
+    await page.evaluate(() =>
+      fetch("http://localhost:3000/api/v1/admin/auth/logout", {
+        method: "POST",
+        headers: { "X-Requested-With": "dashboard" },
+      }),
+    );
+    // ...and the next request (here: refetch on focus, DSH-GEN-11) answers 401.
+    await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+
+    await expect(page).toHaveURL(/\/login\?.*reason=expired/);
+    expect(new URL(page.url()).searchParams.get("next")).toBe("/students?status=ALL");
+    await expect(page.getByText("Your session has ended. Sign in again.")).toBeVisible();
+
+    // Signing in again returns to the same page and filters.
+    await page.getByLabel("Email").fill("owner@example.com");
+    await page.getByLabel("Password", { exact: true }).fill("dashboard-demo");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page).toHaveURL("/students?status=ALL");
+    await expect(page.getByRole("heading", { level: 1, name: "Students" })).toBeVisible();
+  });
+
   test("shows one message for wrong credentials", async ({ page }) => {
     await page.goto("/login");
     await page.getByLabel("البريد الإلكتروني").fill("owner@example.com");
