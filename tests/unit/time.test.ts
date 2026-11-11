@@ -16,3 +16,12 @@ describe("Cairo time conversion", () => {
     expect(utcIsoToZonedLocal("2026-10-17T07:00:00.000Z")).toBe("2026-10-17T10:00");
   });
 });
+
+describe("mock date filters use Cairo days (ISSUES #9)", () => {
+  it("counts 01:00 Cairo on the 10th as the 10th", async () => {
+    const { inRange } = await import("~/mocks/handlers/helpers");
+    const lateUtc = "2026-11-09T23:00:00.000Z"; // 01:00 on 10 Nov in Cairo (UTC+2)
+    expect(inRange(lateUtc, "2026-11-10", "2026-11-10")).toBe(true);
+    expect(inRange(lateUtc, "2026-11-09", "2026-11-09")).toBe(false);
+  });
+});

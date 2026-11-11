@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslations } from "use-intl";
 import { ConfirmDialog } from "~/components/ui/confirm-dialog";
 import { Field } from "~/components/ui/field";
@@ -7,6 +7,7 @@ import { useToast } from "~/components/ui/toast";
 import type { PaymentDetail } from "~/domain/api";
 import { getApiError } from "~/store/api";
 import { useCancelBookingMutation } from "./api";
+import { isStaleState, useIdempotencyKey } from "./use-idempotency-key";
 
 /** Cancel a paid booking: ticket cancelled, seat released, reason required (DSH-PAY-07). */
 export function CancelDialog({
@@ -19,10 +20,13 @@ export function CancelDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations("payments.cancel");
+  const tp = useTranslations("payments");
+  const tc = useTranslations("common");
   const toast = useToast();
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string>();
-  const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [idempotencyKey, renewKeyAfter] = useIdempotencyKey();
+  const sending = useRef(false);
   const [cancel, { isLoading }] = useCancelBookingMutation();
 
   return (
@@ -39,6 +43,8 @@ export function CancelDialog({
       loading={isLoading}
       onConfirm={async () => {
         if (!reason.trim()) return setError(t("reasonError"));
+        if (sending.current) return; // A second click while the first is on its way.
+        sending.current = true;
         try {
           await cancel({
             bookingId: payment.bookingId,
@@ -48,7 +54,15 @@ export function CancelDialog({
           toast({ title: t("done"), description: payment.reference });
           onOpenChange(false);
         } catch (e) {
-          setError(getApiError(e)?.message ?? t("reasonError"));
+          renewKeyAfter(e);
+          const apiError = getApiError(e);
+          if (isStaleState(apiError?.fields)) {
+            toast({ title: tp("staleTitle"), description: tp("staleCancel"), tone: "error" });
+            return onOpenChange(false);
+          }
+          setError(apiError?.fields?.reason ? t("reasonError") : tc("saveFailed"));
+        } finally {
+          sending.current = false;
         }
       }}
     >

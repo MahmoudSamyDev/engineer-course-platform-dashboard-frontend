@@ -1,6 +1,6 @@
 # Progress Tracker — Dashboard
 
-**Current phase:** D12 — QA & hardening (next). D11 finished: the Messages inbox, quick search and the polish backlog; every page is built.
+**Current phase:** D13 — Real API switch (next; blocked until the Website backend ships the admin API). D12 finished: independent review of the money actions, full acceptance suite in both languages, axe, bundle budget, security headers, print.
 **Last updated:** 2026-11-11
 
 Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definitions: `docs/PHASES.md`.
@@ -17,37 +17,40 @@ Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definit
 | D5 | UI kit & states | ✅ | Kit built and reviewed through the real pages (no separate /dev/ui route, DD-027) |
 | D6 | Home | ✅ | KPI title block, needs action, revenue chart, latest lists, upcoming sessions |
 | D7 | Students | ✅ | Table, filters, search, paging, CSV, student page |
-| D8 | Payments | ✅ | Summary, filters, details sheet, refund / move / cancel (independent review still pending) |
+| D8 | Payments | ✅ | Summary, filters, details sheet, refund / move / cancel (independent review done in D12) |
 | D9 | Courses, sessions & attendance | ✅ | Cards, Add course dialog, 6 tabs, sessions + meetings, roster, attendance, print. DAC-02/03/06 pass |
 | D10 | Assistants & profile | ✅ | Assistant cards + dialog + (de)activate/delete; profile in 7 tabs; uploads; password. DAC-07, DAC-08 (mock) pass |
 | D11 | Messages & polish | ✅ | Inbox + reading sheet, optimistic read/new/archive with live badges, quick search (`/`), Payments/Students export in the header, card date, table scroll at 768 px. DUS-25 passes |
-| D12 | QA & hardening | ⬜ | |
+| D12 | QA & hardening | ✅ | Money-action review (7 findings fixed), DAC-01…10 in EN + AR, axe WCAG 2.2 AA, login 199.6/200 KB, `_headers` + CSP by hash, print |
 | D13 | Real API switch | ⬜ | Depends on Website Phase 8 + admin API |
 | D14 | Final review | ⬜ | |
 
 Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with notes · ⛔ blocked
 
-## Handoff — where to continue (2026-11-11, after D11)
+## Handoff — where to continue (2026-11-11, after D12)
 
-**State:** `pnpm typecheck`, `pnpm lint`, Prettier, **74 unit/component tests** and **34 Playwright tests** (desktop + mobile) pass. Build has no mock code. D11 views checked at 360/768/1280/1440 in Arabic and English: no horizontal scroll, no console errors.
+**State:** typecheck, lint, Prettier, **86 unit/component tests**, **47 Playwright tests** (desktop + mobile; 5 skipped by design: phone-only or desktop-only checks), `pnpm build` and `pnpm check:build` (login 199.6 KB gzip of 200, no CSP violations) all pass. No mock code in the build.
 
-**Done (code map, D11 and the test pass before it)**
-- **Messages** — `routes/messages.tsx` (Inbox/Archived via `?tab=`, `?message=` sheet), `features/messages/{api,message-list,message-sheet}.tsx`, rules in `domain/messages.ts` (reply subject in the sender's language).
-- **Quick search** — `features/search/quick-search.tsx` (trigger in the rail and phone top bar, `/` shortcut, combobox over `GET /admin/registrations?q=`).
-- **Shared** — `Dialog` takes `initialFocus`; `scroll-x`/`tabular` are real Tailwind utilities (`@utility`); `formatDayMonth`; Export CSV lives in the page header on Payments and Students.
-- **Auth** — guard redirects only on 401, outages show an error with retry; sign-in seeds `me` and waits (DD-044).
-- **Tests** — `money-dialogs.test.tsx`, `auth-guard.test.ts`, `session-expiry.test.ts`, `messages.test.ts`; e2e `payments`, `students` (incl. quick search), `messages`, DSH-AUTH-05.
+**D12 added (code map)**
+- `domain/money-rules.ts`: which refund / move / cancel a booking allows, and the move-target rule. Used by the payment sheet, the move dialog and the mock.
+- `features/payments/use-idempotency-key.ts`: key per action, renewed after a final 4xx. The mock replays per key (`mocks/handlers/helpers.ts` `idempotent`).
+- `clientLoader` on Payments and Students (pure `paymentFiltersFromUrl` / `registrationFiltersFromUrl`).
+- Lazy English messages (`i18n/config.ts` `loadMessages`, root `useRenderedLocale`); plain sign-in validator (`features/auth/schema.ts` `checkLogin`).
+- `scripts/write-headers.mjs` (run by `pnpm build`), `scripts/check-build.mjs` (`pnpm check:build`), `docs/deploy.md`.
+- Tests: `a11y.spec.ts` (axe), `language-and-mobile.spec.ts` (DAC-09, DAC-10, phone drawer), `arabic.spec.ts` (DAC-04/05/07 in Arabic), `money-rules.test.ts`, more in `money-dialogs.test.tsx` and `login.test.tsx`.
 
-**D12 — QA & hardening, start here**
-1. `ISSUES.md`: #2 independent review of refund/move/cancel (CLAUDE.md), #3 partial refund rule, #4 idempotency in mocks, #6 `clientLoader` on Payments and Students, #8/#9 Cairo dates.
-2. Run the e2e suite in Arabic too; add axe checks; bundle budget; security headers for the host; print check of the roster.
-3. Seed a second upcoming session for the refund-required course so "move" works in the demo.
+**Waiting on the product owner:** confirm DD-050 (refund of a cancelled booking) and DD-051 (accept into the booking's own session). Both change how DSH-PAY-05/06 read.
+
+**D13 — Real API switch (blocked on the Website backend)**
+1. Shared schema package (types + Zod) with the Website (DD-020); contract tests that run against MSW and the real API.
+2. `VITE_API_MOCKING=false`, `VITE_API_BASE_URL` to the backend; CORS with credentials; cookie flags (DNFR-SEC-01/04).
+3. Backend must implement SRS §7.2 incl. rev 1.1 (`/admin/counts`), 1.2 (password errors, certification `imageUrl`) and 1.3 (money action rules, error reasons, idempotent replay). CheckIn should reference the assistant id (DD-040).
+4. Re-run every DAC against the real API; then D14.
 
 **Notes for whoever continues**
-- Auth checks on RTK Query results use `isSuccess`, never `data` (a failed refetch keeps the old `data`).
-- Optimistic updates: patch every cached list the item can appear in, and undo all patches on failure (`features/messages/api.ts`).
-- Lines of user text that can be in either language: `dir="auto"` + `[text-align:match-parent]` so clamping and alignment are both right.
-- Contract items the Website backend must implement: `/admin/counts` (DD-026), certification `imageUrl` (DD-035), password errors (DD-036).
+- The login budget has 0.4 KB of margin. Anything new on the sign-in page or in `root`/`store` must be weighed with `pnpm build && pnpm check:build`. Next lever: messages per namespace.
+- Money rules live in `domain/money-rules.ts` only. Change them there and both the UI and the mock follow.
+- Auth checks on RTK Query results use `isSuccess`, never `data`.
 
 ## Page briefs
 
@@ -96,7 +99,13 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 | DSH-MSG-03 / DSH-NAV-04 | nav, Inbox tab | `NavList`, tab count | `GET /admin/counts` | count changes at once, server wins after | e2e DUS-25 | ✅ (mock) |
 | DSH-GEN-06 | forms | `useDiscardGuard`, `UnsavedChanges` | — | dialogs (course, session, assistant, refund) and tabbed pages | e2e DAC-08, unit | ✅ |
 | DSH-GEN-12 | shell | `QuickSearchTrigger`, `QuickSearchDialog` | `GET /admin/registrations?q=` | `/` shortcut, keyboard, phone trigger, term not in URL | e2e `students.spec.ts` | ✅ (mock) |
-| DSH-PAY-04…07 | `/payments` | `RefundDialog`, `MoveDialog`, `CancelDialog` | refund, move, cancel | validation, no seats, seat taken meanwhile, reason required | `money-dialogs.test.tsx`, e2e DAC-04 | ✅ (mock; independent review pending) |
+| DSH-PAY-04…07 | `/payments` | `RefundDialog`, `MoveDialog`, `CancelDialog`, `domain/money-rules.ts` | refund, move, cancel | validation, no seats, seat taken meanwhile, reason required, refund after cancel, accept into own session, key renewal, idempotent replay, stale 409 | `money-dialogs.test.tsx`, `money-rules.test.ts`, e2e DAC-04 (EN + AR) | ✅ (mock; independent review done, DD-050/051 to confirm) |
+| DNFR-PERF-01 | `/login` | `checkLogin`, lazy English messages | — | 199.6 KB gzip ≤ 200; no other route chunk | `pnpm check:build` | ✅ |
+| DNFR-SEC-05 | all | — | — | search terms never in URLs | e2e DAC-05, quick search | ✅ |
+| DNFR-SEC-06/07 | host | `_headers`, `_redirects`, `robots.txt`, meta | — | CSP by hash, HSTS, frame-ancestors, noindex | `pnpm check:build` (no CSP violations) | ✅ (config; host to apply) |
+| DNFR-A11Y | all | — | — | WCAG 2.2 A/AA, every page + dialogs, AR + EN, phone | e2e `a11y.spec.ts` | ✅ |
+| DAC-09 | all | `LanguageSwitch`, sign-in | `PATCH /admin/auth/me` | LTR at once, page + filters kept, remembered after sign-out/in | e2e, `login.test.tsx` | ✅ (mock) |
+| DAC-10 | all | — | — | 360 px every page AR + EN, stacked rows, dialogs fit, actions reachable, drawer | e2e `language-and-mobile.spec.ts` | ✅ |
 | DUS-25 | `/messages` | — | — | read, reply links, count drops | e2e | ✅ (mock) |
 
 ## Phase reports
@@ -225,3 +234,33 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
   `{"hooks":{"PostToolUse":[{"matcher":"Edit|Write","hooks":[{"type":"command","command":"jq -r '.tool_input.file_path' | xargs pnpm exec prettier --write --ignore-unknown"}]}]}}`
   then run `/hooks` to see it (read-only browser), and edit a file. Needs `jq`. Exit code 2 would show stderr to Claude as feedback.
 - **Docs:** https://code.claude.com/docs/en/hooks
+
+### Phase D12 — QA & hardening: ✅ complete (two assumptions to confirm)
+
+**Delivered:** independent review of the money actions (CLAUDE.md, ISSUES #2) and fixes for all 7 findings; DAC-01…10 automated in English, plus Arabic runs of DAC-01/04/05/07/09/10; axe WCAG 2.2 A/AA on every page and main dialog (AR + EN, desktop + phone); bundle budget DNFR-PERF-01 met and checked; security headers DNFR-SEC-06/07 generated per build and checked; printed roster checked on A4 in both languages; ISSUES #3, #4, #6, #8, #9 closed.
+
+**Verified:** typecheck ✅ · lint ✅ · Prettier ✅ · 86 unit/component tests ✅ · 47 Playwright tests ✅ (5 skipped by design) · build ✅ (no mock code) · `check:build` ✅ (199.6 KB, no CSP violations) · axe ✅ · roster PDFs (AR, EN) inspected.
+
+**Fixed during the phase:**
+- Review findings 1–7 (DD-050…052), see `ISSUES.md`.
+- **Sign-out said "Your session has ended"**: the cache reset made the page refetch into a 401 (DD-056).
+- **The default sign-in page overwrote the account's language** (DAC-09, DD-056).
+- **Account menu label** didn't contain its visible text (WCAG 2.5.3).
+- **Printed roster:** references wrapped onto three lines.
+- **Generated CSP would have blocked the API:** the header script didn't read `.env` (DD-054).
+- **Sign-in page was 243.7 KB** → 199.6 KB (DD-053).
+
+**API contract (flag for the Website backend):** SRS rev 1.3 covers refund on a cancelled booking, move into the own session, the move-target rule, 409/422 reasons in `fields`, and idempotent replay.
+
+**Decisions:** DD-050…DD-056.
+
+**Known issues / deferred:** DD-050/051 need the owner's confirmation; budget margin 0.4 KB; move price difference shown, not recorded; no interactive photo cropper (DD-034).
+
+**Next:** D13 — Real API switch, once the Website backend ships the admin API.
+
+**🎓 Claude ecosystem lesson — Headless mode & CI**
+- **Concept:** `claude -p "<prompt>"` runs Claude Code once, non-interactively, and exits with a status code your scripts can branch on. `--output-format json` returns the result plus session ID and cost; `--allowedTools` pre-approves tools; `--bare` skips local hooks, skills, MCP servers and CLAUDE.md so CI gets the same result on every machine.
+- **How we used it here:** not yet. But this phase made the checks a CI job needs: `pnpm check`, `pnpm test:e2e`, `pnpm build && pnpm check:build`. A headless review can add judgment on top of them.
+- **Why it matters:** the independent review this phase ran as a subagent. In CI, the same review can run on every pull request, without anyone remembering to ask.
+- **Try it yourself:** `git diff main | claude -p "Review this diff against docs/agent/quality.md and the money rules in app/domain/money-rules.ts. List problems as file:line." --output-format json | jq -r '.result'`. For GitHub, see the Actions guide below.
+- **Docs:** https://code.claude.com/docs/en/headless · https://code.claude.com/docs/en/github-actions

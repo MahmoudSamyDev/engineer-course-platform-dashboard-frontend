@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Provider } from "react-redux";
 import {
   isRouteErrorResponse,
@@ -15,7 +15,8 @@ import { BrandBlock } from "./components/layout/brand-block";
 import { StatusScreen } from "./components/layout/status-screen";
 import { Button } from "./components/ui/button";
 import { Spinner } from "./components/ui/spinner";
-import { directionOf } from "./i18n/config";
+import type { Locale } from "./domain/types";
+import { DEFAULT_LOCALE, directionOf, loadedMessages, loadMessages } from "./i18n/config";
 import { AppProviders } from "./providers/app-providers";
 import { LocaleBootstrap } from "./providers/locale-bootstrap";
 import { useAppSelector } from "./store/hooks";
@@ -48,8 +49,28 @@ export function Layout({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * The language to render: the selected one once its messages are here. Until then (first
+ * switch to English, a few KB) the page stays in the current language instead of flashing
+ * message keys.
+ */
+function useRenderedLocale(): Locale {
+  const selected = useAppSelector(selectLocale);
+  const [rendered, setRendered] = useState<Locale>(() =>
+    loadedMessages(selected) ? selected : DEFAULT_LOCALE,
+  );
+  useEffect(() => {
+    let current = true;
+    void loadMessages(selected).then(() => current && setRendered(selected));
+    return () => {
+      current = false;
+    };
+  }, [selected]);
+  return loadedMessages(selected) ? selected : rendered;
+}
+
 function Document({ children }: { children: ReactNode }) {
-  const locale = useAppSelector(selectLocale);
+  const locale = useRenderedLocale();
   return (
     <html lang={locale} dir={directionOf(locale)}>
       <head>

@@ -1,4 +1,6 @@
 import { HttpResponse } from "msw";
+import { utcIsoToZonedLocal } from "~/lib/time";
+import { idempotencyReplays } from "../db";
 
 /** `{ data, meta }` list envelope with server-side paging (SRS §7.2). */
 export function listResponse<T>(items: T[], url: URL, extraMeta: Record<string, unknown> = {}) {
@@ -34,9 +36,13 @@ function normalize(value: string): string {
     .replace(/^\+?20/, "0");
 }
 
-/** Inclusive date range on a Cairo-agnostic ISO timestamp (`from`/`to` are YYYY-MM-DD). */
+/**
+ * Inclusive date range (`from`/`to` are Cairo calendar days, YYYY-MM-DD) on a UTC ISO
+ * timestamp. The day is taken in Cairo time, as the API does: a payment at 01:00 Cairo on
+ * the 10th (23:00 UTC on the 9th) counts for the 10th (ISSUES #9).
+ */
 export function inRange(iso: string, from: string | null, to: string | null): boolean {
-  const day = iso.slice(0, 10);
+  const day = utcIsoToZonedLocal(iso).slice(0, 10);
   if (from && day < from) return false;
   if (to && day > to) return false;
   return true;
@@ -77,4 +83,28 @@ export function csvResponse(
       "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
+}
+
+/**
+ * Idempotent money action: a request repeating an `Idempotency-Key` gets the stored answer
+ * instead of running again (double click, retry after a timeout). Server errors (5xx) are
+ * not stored, so they can be retried with the same key.
+ */
+export async function idempotent(
+  request: Request,
+  scope: string,
+  run: () => Promise<Response>,
+): Promise<Response> {
+  const key = request.headers.get("Idempotency-Key");
+  const id = key ? `${scope}:${key}` : null;
+  const stored = id ? idempotencyReplays.get(id) : undefined;
+  if (stored) return HttpResponse.json(stored.body as object, { status: stored.status });
+  const response = await run();
+  if (id && response.status < 500) {
+    idempotencyReplays.set(id, {
+      status: response.status,
+      body: await response.clone().json(),
+    });
+  }
+  return response;
 }

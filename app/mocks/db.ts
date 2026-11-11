@@ -607,6 +607,7 @@ export function resetDb(): void {
   db = createDb(mockNow());
   mockSession.clear();
   failedAttempts.clear();
+  idempotencyReplays.clear();
 }
 
 export function toPublicAdmin({ password: _password, ...admin }: MockAdmin): AdminUser {
@@ -649,3 +650,6 @@ export const mockSession = {
 
 /** Lockout bookkeeping for DSH-AUTH-02 (5 failures in 15 minutes). */
 export const failedAttempts = new Map<string, number[]>();
+
+/** Responses already given per `Idempotency-Key` (money actions, SRS §7.2): replayed on repeat. */
+export const idempotencyReplays = new Map<string, { status: number; body: unknown }>();

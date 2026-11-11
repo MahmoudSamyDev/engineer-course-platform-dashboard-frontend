@@ -21,6 +21,13 @@ const AFFECTED_BY_BOOKING_CHANGE = [
 ] as const;
 
 /** SRS §7.2 — payments, refunds, move, cancel (DSH-PAY). */
+/**
+ * Refresh after success — and after a 409 too: the booking changed elsewhere (another admin,
+ * a gateway callback), so the sheet must stop offering an action the API refuses.
+ */
+const refreshAfter = (_result: unknown, error: { status?: unknown } | undefined) =>
+  !error || error.status === 409 ? [...AFFECTED_BY_BOOKING_CHANGE] : [];
+
 export const paymentsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getPayments: build.query<Page<PaymentRow> & { summary: PaymentSummary }, PaymentFilters>({
@@ -44,7 +51,7 @@ export const paymentsApi = api.injectEndpoints({
         headers: { "Idempotency-Key": idempotencyKey },
       }),
       transformResponse: (r: ItemResponse<PaymentDetail>) => r.data,
-      invalidatesTags: [...AFFECTED_BY_BOOKING_CHANGE],
+      invalidatesTags: refreshAfter,
     }),
     moveBooking: build.mutation<
       { bookingId: string; sessionId: string },
@@ -57,7 +64,7 @@ export const paymentsApi = api.injectEndpoints({
         headers: { "Idempotency-Key": idempotencyKey },
       }),
       transformResponse: (r: ItemResponse<{ bookingId: string; sessionId: string }>) => r.data,
-      invalidatesTags: [...AFFECTED_BY_BOOKING_CHANGE],
+      invalidatesTags: refreshAfter,
     }),
     cancelBooking: build.mutation<
       { bookingId: string },
@@ -70,7 +77,7 @@ export const paymentsApi = api.injectEndpoints({
         headers: { "Idempotency-Key": idempotencyKey },
       }),
       transformResponse: (r: ItemResponse<{ bookingId: string }>) => r.data,
-      invalidatesTags: [...AFFECTED_BY_BOOKING_CHANGE],
+      invalidatesTags: refreshAfter,
     }),
   }),
 });

@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "use-intl";
 import { z } from "zod";
@@ -16,6 +15,7 @@ import type { PaymentDetail } from "~/domain/api";
 import { egpToPiasters } from "~/domain/money";
 import { getApiError } from "~/store/api";
 import { useRecordRefundMutation } from "./api";
+import { isStaleState, useIdempotencyKey } from "./use-idempotency-key";
 
 /**
  * Record a refund made in the Paymob portal (DSH-PAY-05, DBR-11). Partial refunds allowed
@@ -32,9 +32,10 @@ export function RefundDialog({
 }) {
   const t = useTranslations("payments.refund");
   const tc = useTranslations("common");
+  const tp = useTranslations("payments");
   const toast = useToast();
   const [recordRefund, { isLoading }] = useRecordRefundMutation();
-  const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [idempotencyKey, renewKeyAfter] = useIdempotencyKey();
   const remaining = (payment.amount - payment.refundedAmount) / 100;
 
   const schema = z.object({
@@ -48,7 +49,7 @@ export function RefundDialog({
     defaultValues: { amount: remaining, refundTransactionId: "", note: "" },
     mode: "onTouched",
   });
-  const { errors, isDirty } = form.formState;
+  const { errors, isDirty, isSubmitting } = form.formState;
   const { requestClose, guard } = useDiscardGuard(isDirty, () => onOpenChange(false));
 
   async function submit(values: Values) {
@@ -63,7 +64,12 @@ export function RefundDialog({
       toast({ title: t("done"), description: payment.reference });
       onOpenChange(false);
     } catch (error) {
+      renewKeyAfter(error);
       const apiError = getApiError(error);
+      if (isStaleState(apiError?.fields)) {
+        toast({ title: tp("staleTitle"), description: tp("staleRefund"), tone: "error" });
+        return onOpenChange(false);
+      }
       if (apiError?.fields?.amount) form.setError("amount", { message: "amount" });
       if (apiError?.fields?.refundTransactionId)
         form.setError("refundTransactionId", { message: "transaction" });
@@ -84,7 +90,12 @@ export function RefundDialog({
           <Button variant="secondary" onClick={() => requestClose() && onOpenChange(false)}>
             {tc("cancel")}
           </Button>
-          <Button variant="primary" type="submit" form="refund-form" loading={isLoading}>
+          <Button
+            variant="primary"
+            type="submit"
+            form="refund-form"
+            loading={isLoading || isSubmitting}
+          >
             {t("submit")}
           </Button>
         </>

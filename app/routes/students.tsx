@@ -4,9 +4,21 @@ import { PageHeader } from "~/components/layout/page-header";
 import { Pagination } from "~/components/ui/pagination";
 import { StudentsFilters } from "~/features/students/students-filters";
 import { StudentsTable } from "~/features/students/students-table";
-import { useGetRegistrationsQuery } from "~/features/students/api";
-import { useRegistrationFilters } from "~/features/students/use-registration-filters";
+import { studentsApi, useGetRegistrationsQuery } from "~/features/students/api";
+import {
+  registrationFiltersFromUrl,
+  useRegistrationFilters,
+} from "~/features/students/use-registration-filters";
 import { toQueryString } from "~/store/api";
+import { store } from "~/store/store";
+import type { Route } from "./+types/students";
+
+// Start loading the list during navigation, before the page renders (AGENTS.md §4).
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+  const filters = registrationFiltersFromUrl(new URL(request.url).searchParams);
+  store.dispatch(studentsApi.endpoints.getRegistrations.initiate(filters, { subscribe: false }));
+  return null;
+}
 
 /** Students — "Who is registered?" (SRS §4.4, DUS-06…08, DAC-05). */
 export default function Students() {

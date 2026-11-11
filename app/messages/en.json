@@ -427,7 +427,8 @@
       "chooseError": "Choose a session.",
       "noSeats": "That session just filled up. Choose another one.",
       "submit": "Move student",
-      "done": "Student moved"
+      "done": "Student moved",
+      "optionCurrent": "{code} · this session, a seat is free · {left} left"
     },
     "cancel": {
       "title": "Cancel this booking?",
@@ -436,7 +437,11 @@
       "reasonError": "Give a reason for the cancellation.",
       "submit": "Cancel booking",
       "done": "Booking cancelled"
-    }
+    },
+    "staleTitle": "This booking changed in the meantime",
+    "staleRefund": "It can't be refunded any more. The details are refreshed.",
+    "staleCancel": "It can't be cancelled any more. The details are refreshed.",
+    "staleMove": "It doesn't need a decision any more. The details are refreshed."
   },
   "courses": {
     "stateTabs": "Filter by state",

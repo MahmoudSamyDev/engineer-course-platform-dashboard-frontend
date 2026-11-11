@@ -7,12 +7,14 @@ import { Field } from "~/components/ui/field";
 import { Select } from "~/components/ui/select";
 import { useToast } from "~/components/ui/toast";
 import type { PaymentDetail } from "~/domain/api";
+import { moveTargetProblem } from "~/domain/money-rules";
 import type { Locale } from "~/domain/types";
 import { appNow } from "~/lib/clock";
 import { formatDateTime } from "~/lib/format";
 import { getApiError } from "~/store/api";
 import { useGetCourseSessionsQuery } from "../courses/api";
 import { useMoveBookingMutation } from "./api";
+import { isStaleState, useIdempotencyKey } from "./use-idempotency-key";
 
 /** Resolve a refund-required booking by moving the student to another session with seats (DSH-PAY-06, DBR-12). */
 export function MoveDialog({
@@ -25,33 +27,46 @@ export function MoveDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations("payments.move");
+  const tp = useTranslations("payments");
   const tc = useTranslations("common");
   const locale = useLocale() as Locale;
   const toast = useToast();
   const [target, setTarget] = useState<string>();
   const [error, setError] = useState<string>();
-  const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [idempotencyKey, renewKeyAfter] = useIdempotencyKey();
   const { data: sessions } = useGetCourseSessionsQuery(payment.course.id, { skip: !open });
   const [move, { isLoading }] = useMoveBookingMutation();
-  const now = appNow().getTime();
+  const now = appNow();
 
+  // The same target rule as the API (DBR-12, DD-051). The booking's own session is offered
+  // too when a seat has freed up: accepting the student where they paid.
   const options = (sessions ?? [])
     .filter(
       (s) =>
-        s.id !== payment.session.id &&
-        s.isPublished &&
-        Date.parse(s.meetings[0]!.startsAt) > now &&
-        s.capacity - s.sold - s.held > 0,
+        moveTargetProblem(
+          {
+            courseId: payment.course.id,
+            isPublished: s.isPublished,
+            isClosedManually: s.isClosedManually,
+            firstStartsAt: s.meetings[0]!.startsAt,
+            remainingSeats: s.capacity - s.sold - s.held,
+          },
+          payment.course.id,
+          now,
+        ) === null,
     )
-    .map((s) => ({
-      value: s.id,
-      label: t("option", {
+    .map((s) => {
+      const values = {
         code: s.code,
         date: formatDateTime(s.meetings[0]!.startsAt, locale),
         left: s.capacity - s.sold - s.held,
-      }),
-      price: s.price,
-    }));
+      };
+      return {
+        value: s.id,
+        label: s.id === payment.session.id ? t("optionCurrent", values) : t("option", values),
+        price: s.price,
+      };
+    });
   const chosen = options.find((o) => o.value === target);
 
   async function submit() {
@@ -65,12 +80,13 @@ export function MoveDialog({
       toast({ title: t("done"), description: payment.reference });
       onOpenChange(false);
     } catch (e) {
+      renewKeyAfter(e);
       const apiError = getApiError(e);
-      setError(
-        apiError?.fields?.targetSessionId === "NO_SEATS"
-          ? t("noSeats")
-          : (apiError?.message ?? tc("save")),
-      );
+      if (isStaleState(apiError?.fields)) {
+        toast({ title: tp("staleTitle"), description: tp("staleMove"), tone: "error" });
+        return onOpenChange(false);
+      }
+      setError(apiError?.fields?.targetSessionId === "NO_SEATS" ? t("noSeats") : t("chooseError"));
     }
   }
 

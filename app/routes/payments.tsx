@@ -6,12 +6,25 @@ import { Pagination } from "~/components/ui/pagination";
 import { Skeleton } from "~/components/ui/skeleton";
 import { TitleBlock, TitleCell } from "~/components/ui/title-block";
 import { useGetCountsQuery } from "~/features/overview/api";
-import { useGetPaymentsQuery } from "~/features/payments/api";
+import { paymentsApi, useGetPaymentsQuery } from "~/features/payments/api";
 import { PaymentSheet } from "~/features/payments/payment-sheet";
 import { PaymentsFilters } from "~/features/payments/payments-filters";
 import { PaymentsTable } from "~/features/payments/payments-table";
-import { usePaymentFilters } from "~/features/payments/use-payment-filters";
+import { paymentFiltersFromUrl, usePaymentFilters } from "~/features/payments/use-payment-filters";
 import { toQueryString } from "~/store/api";
+import { store } from "~/store/store";
+import type { Route } from "./+types/payments";
+
+// Start loading the list (and an opened payment) during navigation (AGENTS.md §4, ISSUES #6).
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+  const params = new URL(request.url).searchParams;
+  store.dispatch(
+    paymentsApi.endpoints.getPayments.initiate(paymentFiltersFromUrl(params), { subscribe: false }),
+  );
+  const open = params.get("payment");
+  if (open) store.dispatch(paymentsApi.endpoints.getPayment.initiate(open, { subscribe: false }));
+  return null;
+}
 
 /** Payments — "Do the numbers reconcile, and what needs action?" (SRS §4.5, DUS-09…11, DAC-04). */
 export default function Payments() {

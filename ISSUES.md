@@ -9,14 +9,14 @@ Severity: **High** = wrong behavior or risk before go-live · **Medium** = spec/
 | # | Severity | Area | Issue |
 |---|---|---|---|
 | 1 | High | Auth | ~~A network or server failure on `me` looks like a sign-out~~ — **resolved** (DD-044) |
-| 2 | High | Process | Independent review of the money actions (refund/move/cancel) is still outstanding |
-| 3 | Medium | Payments | Mock refund sets `REFUNDED` on a partial refund |
-| 4 | Medium | Mocks | Mock move/cancel/refund ignore the `Idempotency-Key`; price difference on move isn't recorded |
+| 2 | High | Process | ~~Independent review of the money actions~~ — **done in D12**; 7 findings fixed (DD-050…052) |
+| 3 | Medium | Payments | ~~Mock refund sets `REFUNDED` on a partial refund~~ — **matches DBR-11** (no change) |
+| 4 | Medium | Mocks | ~~Mocks ignore the `Idempotency-Key`~~ — **resolved** (DD-052); price difference on move: still shown only, settled by hand (DSH-PAY-06) |
 | 5 | Medium | API contract | ~~`POST /admin/auth/password` not mocked or built~~ — **resolved in D10** (DD-036) |
-| 6 | Medium | Conventions | `clientLoader` prefetching is not used consistently — D10 routes prefetch; **`payments.tsx` still doesn't** |
+| 6 | Medium | Conventions | ~~`clientLoader` prefetching~~ — **resolved**: every data route prefetches (Payments, Students added in D12) |
 | 7 | Medium | Tests | Thin UI test coverage — **mostly resolved**: payments, students and session-expiry now have e2e and component tests; remaining: both-locale runs and axe (D12) |
-| 8 | Low | Tests | `futureDate()` in the e2e tests uses UTC dates |
-| 9 | Low | Mocks | `inRange` ignores the Cairo timezone |
+| 8 | Low | Tests | ~~`futureDate()` uses UTC~~ — **resolved** (Cairo date) |
+| 9 | Low | Mocks | ~~`inRange` ignores the Cairo timezone~~ — **resolved** (Cairo day, unit-tested) |
 | 10 | Low | Tooling | ~~`.npmrc` sets `legacy-peer-deps=true`~~ — **resolved**, switched to pnpm (DD-032) |
 | 11 | Low | UI | ~~Known visual bugs from the progress file~~ — **resolved in D11** (DD-046, DD-047) |
 | 12 | Info | Verification | ~~Checks not run in this scan~~ — **done** after the pnpm install |
@@ -162,3 +162,19 @@ After installing with pnpm: typecheck ✅, lint ✅, 30 unit/component tests ✅
 - **Signing in from the English sign-in page showed Arabic until a reload** (DAC-09): an un-awaited cache write with the account's old language overwrote the choice. The form now writes the final user and waits for it.
 - **The guard only worked after sign-in through a hidden extra redirect** (guard → `/login` → back) because `me` was still being written. Fixed by the same awaited write.
 - **The mock seed has no second upcoming session for the refund-required course**, so "move" can't succeed in the demo as seeded. The tests add one; consider seeding one for demos.
+
+## D12 — independent review and hardening (2026-11-11)
+
+**Independent review** (fresh subagent, SRS IDs only, read-only) of refund / move / cancel. Seat counts and ticket states were found correct on every path. Findings and what was done:
+
+1. Refund of a cancelled booking was impossible → allowed (DD-050, **to confirm with the owner**).
+2. The same `Idempotency-Key` was reused after a refusal → new key after any final 4xx; the mock replays per key (DD-052).
+3. A refund-required student couldn't be accepted into their own session when a seat freed up → allowed (DD-051, **to confirm**).
+4. The UI and the mock disagreed on move targets → one rule in `domain/money-rules.ts` (DD-051).
+5. Error codes not in the SRS → documented in SRS rev 1.3, the UI shows localized messages (DD-052).
+6. The sheet stayed stale after a 409 → a 409 refreshes the data.
+7. Double submit possible while validating → blocked.
+
+**Found while hardening:** sign-out showed "Your session has ended" (DD-056); the default sign-in page overwrote the account's language (DD-056); the account menu's label didn't contain its visible text (WCAG 2.5.3); references wrapped in the printed roster; the generated CSP would have blocked the API (DD-054).
+
+**Still open:** the owner's confirmation of DD-050/051; budget margin is 0.4 KB (DD-053); the price difference on a move is shown but not recorded (DSH-PAY-06 says to settle it by hand).

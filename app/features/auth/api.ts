@@ -29,14 +29,9 @@ export const authApi = api.injectEndpoints({
     }),
     logout: build.mutation<void, void>({
       query: () => ({ url: "/auth/logout", method: "POST" }),
-      // Sign-out clears every cached record (SRS DSH-AUTH-06, DNFR-PRIV-03).
-      async onQueryStarted(_input, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-        } finally {
-          dispatch(api.util.resetApiState());
-        }
-      },
+      // Sign-out clears every cached record (DSH-AUTH-06, DNFR-PRIV-03) — done by the sign-in
+      // page when it opens (login.tsx). Resetting here, while the signed-in page is still
+      // mounted, made it refetch, get a 401, and show "Your session has ended" instead.
     }),
     updateMyLocale: build.mutation<AdminUser, Locale>({
       query: (locale) => ({ url: "/auth/me", method: "PATCH", body: { locale } }),

@@ -2,6 +2,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll } from "vitest";
 import { resetDb } from "~/mocks/db";
+import { loadMessages } from "~/i18n/config";
 import { server } from "~/mocks/node";
 
 // jsdom lacks the pointer-capture and scroll APIs Radix Select calls when it opens.
@@ -13,7 +14,10 @@ if (typeof Element !== "undefined") {
 }
 
 // The same MSW handlers as development, so component tests exercise the real API layer.
-beforeAll(() => server.listen({ onUnhandledFrame: "error" }));
+beforeAll(async () => {
+  await loadMessages("en"); // Component tests render in English; it's a lazy chunk in the app.
+  server.listen({ onUnhandledFrame: "error" });
+});
 afterEach(() => {
   cleanup();
   server.resetHandlers();

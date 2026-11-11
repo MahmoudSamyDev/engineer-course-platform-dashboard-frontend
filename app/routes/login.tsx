@@ -1,7 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { redirect, useNavigate, useSearchParams } from "react-router";
 import { useTranslations } from "use-intl";
 import { BrandBlock } from "~/components/layout/brand-block";
@@ -13,7 +11,8 @@ import { Field } from "~/components/ui/field";
 import { Input, inputClasses } from "~/components/ui/input";
 import { authApi, useLoginMutation, useUpdateMyLocaleMutation } from "~/features/auth/api";
 import { safeNextPath } from "~/features/auth/redirect";
-import { loginSchema, type LoginInput } from "~/features/auth/schema";
+import { readStoredLocale } from "~/i18n/config";
+import { checkLogin, type LoginInput, type LoginProblems } from "~/features/auth/schema";
 import { cn } from "~/lib/cn";
 import { api, getApiError, isNetworkError } from "~/store/api";
 import { useAppSelector } from "~/store/hooks";
@@ -59,27 +58,48 @@ export default function Login() {
         ? t("auth.signedOut")
         : null;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema), mode: "onTouched" });
+  // Errors show after a field is left or the form is sent, then update as you type (DSH-AUTH-01).
+  const [values, setValues] = useState<LoginInput>({ email: "", password: "" });
+  const [touched, setTouched] = useState<Partial<Record<keyof LoginInput, boolean>>>({});
+  const problems: LoginProblems = checkLogin(values);
+  const emailInput = useRef<HTMLInputElement>(null);
+  const passwordInput = useRef<HTMLInputElement>(null);
+  const field = (name: keyof LoginInput) => ({
+    name,
+    value: values[name],
+    onChange: (e: ChangeEvent<HTMLInputElement>) =>
+      setValues((v) => ({ ...v, [name]: e.target.value })),
+    onBlur: () => setTouched((t) => ({ ...t, [name]: true })),
+  });
 
-  // Schema codes → messages that say what to change (DESIGN_SYSTEM §9).
-  const emailError =
-    errors.email?.message === "required"
+  // Problem codes → messages that say what to change (DESIGN_SYSTEM §9).
+  const emailError = !touched.email
+    ? undefined
+    : problems.email === "required"
       ? t("auth.errors.emailRequired")
-      : errors.email
+      : problems.email
         ? t("auth.errors.emailInvalid")
         : undefined;
-  const passwordError = errors.password ? t("auth.errors.passwordRequired") : undefined;
+  const passwordError =
+    touched.password && problems.password ? t("auth.errors.passwordRequired") : undefined;
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (isLoading) return;
+    setTouched({ email: true, password: true });
+    if (problems.email) return emailInput.current?.focus();
+    if (problems.password) return passwordInput.current?.focus();
+    void onSubmit({ email: values.email.trim(), password: values.password });
+  }
 
   async function onSubmit(values: LoginInput) {
     setFormError(null);
     try {
       let user = await login(values).unwrap();
-      // The language chosen on this page is the latest explicit choice: keep it (DSH-GEN-02).
-      if (user.locale !== uiLocale)
+      // A language chosen in this browser is the latest explicit choice: keep it (DSH-GEN-02).
+      // With no stored choice the page only shows the default, and the account's saved
+      // language wins (DAC-09: "remembered on next sign-in").
+      if (readStoredLocale() !== null && user.locale !== uiLocale)
         user = await saveLocale(uiLocale)
           .unwrap()
           .catch(() => user);
@@ -117,12 +137,13 @@ export default function Login() {
           </p>
         ) : null}
 
-        <form noValidate onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-5">
+        <form noValidate onSubmit={handleSubmit} className="mt-6 flex flex-col gap-5">
           <Field label={t("auth.email")} error={emailError} required>
             {(control) => (
               <Input
                 {...control}
-                {...register("email")}
+                {...field("email")}
+                ref={emailInput}
                 type="email"
                 inputMode="email"
                 autoComplete="username"
@@ -136,7 +157,8 @@ export default function Login() {
               <div className="relative">
                 <input
                   {...control}
-                  {...register("password")}
+                  {...field("password")}
+                  ref={passwordInput}
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   dir="ltr"

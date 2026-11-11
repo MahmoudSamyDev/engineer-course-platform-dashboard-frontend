@@ -3,9 +3,23 @@ import type { PaymentMethod, PaymentRow, PaymentStatus, PaymentSummary } from "~
 import { MOCK_API } from "../config";
 import { db, mockNow } from "../db";
 import { apiError, currentAdmin, latency } from "../http";
-import { asDomainSession, findSession, paymentDetail, paymentRow } from "../views";
+import { asDomainSession, findCourse, findSession, paymentDetail, paymentRow } from "../views";
 import { getSessionAvailability } from "~/domain/availability";
-import { csvResponse, inRange, itemResponse, listResponse, matchesQuery, sortBy } from "./helpers";
+import {
+  csvResponse,
+  idempotent,
+  inRange,
+  itemResponse,
+  listResponse,
+  matchesQuery,
+  sortBy,
+} from "./helpers";
+import {
+  canCancelBooking,
+  canMoveBooking,
+  canRecordRefund,
+  moveTargetProblem,
+} from "~/domain/money-rules";
 
 function filteredPayments(url: URL): PaymentRow[] {
   const p = url.searchParams;
@@ -95,94 +109,130 @@ export const paymentHandlers = [
     return itemResponse(paymentDetail(payment));
   }),
 
-  http.post(`${MOCK_API}/payments/:id/refund`, async ({ params, request }) => {
-    await latency();
-    const payment = db.payments.find((p) => p.id === params.id);
-    if (!payment) return apiError(404, "NOT_FOUND", "Payment not found.");
-    const booking = db.bookings.find((b) => b.id === payment.bookingId)!;
-    const body = (await request.json()) as {
-      amount?: number;
-      refundTransactionId?: string;
-      note?: string;
-    };
+  http.post(`${MOCK_API}/payments/:id/refund`, async ({ params, request }) =>
+    idempotent(request, `refund:${String(params.id)}`, async () => {
+      await latency();
+      const payment = db.payments.find((p) => p.id === params.id);
+      if (!payment) return apiError(404, "NOT_FOUND", "Payment not found.");
+      const booking = db.bookings.find((b) => b.id === payment.bookingId)!;
+      const body = (await request.json()) as {
+        amount?: number;
+        refundTransactionId?: string;
+        note?: string;
+      };
 
-    if (payment.status !== "SUCCEEDED" || !["PAID", "REFUND_REQUIRED"].includes(booking.status)) {
-      return apiError(409, "CONFLICT", "Only a paid payment can be refunded.");
-    }
-    const remaining = payment.amount - payment.refundedAmount;
-    const fields: Record<string, string> = {};
-    if (!Number.isInteger(body.amount) || body.amount! < 100 || body.amount! > remaining)
-      fields.amount = "OUT_OF_RANGE";
-    if (!body.refundTransactionId?.trim()) fields.refundTransactionId = "REQUIRED";
-    if (Object.keys(fields).length)
-      return apiError(422, "VALIDATION_FAILED", "Check the refund details.", fields);
+      if (!canRecordRefund(payment.status, booking.status)) {
+        return apiError(409, "CONFLICT", "This payment can't be refunded any more.", {
+          payment: "INVALID_STATE",
+        });
+      }
+      const remaining = payment.amount - payment.refundedAmount;
+      const fields: Record<string, string> = {};
+      if (!Number.isInteger(body.amount) || body.amount! < 100 || body.amount! > remaining)
+        fields.amount = "OUT_OF_RANGE";
+      if (!body.refundTransactionId?.trim()) fields.refundTransactionId = "REQUIRED";
+      if (Object.keys(fields).length)
+        return apiError(422, "VALIDATION_FAILED", "Check the refund details.", fields);
 
-    const at = mockNow().toISOString();
-    payment.status = "REFUNDED";
-    payment.refundedAmount += body.amount!;
-    payment.refundTransactionId = body.refundTransactionId!.trim();
-    payment.refundNote = body.note?.trim() || null;
-    payment.timeline.push({
-      type: "REFUNDED",
-      at,
-      by: by(),
-      note: payment.refundNote ?? undefined,
-    });
-    booking.status = "REFUNDED";
-    return itemResponse(paymentDetail(payment));
-  }),
-
-  http.post(`${MOCK_API}/bookings/:id/move`, async ({ params, request }) => {
-    await latency();
-    const booking = db.bookings.find((b) => b.id === params.id);
-    if (!booking) return apiError(404, "NOT_FOUND", "Booking not found.");
-    const { targetSessionId } = (await request.json()) as { targetSessionId?: string };
-    const from = findSession(booking.sessionId)!;
-    const target = targetSessionId ? findSession(targetSessionId) : undefined;
-    if (booking.status !== "REFUND_REQUIRED")
-      return apiError(409, "CONFLICT", "Only refund-required bookings can be moved.");
-    if (!target || target.courseId !== from.courseId || target.id === from.id) {
-      return apiError(422, "VALIDATION_FAILED", "Choose another session of the same course.", {
-        targetSessionId: "INVALID",
+      // DBR-11: also for partial refunds — payment and booking Refunded, ticket Cancelled.
+      const at = mockNow().toISOString();
+      payment.status = "REFUNDED";
+      payment.refundedAmount += body.amount!;
+      payment.refundTransactionId = body.refundTransactionId!.trim();
+      payment.refundNote = body.note?.trim() || null;
+      payment.timeline.push({
+        type: "REFUNDED",
+        at,
+        by: by(),
+        note: payment.refundNote ?? undefined,
       });
-    }
-    if (getSessionAvailability(asDomainSession(target), mockNow()).remainingSeats < 1) {
-      return apiError(409, "CONFLICT", "That session has no free seats.", {
-        targetSessionId: "NO_SEATS",
-      });
-    }
-    booking.movedFromSessionId = from.id;
-    booking.sessionId = target.id;
-    booking.status = "PAID";
-    const payment = db.payments.find((p) => p.bookingId === booking.id && p.status === "SUCCEEDED");
-    payment?.timeline.push({
-      type: "MOVED",
-      at: mockNow().toISOString(),
-      by: by(),
-      note: `${from.code} → ${target.code}`,
-    });
-    return itemResponse({ bookingId: booking.id, sessionId: target.id });
-  }),
+      booking.status = "REFUNDED";
+      return itemResponse(paymentDetail(payment));
+    }),
+  ),
 
-  http.post(`${MOCK_API}/bookings/:id/cancel`, async ({ params, request }) => {
-    await latency();
-    const booking = db.bookings.find((b) => b.id === params.id);
-    if (!booking) return apiError(404, "NOT_FOUND", "Booking not found.");
-    const { reason } = (await request.json()) as { reason?: string };
-    if (booking.status !== "PAID")
-      return apiError(409, "CONFLICT", "Only paid bookings can be cancelled.");
-    if (!reason?.trim())
-      return apiError(422, "VALIDATION_FAILED", "Give a reason.", { reason: "REQUIRED" });
-    booking.status = "CANCELLED";
-    booking.cancelledAt = mockNow().toISOString();
-    booking.cancelReason = reason.trim();
-    const payment = db.payments.find((p) => p.bookingId === booking.id && p.status === "SUCCEEDED");
-    payment?.timeline.push({
-      type: "CANCELLED",
-      at: booking.cancelledAt,
-      by: by(),
-      note: booking.cancelReason,
-    });
-    return itemResponse({ bookingId: booking.id });
-  }),
+  http.post(`${MOCK_API}/bookings/:id/move`, async ({ params, request }) =>
+    idempotent(request, `move:${String(params.id)}`, async () => {
+      await latency();
+      const booking = db.bookings.find((b) => b.id === params.id);
+      if (!booking) return apiError(404, "NOT_FOUND", "Booking not found.");
+      const { targetSessionId } = (await request.json()) as { targetSessionId?: string };
+      const from = findSession(booking.sessionId)!;
+      const target = targetSessionId ? findSession(targetSessionId) : undefined;
+      if (!canMoveBooking(booking.status))
+        return apiError(409, "CONFLICT", "Only refund-required bookings can be moved.", {
+          booking: "INVALID_STATE",
+        });
+      if (!target)
+        return apiError(422, "VALIDATION_FAILED", "Choose a session of the same course.", {
+          targetSessionId: "INVALID",
+        });
+      const now = mockNow();
+      const course = findCourse(target.courseId);
+      const problem = course?.archivedAt
+        ? "NOT_OPEN"
+        : moveTargetProblem(
+            {
+              courseId: target.courseId,
+              isPublished: target.isPublished,
+              isClosedManually: target.isClosedManually,
+              firstStartsAt: target.meetings[0]!.startsAt,
+              remainingSeats: getSessionAvailability(asDomainSession(target), now).remainingSeats,
+            },
+            from.courseId,
+            now,
+          );
+      if (problem === "NO_SEATS")
+        return apiError(409, "CONFLICT", "That session has no free seats.", {
+          targetSessionId: "NO_SEATS",
+        });
+      if (problem)
+        return apiError(422, "VALIDATION_FAILED", "Choose an open session of the same course.", {
+          targetSessionId: problem,
+        });
+
+      // Seat check and status change together, with nothing in between (DBR-12).
+      if (target.id !== from.id) booking.movedFromSessionId = from.id;
+      booking.sessionId = target.id;
+      booking.status = "PAID";
+      const payment = db.payments.find(
+        (p) => p.bookingId === booking.id && p.status === "SUCCEEDED",
+      );
+      payment?.timeline.push({
+        type: "MOVED",
+        at: now.toISOString(),
+        by: by(),
+        note: target.id === from.id ? `${from.code} (accepted)` : `${from.code} → ${target.code}`,
+      });
+      return itemResponse({ bookingId: booking.id, sessionId: target.id });
+    }),
+  ),
+
+  http.post(`${MOCK_API}/bookings/:id/cancel`, async ({ params, request }) =>
+    idempotent(request, `cancel:${String(params.id)}`, async () => {
+      await latency();
+      const booking = db.bookings.find((b) => b.id === params.id);
+      if (!booking) return apiError(404, "NOT_FOUND", "Booking not found.");
+      const { reason } = (await request.json()) as { reason?: string };
+      const payment = db.payments.find(
+        (p) => p.bookingId === booking.id && p.status === "SUCCEEDED",
+      );
+      if (!canCancelBooking(payment?.status ?? "FAILED", booking.status))
+        return apiError(409, "CONFLICT", "Only paid bookings can be cancelled.", {
+          booking: "INVALID_STATE",
+        });
+      if (!reason?.trim())
+        return apiError(422, "VALIDATION_FAILED", "Give a reason.", { reason: "REQUIRED" });
+      booking.status = "CANCELLED";
+      booking.cancelledAt = mockNow().toISOString();
+      booking.cancelReason = reason.trim();
+      payment?.timeline.push({
+        type: "CANCELLED",
+        at: booking.cancelledAt,
+        by: by(),
+        note: booking.cancelReason,
+      });
+      return itemResponse({ bookingId: booking.id });
+    }),
+  ),
 ];

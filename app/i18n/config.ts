@@ -1,12 +1,27 @@
 import { LOCALES, type Locale } from "~/domain/types";
 import ar from "~/messages/ar.json";
-import en from "~/messages/en.json";
+// Type only: erased from the bundle, so English still loads lazily (loadMessages).
+import type en from "~/messages/en.json";
 
 export const DEFAULT_LOCALE: Locale = "ar";
 export const TIME_ZONE = "Africa/Cairo";
 
-export const messages = { ar, en } as const;
 export type Messages = typeof en;
+
+/**
+ * Arabic (the default) ships with the app; English loads as its own chunk the first time
+ * it's needed, so the sign-in page doesn't carry both languages (DNFR-PERF-01, DD-053).
+ */
+const loaded: Partial<Record<Locale, Messages>> = { ar: ar as Messages };
+
+export function loadedMessages(locale: Locale): Messages | undefined {
+  return loaded[locale];
+}
+
+export async function loadMessages(locale: Locale): Promise<Messages> {
+  if (!loaded[locale]) loaded[locale] = (await import("~/messages/en.json")).default as Messages;
+  return loaded[locale];
+}
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === "string" && (LOCALES as readonly string[]).includes(value);

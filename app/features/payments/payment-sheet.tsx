@@ -10,6 +10,7 @@ import { ErrorState } from "~/components/ui/error-state";
 import { Sheet } from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
 import type { PaymentDetail } from "~/domain/api";
+import { canCancelBooking, canMoveBooking, canRecordRefund } from "~/domain/money-rules";
 import type { Locale } from "~/domain/types";
 import { useGetPaymentQuery } from "./api";
 import { CancelDialog } from "./cancel-dialog";
@@ -31,12 +32,10 @@ export function PaymentSheet({ id, onClose }: { id: string | undefined; onClose:
   const { data, error, isLoading, refetch } = useGetPaymentQuery(id ?? "", { skip: !id });
   const [dialog, setDialog] = useState<"refund" | "move" | "cancel" | null>(null);
 
-  const canRefund =
-    data &&
-    data.status === "SUCCEEDED" &&
-    (data.bookingStatus === "PAID" || data.bookingStatus === "REFUND_REQUIRED");
-  const canMove = data?.bookingStatus === "REFUND_REQUIRED";
-  const canCancel = data?.bookingStatus === "PAID" && data.status === "SUCCEEDED";
+  // The same rules the API applies (DBR-11/12, DSH-PAY-05…07).
+  const canRefund = Boolean(data && canRecordRefund(data.status, data.bookingStatus));
+  const canMove = Boolean(data && canMoveBooking(data.bookingStatus));
+  const canCancel = Boolean(data && canCancelBooking(data.status, data.bookingStatus));
 
   return (
     <Sheet

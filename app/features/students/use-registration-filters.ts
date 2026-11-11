@@ -14,29 +14,35 @@ export const ATTENDANCE_FILTERS: Array<Exclude<AttendanceStatus, "NONE">> = [
 ];
 
 /**
- * Students list state: structured filters in the URL, the search term in memory only
- * (DSH-GEN-04). Booking status defaults to Paid (DSH-STU-03).
+ * Structured filters from the URL (pure, shared by the hook and the route's `clientLoader`).
+ * Booking status defaults to Paid (DSH-STU-03). The search term never comes from the URL.
  */
+export function registrationFiltersFromUrl(
+  params: URLSearchParams,
+  q?: string,
+): RegistrationFilters {
+  const get = (key: string) => params.get(key) ?? undefined;
+  const range = get("range");
+  return {
+    q: q || undefined,
+    courseId: get("course"),
+    sessionId: get("session"),
+    bookingStatus: (get("status") as BookingStatus | "ALL" | undefined) ?? "PAID",
+    attendance: get("attendance") as Exclude<AttendanceStatus, "NONE"> | undefined,
+    ...rangeDates(isDateRange(range) ? range : undefined, appNow()),
+    sort: (get("sort") as RegistrationFilters["sort"]) ?? "-registeredAt",
+    page: Number(get("page")) || 1,
+    pageSize: Number(get("size")) || 25,
+  };
+}
+
+/** Students list state: structured filters in the URL, the search term in memory only (DSH-GEN-04). */
 export function useRegistrationFilters() {
   const url = useUrlParams();
   const [q, setQ] = useState("");
   const status = (url.get("status") as BookingStatus | "ALL" | undefined) ?? "PAID";
   const range = url.get("range");
-
-  const filters: RegistrationFilters = useMemo(
-    () => ({
-      q: q || undefined,
-      courseId: url.get("course"),
-      sessionId: url.get("session"),
-      bookingStatus: status,
-      attendance: url.get("attendance") as Exclude<AttendanceStatus, "NONE"> | undefined,
-      ...rangeDates(isDateRange(range) ? range : undefined, appNow()),
-      sort: (url.get("sort") as RegistrationFilters["sort"]) ?? "-registeredAt",
-      page: Number(url.get("page")) || 1,
-      pageSize: Number(url.get("size")) || 25,
-    }),
-    [q, url, status, range],
-  );
+  const filters = useMemo(() => registrationFiltersFromUrl(url.params, q), [url.params, q]);
 
   return { filters, q, setQ, url, status, range: isDateRange(range) ? range : undefined };
 }

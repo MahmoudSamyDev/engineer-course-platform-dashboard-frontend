@@ -167,7 +167,9 @@ export function RosterTable({ session }: { session: SessionDetail }) {
                   </div>
                 </td>
                 <td className="px-3 py-2.5">
-                  <Ltr className="text-caption text-graphite tabular">{entry.reference}</Ltr>
+                  <Ltr className="text-caption whitespace-nowrap text-graphite tabular">
+                    {entry.reference}
+                  </Ltr>
                 </td>
                 <td className="px-3 py-2.5 print:hidden">
                   <BookingBadge status={entry.status} />

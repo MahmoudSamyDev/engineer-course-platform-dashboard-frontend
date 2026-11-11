@@ -1,7 +1,9 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MOCK_API } from "~/mocks/config";
 import { db, mockNow, mockSession } from "~/mocks/db";
+import { server } from "~/mocks/node";
 import { heldSeats, paymentDetail, soldSeats } from "~/mocks/views";
 import { renderWithProviders } from "../../../tests/render";
 import { CancelDialog } from "./cancel-dialog";
@@ -192,5 +194,90 @@ describe("Cancel booking (DSH-PAY-07)", () => {
       cancelReason: "Student asked to withdraw.",
     });
     expect(payment.timeline.at(-1)).toMatchObject({ type: "CANCELLED" });
+  });
+});
+
+describe("review findings (D12)", () => {
+  it("records the Paymob refund of a cancelled booking (DD-050)", async () => {
+    const { booking, payment, detail } = paidUpcoming();
+    booking.status = "CANCELLED";
+    const onOpenChange = vi.fn();
+    renderWithProviders(
+      <RefundDialog
+        payment={{ ...detail, bookingStatus: "CANCELLED" }}
+        open
+        onOpenChange={onOpenChange}
+      />,
+    );
+    await userEvent.type(screen.getByLabelText(/Paymob refund transaction ID/), "262000111");
+    await userEvent.click(screen.getByRole("button", { name: "Record refund" }));
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+    expect(payment.status).toBe("REFUNDED");
+    expect(booking.status).toBe("REFUNDED");
+  });
+
+  it("accepts the student into their own session when a seat has freed up (DD-051)", async () => {
+    const { booking, payment, detail } = refundRequired();
+    const own = db.sessions.find((s) => s.id === booking.sessionId)!;
+    own.capacity = soldSeats(own.id) + heldSeats(own.id) + 1;
+    const onOpenChange = vi.fn();
+    renderWithProviders(<MoveDialog payment={detail} open onOpenChange={onOpenChange} />);
+    await userEvent.click(await screen.findByRole("combobox", { name: /Session/ }));
+    await userEvent.click(await screen.findByRole("option", { name: /this session/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Move student" }));
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+    expect(booking).toMatchObject({ status: "PAID", sessionId: own.id });
+    expect(payment.timeline.at(-1)?.note).toContain("accepted");
+  });
+
+  it("uses a new Idempotency-Key after a refusal, so the next try isn't replayed", async () => {
+    const { booking, detail } = refundRequired();
+    const a = addTarget(booking.sessionId, "A");
+    addTarget(booking.sessionId, "B");
+    const keys: string[] = [];
+    server.events.on("request:start", ({ request }) => {
+      if (request.url.includes("/move")) keys.push(request.headers.get("Idempotency-Key")!);
+    });
+    renderWithProviders(<MoveDialog payment={detail} open onOpenChange={vi.fn()} />);
+    const choose = async (code: string) => {
+      await userEvent.click(await screen.findByRole("combobox", { name: /Session/ }));
+      await userEvent.click(await screen.findByRole("option", { name: new RegExp(`^${code} `) }));
+    };
+    await choose(a.code);
+    fill(a.id);
+    await userEvent.click(screen.getByRole("button", { name: "Move student" }));
+    await screen.findByText("That session just filled up. Choose another one.");
+    await choose(`${a.code.slice(0, -2)}-B`);
+    await userEvent.click(screen.getByRole("button", { name: "Move student" }));
+    await waitFor(() => expect(booking.status).toBe("PAID"));
+    expect(keys).toHaveLength(2);
+    expect(keys[0]).not.toBe(keys[1]);
+    server.events.removeAllListeners();
+  });
+
+  it("replays the first answer when the same key is sent twice (mock contract)", async () => {
+    const { payment } = refundRequired();
+    const send = () =>
+      fetch(`${MOCK_API}/payments/${payment.id}/refund`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Idempotency-Key": "same-key" },
+        body: JSON.stringify({ amount: 100, refundTransactionId: "263000222" }),
+      });
+    const first = await send();
+    const second = await send();
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200); // Not "can't be refunded any more".
+    expect(payment.refundedAmount).toBe(100); // Applied once.
+  });
+
+  it("explains a booking that changed meanwhile instead of showing the server text", async () => {
+    const { booking, detail } = paidUpcoming();
+    const onOpenChange = vi.fn();
+    renderWithProviders(<CancelDialog payment={detail} open onOpenChange={onOpenChange} />);
+    booking.status = "CANCELLED"; // Another admin was faster.
+    await userEvent.type(screen.getByLabelText(/Reason/), "Student withdrew.");
+    await userEvent.click(screen.getByRole("button", { name: "Cancel booking" }));
+    expect(await screen.findByText("This booking changed in the meantime")).toBeInTheDocument();
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });

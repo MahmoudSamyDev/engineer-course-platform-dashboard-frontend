@@ -30,12 +30,13 @@ Add `?mockError=500` to any page URL to see how a page handles API errors.
 | Command | What it does |
 |---|---|
 | `pnpm dev` | Dev server with the mock API |
-| `pnpm build` | Production SPA build in `build/client` (no mock code) |
+| `pnpm build` | Production SPA build in `build/client` (no mock code), plus `_headers` / `_redirects` |
+| `pnpm check:build` | After a build: login JS ≤ 200 KB gzip, route splitting, CSP without violations |
 | `pnpm typecheck` | Route type generation + TypeScript |
 | `pnpm lint` | ESLint (incl. a11y rules and a "no raw hex colors" rule) |
 | `pnpm format` | Prettier (+ Tailwind class sorting) |
 | `pnpm test` | Vitest unit and component tests (MSW in Node) |
-| `pnpm test:e2e` | Playwright (run `pnpm exec playwright install chromium` once) |
+| `pnpm test:e2e` | Playwright, desktop + phone: acceptance flows (DAC-01…10) in English and Arabic, axe (WCAG 2.2 AA), 360 px layout (run `pnpm exec playwright install chromium` once) |
 | `pnpm check` | typecheck + lint + tests |
 
 ## Project structure
@@ -58,7 +59,7 @@ docs/                 SRS, PRD, design system, plan, progress, decisions
 
 ## Deploying
 
-`pnpm build`, then serve `build/client` from any static host with all paths rewritten to `index.html` (e.g. Netlify `_redirects`: `/* /index.html 200`). Set `VITE_API_BASE_URL` to the Website backend's `/api/v1` and `VITE_API_MOCKING=false`. The backend must allow this origin with credentials (SRS §7.2).
+`pnpm build` and `pnpm check:build`, then serve `build/client` from any static host. The build writes `_headers` (security headers, CSP by hash) and `_redirects` (SPA fallback). Set `VITE_API_BASE_URL` to the Website backend's `/api/v1` and `VITE_API_MOCKING=false`. Details and an nginx example: `docs/deploy.md`.
 
 ## Documentation
 

@@ -20,3 +20,16 @@ describe("post-sign-in redirect", () => {
     );
   });
 });
+
+describe("sign-in form checks (DSH-AUTH-01)", () => {
+  it("asks for both fields and a plausible email", async () => {
+    const { checkLogin } = await import("~/features/auth/schema");
+    expect(checkLogin({ email: "", password: "" })).toEqual({
+      email: "required",
+      password: "required",
+    });
+    expect(checkLogin({ email: "  ", password: "x" })).toEqual({ email: "required" });
+    expect(checkLogin({ email: "owner@example", password: "x" })).toEqual({ email: "email" });
+    expect(checkLogin({ email: " owner@example.com ", password: "x" })).toEqual({});
+  });
+});

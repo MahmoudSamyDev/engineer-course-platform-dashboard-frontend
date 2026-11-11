@@ -11,11 +11,11 @@ async function signIn(page: Page) {
   await page.waitForURL("/");
 }
 
-/** A date `days` from today as YYYY-MM-DD, for the meeting date input. */
+/** A Cairo calendar date `days` from today as YYYY-MM-DD, for the meeting date input. */
 function futureDate(days: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return date.toISOString().slice(0, 10);
+  const date = new Date(Date.now() + days * 24 * 60 * 60_000);
+  // en-CA formats as YYYY-MM-DD; the app works in Cairo time, not UTC (ISSUES #8).
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Cairo" }).format(date);
 }
 
 test.describe("courses and sessions", () => {

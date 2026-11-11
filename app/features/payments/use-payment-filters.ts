@@ -7,25 +7,29 @@ import { useUrlParams } from "~/lib/use-url-params";
 export const PAYMENT_STATUSES: PaymentStatus[] = ["SUCCEEDED", "INITIATED", "FAILED", "REFUNDED"];
 export const PAYMENT_METHODS: PaymentMethod[] = ["CARD", "WALLET"];
 
+/** Filters from the URL (pure: shared by the hook and the route's `clientLoader`). */
+export function paymentFiltersFromUrl(params: URLSearchParams, q?: string): PaymentFilters {
+  const get = (key: string) => params.get(key) ?? undefined;
+  const range = get("range");
+  return {
+    q: q || undefined,
+    status: get("status") as PaymentStatus | undefined,
+    method: get("method") as PaymentMethod | undefined,
+    courseId: get("course"),
+    needsAction: get("needsAction") === "true" || undefined,
+    ...rangeDates(isDateRange(range) ? range : undefined, appNow()),
+    sort: (get("sort") as PaymentFilters["sort"]) ?? "-createdAt",
+    page: Number(get("page")) || 1,
+    pageSize: Number(get("size")) || 25,
+  };
+}
+
 /** Payments list state (DSH-PAY-03): filters in the URL, search term in memory. */
 export function usePaymentFilters() {
   const url = useUrlParams();
   const [q, setQ] = useState("");
   const range = url.get("range");
-  const filters: PaymentFilters = useMemo(
-    () => ({
-      q: q || undefined,
-      status: url.get("status") as PaymentStatus | undefined,
-      method: url.get("method") as PaymentMethod | undefined,
-      courseId: url.get("course"),
-      needsAction: url.get("needsAction") === "true" || undefined,
-      ...rangeDates(isDateRange(range) ? range : undefined, appNow()),
-      sort: (url.get("sort") as PaymentFilters["sort"]) ?? "-createdAt",
-      page: Number(url.get("page")) || 1,
-      pageSize: Number(url.get("size")) || 25,
-    }),
-    [q, url, range],
-  );
+  const filters = useMemo(() => paymentFiltersFromUrl(url.params, q), [url.params, q]);
   const clear = () => {
     setQ("");
     url.set({

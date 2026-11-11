@@ -25,15 +25,14 @@ export function UserMenu({ user }: { user: AdminUser }) {
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger
-        aria-label={t("nav.account")}
-        className="flex w-full items-center gap-3 rounded-sm p-2 text-start transition-colors duration-150 hover:bg-paper data-[state=open]:bg-paper"
-      >
+      {/* Named by what it shows, plus its purpose (WCAG 2.5.3 Label in Name). */}
+      <DropdownMenu.Trigger className="flex w-full items-center gap-3 rounded-sm p-2 text-start transition-colors duration-150 hover:bg-paper data-[state=open]:bg-paper">
         <Avatar name={user.name} size="sm" />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-body font-medium text-ink">{user.name}</span>
           <span className="truncate text-caption text-graphite">{t(`roles.${user.role}`)}</span>
         </span>
+        <span className="sr-only">, {t("nav.account")}</span>
         <ChevronsUpDown aria-hidden="true" className="size-4 text-graphite" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>

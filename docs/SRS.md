@@ -22,6 +22,7 @@
 | 1.0 | 2026-10-03 | Mahmoud Samy | Initial Dashboard SRS: routes, functional requirements, admin API contract, data additions, NFRs, acceptance criteria |
 | 1.1 | 2026-10-03 | Mahmoud Samy | Added `GET /admin/counts` for navigation badges (DD-026) |
 | 1.2 | 2026-11-11 | Mahmoud Samy | `POST /admin/auth/password` answers 204, or 422 with `fields.currentPassword = INCORRECT` / `fields.newPassword = TOO_SHORT \| SAME` (DD-036); certifications carry `imageUrl` (DD-035) |
+| 1.3 | 2026-11-11 | Mahmoud Samy | Money actions after the independent review (DD-050…052): refund also accepted for a `CANCELLED` booking whose payment is `SUCCEEDED`; move accepts the booking's own session when it has a free seat, and targets must be published, not closed, not started; rule violations are 409 `CONFLICT` with the reason in `fields` (`payment`/`booking: INVALID_STATE`, `targetSessionId: NO_SEATS`), invalid input 422 (`targetSessionId: INVALID \| OTHER_COURSE \| NOT_OPEN \| STARTED`, `amount: OUT_OF_RANGE`); a repeated `Idempotency-Key` replays the stored answer (not for 5xx) |
 
 ---
 
@@ -506,7 +507,7 @@ Implemented by the shared backend (Website app). The Dashboard's RTK Query endpo
 | Errors | `{ error: { code, message, fields? } }` (same shape as the Website). Codes: `UNAUTHENTICATED` 401, `FORBIDDEN` 403, `NOT_FOUND` 404, `VALIDATION_FAILED` 422 (with `fields`), `CONFLICT` 409 (rule violations, e.g. `CAPACITY_BELOW_SOLD`, `COURSE_CODE_LOCKED`, `HAS_BOOKINGS`), `RATE_LIMITED` 429 |
 | Money / time | Piasters (integers); UTC ISO-8601 strings |
 | Bilingual | `{ ar: string, en: string }` objects |
-| Idempotency | Mutations that change money or seats (`refund`, `move`, `cancel`) accept an `Idempotency-Key` header |
+| Idempotency | Mutations that change money or seats (`refund`, `move`, `cancel`) accept an `Idempotency-Key` header. A repeated key gets the stored answer (status and body) instead of running again; 5xx answers are not stored. Clients send a new key for a changed request (rev 1.3) |
 
 **Endpoints**
 
@@ -524,10 +525,10 @@ Implemented by the shared backend (Website app). The Dashboard's RTK Query endpo
 | GET | `/admin/students/:id` | Student details with registrations, attendance, payments | DSH-STU-05 |
 | GET | `/admin/payments` | Payments table (filters: `status`, `method`, `courseId`, `from`, `to`, `needsAction`) + `meta.summary` | DSH-PAY-01…03 |
 | GET | `/admin/payments/:id` | Payment details + timeline | DSH-PAY-04 |
-| POST | `/admin/payments/:id/refund` | Record refund `{ amount, refundTransactionId, note }` | DSH-PAY-05 |
+| POST | `/admin/payments/:id/refund` | Record refund `{ amount, refundTransactionId, note }`. Payment `SUCCEEDED`, booking `PAID`, `REFUND_REQUIRED` or `CANCELLED` (rev 1.3); else 409 `fields.payment = INVALID_STATE`; 422 `fields.amount = OUT_OF_RANGE` / `refundTransactionId = REQUIRED` | DSH-PAY-05 |
 | GET | `/admin/payments/export.csv` | CSV | DSH-PAY-08 |
-| POST | `/admin/bookings/:id/move` | `{ targetSessionId }` | DSH-PAY-06 |
-| POST | `/admin/bookings/:id/cancel` | `{ reason }` | DSH-PAY-07 |
+| POST | `/admin/bookings/:id/move` | `{ targetSessionId }`: same course, published, not closed, not started, ≥ 1 seat; may be the booking's own session (rev 1.3). 409 `fields.targetSessionId = NO_SEATS` or `fields.booking = INVALID_STATE`; 422 `fields.targetSessionId = INVALID \| OTHER_COURSE \| NOT_OPEN \| STARTED` | DSH-PAY-06 |
+| POST | `/admin/bookings/:id/cancel` | `{ reason }`. 409 `fields.booking = INVALID_STATE` unless `PAID`; 422 `fields.reason = REQUIRED` | DSH-PAY-07 |
 | GET | `/admin/courses` | Cards (filters: `state`=`published`/`draft`/`archived`, `q`) + counts per state | DSH-CRS-01/02 |
 | POST | `/admin/courses` | Create draft (essentials) | DSH-CRS-03 |
 | GET | `/admin/courses/:id` | Full course incl. modules, FAQ, publishing readiness | DSH-CRS-04 |
