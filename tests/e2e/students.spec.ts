@@ -61,4 +61,38 @@ test.describe("students", () => {
     await search(page).fill("01099999999");
     await expect(page.getByText("No registrations match these filters")).toBeVisible();
   });
+
+  test("DSH-GEN-12: quick search finds a booking by reference and opens the student", async ({
+    page,
+    isMobile,
+  }) => {
+    await signIn(page);
+    await page.goto("/payments");
+    // A real reference from the list (second line of the first row's student cell).
+    const reference = (await page
+      .getByRole("main")
+      .getByText(/^KM-\d{4}-[A-Z0-9]+$/)
+      .first()
+      .textContent())!.trim();
+
+    // "/" opens it from anywhere outside a text field; the phone top bar has a button.
+    if (isMobile) await page.getByRole("button", { name: "Find a booking" }).click();
+    else await page.keyboard.press("/");
+    const dialog = page.getByRole("dialog", { name: "Find a booking" });
+    const box = dialog.getByRole("combobox", { name: "Reference, phone or email" });
+    await expect(box).toBeFocused();
+
+    await box.fill("KM");
+    await expect(dialog.getByText("Type at least 3 characters.")).toBeVisible();
+    await box.fill(reference);
+    const option = dialog.getByRole("option").first();
+    await expect(option).toContainText(reference);
+    await expect(option).toHaveAttribute("aria-selected", "true");
+
+    await box.press("Enter");
+    await expect(dialog).toBeHidden();
+    await expect(page).toHaveURL(/\/students\/[^/?]+$/);
+    await expect(page.getByText(reference).first()).toBeVisible();
+    expect(page.url()).not.toContain(reference);
+  });
 });

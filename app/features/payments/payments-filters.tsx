@@ -1,12 +1,10 @@
 import { TriangleAlert } from "lucide-react";
 import { useTranslations } from "use-intl";
-import { ExportButton } from "~/components/export-button";
 import { Button } from "~/components/ui/button";
 import { FilterBar, FilterChips, SearchInput } from "~/components/ui/filter-bar";
 import { Select } from "~/components/ui/select";
 import { cn } from "~/lib/cn";
 import { DATE_RANGES } from "~/lib/date-ranges";
-import { toQueryString } from "~/store/api";
 import { useCourseOptions } from "../courses/options";
 import { PAYMENT_METHODS, PAYMENT_STATUSES, type usePaymentFilters } from "./use-payment-filters";
 
@@ -48,8 +46,6 @@ export function PaymentsFilters({
     range && { key: "range", label: tr(range), onRemove: () => url.set({ range: undefined }) },
   ].filter(Boolean) as Array<{ key: string; label: string; onRemove: () => void }>;
 
-  const { page: _p, pageSize: _s, sort: _o, ...exportFilters } = filters;
-
   return (
     <>
       <FilterBar
@@ -62,13 +58,6 @@ export function PaymentsFilters({
           />
         }
         activeCount={chips.length}
-        actions={
-          <ExportButton
-            path="/payments/export.csv"
-            query={toQueryString(exportFilters)}
-            filename="payments.csv"
-          />
-        }
       >
         <Button
           variant="secondary"

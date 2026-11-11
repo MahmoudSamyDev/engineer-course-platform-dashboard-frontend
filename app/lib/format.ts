@@ -19,6 +19,15 @@ export function formatDate(iso: string, locale: Locale, withYear = false): strin
   }).format(new Date(iso));
 }
 
+/** "20 Nov" / "20 نوفمبر": day and month only, for tight cells (course card stats). */
+export function formatDayMonth(iso: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(DATE_LOCALE[locale], {
+    timeZone: BUSINESS_TIMEZONE,
+    day: "numeric",
+    month: "short",
+  }).format(new Date(iso));
+}
+
 export function formatDateTime(iso: string, locale: Locale): string {
   return `${formatDate(iso, locale, true)}, ${formatTime(iso, locale)}`;
 }

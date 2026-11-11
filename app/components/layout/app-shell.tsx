@@ -1,6 +1,11 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslations } from "use-intl";
 import type { AdminUser } from "~/domain/admin";
+import {
+  QuickSearchDialog,
+  QuickSearchTrigger,
+  useQuickSearchShortcut,
+} from "~/features/search/quick-search";
 import { BrandBlock } from "./brand-block";
 import { LanguageSwitch } from "./language-switch";
 import { MobileNav } from "./mobile-nav";
@@ -15,6 +20,8 @@ import { UserMenu } from "./user-menu";
  */
 export function AppShell({ user, children }: { user: AdminUser; children: ReactNode }) {
   const t = useTranslations();
+  const [searching, setSearching] = useState(false);
+  useQuickSearchShortcut(() => setSearching(true));
 
   return (
     <div className="min-h-dvh">
@@ -27,6 +34,7 @@ export function AppShell({ user, children }: { user: AdminUser; children: ReactN
 
       <aside className="fixed inset-y-0 start-0 z-30 hidden w-rail flex-col gap-5 border-e-[1.5px] border-line-strong bg-sheet p-4 lg:flex print:lg:hidden">
         <BrandBlock />
+        <QuickSearchTrigger onOpen={() => setSearching(true)} />
         <nav aria-label={t("nav.label")} className="flex-1 overflow-y-auto">
           <NavList />
         </nav>
@@ -49,8 +57,12 @@ export function AppShell({ user, children }: { user: AdminUser; children: ReactN
             >
               KM
             </span>
-            <span className="truncate text-body font-semibold">{t("brand.product")}</span>
+            {/* Below 400px the search and language controls need the room; the KM mark stays. */}
+            <span className="truncate text-body font-semibold max-[399px]:sr-only">
+              {t("brand.product")}
+            </span>
           </span>
+          <QuickSearchTrigger compact onOpen={() => setSearching(true)} />
           <LanguageSwitch signedIn />
         </header>
         <main
@@ -61,6 +73,7 @@ export function AppShell({ user, children }: { user: AdminUser; children: ReactN
           {children}
         </main>
       </div>
+      <QuickSearchDialog open={searching} onOpenChange={setSearching} />
     </div>
   );
 }

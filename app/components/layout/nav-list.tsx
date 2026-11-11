@@ -42,7 +42,7 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
             <Icon aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.5} />
             <span className="flex-1">{t(key)}</span>
             {badgeFor(key) ? (
-              <span className="tabular inline-flex h-5 min-w-5 items-center justify-center rounded-xs bg-warning-wash px-1.5 text-caption font-semibold text-warning">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-xs bg-warning-wash px-1.5 text-caption font-semibold text-warning tabular">
                 {badgeFor(key)}
                 <span className="sr-only"> {t("needsAttention")}</span>
               </span>

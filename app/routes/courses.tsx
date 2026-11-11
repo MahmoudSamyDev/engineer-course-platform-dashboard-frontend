@@ -104,7 +104,7 @@ export default function Courses() {
             >
               {t(`states.${state}`)}
               {data ? (
-                <span className="tabular ms-1.5 text-caption text-graphite">
+                <span className="ms-1.5 text-caption text-graphite tabular">
                   {data.counts[state]}
                 </span>
               ) : null}

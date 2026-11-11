@@ -38,7 +38,7 @@ export function CourseCover({
         </span>
         <span className="flex items-end justify-between gap-3 border-t-[1.5px] border-ink/70 pt-1.5 text-caption font-medium text-ink">
           <span className="truncate">{discipline[locale]}</span>
-          <span dir="ltr" className="tabular text-graphite">
+          <span dir="ltr" className="text-graphite tabular">
             S-{String(sortOrder).padStart(2, "0")}
           </span>
         </span>

@@ -97,7 +97,7 @@ export function RosterTable({ session }: { session: SessionDetail }) {
 
   return (
     <>
-      <div className="scroll-x min-w-0 rounded-sm border border-line bg-sheet print:overflow-visible print:border-0 print:contain-none">
+      <div className="min-w-0 scroll-x rounded-sm border border-line bg-sheet print:overflow-visible print:border-0 print:contain-none">
         <table className="w-full border-collapse text-body">
           <caption className="sr-only">{t("caption", { code: session.code })}</caption>
           <thead className="bg-paper">
@@ -167,7 +167,7 @@ export function RosterTable({ session }: { session: SessionDetail }) {
                   </div>
                 </td>
                 <td className="px-3 py-2.5">
-                  <Ltr className="tabular text-caption text-graphite">{entry.reference}</Ltr>
+                  <Ltr className="text-caption text-graphite tabular">{entry.reference}</Ltr>
                 </td>
                 <td className="px-3 py-2.5 print:hidden">
                   <BookingBadge status={entry.status} />

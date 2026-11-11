@@ -27,7 +27,7 @@ export function AttendanceStrip({ meetings }: { meetings: MeetingAttendance[] })
             )}
           >
             <span className="font-medium text-ink">{t("meeting", { order: m.order })}</span>
-            <span className="tabular text-graphite">{formatDate(m.startsAt, locale)}</span>
+            <span className="text-graphite tabular">{formatDate(m.startsAt, locale)}</span>
             <span className="flex items-center gap-1 font-medium">
               {state === "attended" ? (
                 <>

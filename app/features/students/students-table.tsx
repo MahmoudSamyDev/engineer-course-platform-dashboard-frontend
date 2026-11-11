@@ -101,7 +101,7 @@ export function StudentsTable({
       key: "reference",
       header: t("columns.reference"),
       className: "hidden 2xl:table-cell",
-      cell: (r) => <Ltr className="tabular text-caption text-graphite">{r.reference}</Ltr>,
+      cell: (r) => <Ltr className="text-caption text-graphite tabular">{r.reference}</Ltr>,
     },
   ];
 

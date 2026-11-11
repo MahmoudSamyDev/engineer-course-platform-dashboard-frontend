@@ -1,6 +1,6 @@
 # Progress Tracker — Dashboard
 
-**Current phase:** D11 — Messages & polish (next). D10 finished: assistants and the instructor profile are managed from the Dashboard.
+**Current phase:** D12 — QA & hardening (next). D11 finished: the Messages inbox, quick search and the polish backlog; every page is built.
 **Last updated:** 2026-11-11
 
 Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definitions: `docs/PHASES.md`.
@@ -20,37 +20,33 @@ Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definit
 | D8 | Payments | ✅ | Summary, filters, details sheet, refund / move / cancel (independent review still pending) |
 | D9 | Courses, sessions & attendance | ✅ | Cards, Add course dialog, 6 tabs, sessions + meetings, roster, attendance, print. DAC-02/03/06 pass |
 | D10 | Assistants & profile | ✅ | Assistant cards + dialog + (de)activate/delete; profile in 7 tabs; uploads; password. DAC-07, DAC-08 (mock) pass |
-| D11 | Messages & polish | ⬜ | |
+| D11 | Messages & polish | ✅ | Inbox + reading sheet, optimistic read/new/archive with live badges, quick search (`/`), Payments/Students export in the header, card date, table scroll at 768 px. DUS-25 passes |
 | D12 | QA & hardening | ⬜ | |
 | D13 | Real API switch | ⬜ | Depends on Website Phase 8 + admin API |
 | D14 | Final review | ⬜ | |
 
 Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with notes · ⛔ blocked
 
-## Handoff — where to continue (2026-11-11)
+## Handoff — where to continue (2026-11-11, after D11)
 
-**State:** package manager is **pnpm** (DD-032). `pnpm typecheck`, `pnpm lint`, Prettier, **56 unit/component tests** and **18 Playwright tests** (desktop + mobile) all pass. Production build contains no mock code. D10 pages checked at 360/768/1280/1440 in Arabic and English: no horizontal scroll, no console errors.
+**State:** `pnpm typecheck`, `pnpm lint`, Prettier, **74 unit/component tests** and **34 Playwright tests** (desktop + mobile) pass. Build has no mock code. D11 views checked at 360/768/1280/1440 in Arabic and English: no horizontal scroll, no console errors.
 
-**Done (code map, D10)**
-- **Assistants** — `routes/assistants.tsx` (Active/Inactive/All, search, cards grid, confirm dialogs), `features/assistants/assistant-card.tsx`, `assistant-dialog.tsx` (+ test).
-- **Profile** — `routes/profile.tsx` (`UrlTabs`), `features/profile/tabs/{personal,contact,bio,stats,certifications,journey,account}-tab.tsx`, `use-profile-save.ts`.
-- **Uploads** — `features/uploads/{api,use-image-upload}.ts`, `components/ui/image-picker.tsx`.
-- **Rules** — `domain/phone.ts`, `domain/uploads.ts`, `domain/profile-rules.ts` (tests in `tests/unit/people.test.ts`).
-- **Shared fixes** — tab-aware unsaved guard (`components/unsaved-changes.tsx`), section saves write the response to the cache (`features/courses/api.ts`, `features/profile/api.ts`), `lib/website-url.ts` (moved from courses).
+**Done (code map, D11 and the test pass before it)**
+- **Messages** — `routes/messages.tsx` (Inbox/Archived via `?tab=`, `?message=` sheet), `features/messages/{api,message-list,message-sheet}.tsx`, rules in `domain/messages.ts` (reply subject in the sender's language).
+- **Quick search** — `features/search/quick-search.tsx` (trigger in the rail and phone top bar, `/` shortcut, combobox over `GET /admin/registrations?q=`).
+- **Shared** — `Dialog` takes `initialFocus`; `scroll-x`/`tabular` are real Tailwind utilities (`@utility`); `formatDayMonth`; Export CSV lives in the page header on Payments and Students.
+- **Auth** — guard redirects only on 401, outages show an error with retry; sign-in seeds `me` and waits (DD-044).
+- **Tests** — `money-dialogs.test.tsx`, `auth-guard.test.ts`, `session-expiry.test.ts`, `messages.test.ts`; e2e `payments`, `students` (incl. quick search), `messages`, DSH-AUTH-05.
 
-**D11 — Messages & polish, in order**
-1. `routes/messages.tsx` — replace the placeholder: inbox list (New / Read / Archived), reading sheet `?message=<id>`, reply via email/WhatsApp links, mark read (optimistic, DSH-MSG-02). APIs ready in `features/messages/api.ts`; nav badge from `/admin/counts` must drop when a message is read.
-2. Polish from the backlog: Payments filter bar wrapping at 1280 px; course card "next session" truncating in Arabic.
-3. Quick search (Could), then the e2e for DUS-25, screenshots, phase report, commit.
-
-**Then:** D12 QA (start with `ISSUES.md`) → D13 real API → D14 review (`docs/PHASES.md`).
+**D12 — QA & hardening, start here**
+1. `ISSUES.md`: #2 independent review of refund/move/cancel (CLAUDE.md), #3 partial refund rule, #4 idempotency in mocks, #6 `clientLoader` on Payments and Students, #8/#9 Cairo dates.
+2. Run the e2e suite in Arabic too; add axe checks; bundle budget; security headers for the host; print check of the roster.
+3. Seed a second upcoming session for the refund-required course so "move" works in the demo.
 
 **Notes for whoever continues**
-- Follow the existing patterns: tab components in `features/<x>/tabs/`, one `SectionForm` per tab, `useDraft` for editable copies, `getApiError` to map server field errors.
-- A mutation that answers with the whole record should also `upsertQueryData` it (DD-038), or the tab guard fires right after a save.
-- Text typed by people goes in `<bdi>`; Arabic copy with spaced numbers needs Unicode isolates (DD-041).
-- Keep the Cairo-time rule in mind: date/time inputs are wall-clock and go through `zonedLocalToUtcIso` (DD-029).
-- Independent review of the money actions (refund/move/cancel) is still outstanding — CLAUDE.md asks for one in D8.
+- Auth checks on RTK Query results use `isSuccess`, never `data` (a failed refetch keeps the old `data`).
+- Optimistic updates: patch every cached list the item can appear in, and undo all patches on failure (`features/messages/api.ts`).
+- Lines of user text that can be in either language: `dir="auto"` + `[text-align:match-parent]` so clamping and alignment are both right.
 - Contract items the Website backend must implement: `/admin/counts` (DD-026), certification `imageUrl` (DD-035), password errors (DD-036).
 
 ## Page briefs
@@ -62,6 +58,10 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 **Assistants.** Question: "Who scans tickets at the door, and can they?" Primary user: the owner, often on a phone. Primary action: *Add assistant*. Secondary: edit, deactivate/activate, delete (only without check-ins). Hierarchy: header → Active/Inactive/All + search → cards (avatar, name, status, phone + WhatsApp, email, notes; facts: check-ins, Scanner app "coming soon"). Data: `GET/POST/PATCH/DELETE /admin/assistants`, `POST /admin/uploads`. URL: `?status=`, `?new=1` (search never in the URL). Responsive: 1/2/3 columns. States: skeleton, first-use empty explaining the Scanner app, no results + clear search, error + retry, long names wrap. Covers DSH-ASS-01…04, DUS-20/21, DAC-07.
 
 **Profile.** Question: "What do students see about me, and is it right?" Primary user: the owner. Primary action: *Save changes* per tab (no header primary; *View on website* is secondary). Hierarchy: header → tabs Personal · Contact · Bio · Stats · Certifications · Journey · Account → one section form per tab with a sticky save bar. Data: `GET/PATCH /admin/instructor`, `PUT …/certifications`, `PUT …/journey`, `POST /admin/uploads`, `PATCH /admin/auth/me`, `POST /admin/auth/password`. URL: `?tab=`. Responsive: AR/EN side by side ≥ 768 px, stacked below. States: skeleton, error + retry (Account still works), missing-language errors per field, unsaved guard on tab change and navigation, truthful-claims notice on Stats. Covers DSH-PRO-01…09, DSH-AUTH-08, DUS-22…24, DAC-08 (mock).
+
+**Messages.** Question: "Who wrote, and have I answered?" Primary user: the owner, on a phone between sessions. Primary action: open a new message and *Reply by email*. Secondary: reply on WhatsApp (when a phone was given), mark as new, archive / move to inbox. Hierarchy: header → Inbox (new count) · Archived → rows (new dot + bold sender, topic · course, first line, received time) → reading sheet (status and course, full message in its own direction, sender email/phone with copy, received, reply actions in the footer). Data: `GET /admin/messages`, `PATCH /admin/messages/:id`, `GET /admin/counts`. URL: `?tab=archived`, `?message=<id>`. Responsive: one column; the sheet is full screen below 640 px. States: skeleton rows, empty inbox / empty archive, error + retry, unknown id → "doesn't exist anymore". Covers DSH-MSG-01…03, DSH-NAV-04, DUS-25.
+
+**Quick search.** Question: "Where is this person's booking?" Trigger: *Find a booking* in the rail (with `/` hint) or the search icon in the phone top bar; `/` anywhere outside a text field. Dialog with a combobox: 3+ characters, up to 8 bookings (name, reference, phone, course · session, status), ↑/↓ and Enter, click. Term never in the URL and cleared on close. States: hint, searching spinner, no match, error, "showing 8 of N". Covers DSH-GEN-12.
 
 ## Traceability
 
@@ -91,6 +91,13 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 | DSH-PRO-07 | `?tab=journey` | `JourneyTab` | `PUT /admin/instructor/journey` | range/present/single, end ≥ start | e2e, unit | ✅ (mock) |
 | DSH-PRO-08 / DSH-AUTH-08 | `?tab=account` | `AccountTab` | `PATCH /admin/auth/me`, `POST /admin/auth/password` | name, language, password errors | — (visual) | ✅ (mock) |
 | DSH-PRO-09 | `/profile` | header link | — | opens the Website home in the UI language | visual | ✅ |
+| DSH-MSG-01 | `/messages` | `MessageList`, folder tabs | `GET /admin/messages` | Inbox (New + Read) / Archived, newest first, empty, error, AR/EN previews | e2e `messages.spec.ts` | ✅ (mock) |
+| DSH-MSG-02 | `?message=<id>` | `MessageSheet` | `PATCH /admin/messages/:id` | marks Read once per opening (optimistic), reply mailto (subject in sender's language) and WhatsApp, mark new, archive/unarchive | e2e, `messages.test.ts` | ✅ (mock) |
+| DSH-MSG-03 / DSH-NAV-04 | nav, Inbox tab | `NavList`, tab count | `GET /admin/counts` | count changes at once, server wins after | e2e DUS-25 | ✅ (mock) |
+| DSH-GEN-06 | forms | `useDiscardGuard`, `UnsavedChanges` | — | dialogs (course, session, assistant, refund) and tabbed pages | e2e DAC-08, unit | ✅ |
+| DSH-GEN-12 | shell | `QuickSearchTrigger`, `QuickSearchDialog` | `GET /admin/registrations?q=` | `/` shortcut, keyboard, phone trigger, term not in URL | e2e `students.spec.ts` | ✅ (mock) |
+| DSH-PAY-04…07 | `/payments` | `RefundDialog`, `MoveDialog`, `CancelDialog` | refund, move, cancel | validation, no seats, seat taken meanwhile, reason required | `money-dialogs.test.tsx`, e2e DAC-04 | ✅ (mock; independent review pending) |
+| DUS-25 | `/messages` | — | — | read, reply links, count drops | e2e | ✅ (mock) |
 
 ## Phase reports
 
@@ -187,3 +194,34 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 - **How we used it here:** this phase drove Chromium through Playwright scripts (72 screenshots, keyboard and error-state checks). A Playwright MCP server would let Claude do the same interactively — click, read the page, screenshot — without writing a script.
 - **Try it yourself:** `claude mcp add --scope project playwright -- npx @playwright/mcp@latest`, restart, run `/mcp`, then ask "open http://localhost:5173/assistants and tell me what's on the page".
 - **Docs:** https://code.claude.com/docs/en/mcp
+
+### Phase D11 — Messages & polish: ✅ complete
+
+**Delivered:** DSH-MSG-01…03, DSH-NAV-04 (messages badge live), DSH-GEN-06 (confirmed across forms), DSH-GEN-12 (quick search, Could); DUS-25. Before D11, a test pass covered Payments (DAC-04), Students (DAC-05) and session expiry (DSH-AUTH-05), and fixed ISSUES #1.
+
+**Verified:** typecheck ✅ · lint ✅ · Prettier ✅ · 74 unit/component tests ✅ (+18 since D10) · 34 Playwright tests ✅ (+16, desktop + mobile) · build ✅ with no mock code. Screenshots of messages, a message in each language, archive, quick search, payments, students and courses at 360/768/1280/1440 in AR and EN: no horizontal scroll, no console errors; phone numbers and mixed-direction previews checked zoomed in.
+
+**Fixed during the phase:**
+- **Session expiry bounced back** from the sign-in page to a page of errors (stale `data` after a failed refetch); **outage looked like a sign-out** (ISSUES #1); **sign-in from the English page showed Arabic** until reload (DAC-09); the guard only worked after sign-in through a hidden extra redirect. All DD-044.
+- **"Mark as new" didn't stick:** the optimistic update re-triggered the auto mark-read. Now once per opening.
+- **Tables overflowed the page at 768–1023 px:** `md:scroll-x` didn't exist because `.scroll-x` was a plain class; now `@utility` (DD-048).
+- **Payments filter bar wrapped at 1280 px** → Export moved to the page header on Payments and Students (DD-046). **Course card date cut off in Arabic** → day and month only, full date as title (DD-047).
+- English previews in the Arabic inbox clipped at the wrong end → `dir="auto"` + `match-parent`. Phone top bar squeezed the product name → hidden below 400 px (kept for screen readers). Inbox tab announced its count twice.
+- The seed had no target session for "move", so three move tests passed without checking anything; they now create one.
+
+**API contract:** no changes. Quick search reuses `GET /admin/registrations?q=`.
+
+**Decisions:** DD-044…DD-049.
+
+**Known issues / backlog (→ D12):** independent review of the money actions (ISSUES #2); partial refund rule and mock idempotency (#3, #4); `clientLoader` on Payments and Students (#6); Cairo dates in tests/mocks (#8, #9); e2e in Arabic and axe checks; no interactive photo cropper (DD-034).
+
+**Next:** D12 — QA & hardening.
+
+**🎓 Claude ecosystem lesson — Hooks**
+- **Concept:** hooks run your own command at fixed points in Claude Code's loop. `PostToolUse` fires after a tool call succeeds; a matcher like `"Edit|Write"` limits it to file edits. The event's JSON (with `tool_input.file_path`) arrives on stdin.
+- **How we used it here:** we didn't. I ran `pnpm exec prettier --write` by hand after almost every edit this phase. That's exactly the job of a hook.
+- **Why it matters:** a hook is enforced by the harness, every time, instead of relying on the agent to remember. Put it in `.claude/settings.json` (committed, shared) or `.claude/settings.local.json` (just you).
+- **Try it yourself:** add to `.claude/settings.json`:
+  `{"hooks":{"PostToolUse":[{"matcher":"Edit|Write","hooks":[{"type":"command","command":"jq -r '.tool_input.file_path' | xargs pnpm exec prettier --write --ignore-unknown"}]}]}}`
+  then run `/hooks` to see it (read-only browser), and edit a file. Needs `jq`. Exit code 2 would show stderr to Claude as feedback.
+- **Docs:** https://code.claude.com/docs/en/hooks

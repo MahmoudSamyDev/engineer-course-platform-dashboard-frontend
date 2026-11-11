@@ -6,7 +6,7 @@ import { CourseStatusBadge, PublicationBadge } from "~/components/status";
 import { ActionMenu, ActionMenuItem, ActionMenuSeparator } from "~/components/ui/menu";
 import type { CourseCard as CourseCardData } from "~/domain/api";
 import type { Locale } from "~/domain/types";
-import { formatDate } from "~/lib/format";
+import { formatDate, formatDayMonth } from "~/lib/format";
 import { CourseCover } from "./course-cover";
 import { websiteCourseUrl } from "~/lib/website-url";
 
@@ -92,13 +92,20 @@ export function CourseCard({
       <dl className="grid grid-cols-3 border-t border-line text-caption">
         <div className="flex min-w-0 flex-col gap-0.5 border-e border-line px-3 py-2.5">
           <dt className="text-graphite">{t("nextSession")}</dt>
-          <dd className="truncate font-medium text-ink">
-            {next ? formatDate(next.startsAt, locale) : "—"}
+          <dd className="font-medium break-words text-ink">
+            {/* Day and month only, so it fits the column in Arabic too; the full date is the title. */}
+            {next ? (
+              <time dateTime={next.startsAt} title={formatDate(next.startsAt, locale, true)}>
+                {formatDayMonth(next.startsAt, locale)}
+              </time>
+            ) : (
+              "—"
+            )}
           </dd>
         </div>
         <div className="flex min-w-0 flex-col gap-0.5 border-e border-line px-3 py-2.5">
           <dt className="text-graphite">{t("seats")}</dt>
-          <dd className="tabular truncate font-medium text-ink">
+          <dd className="truncate font-medium text-ink tabular">
             {next ? tc("seatsOf", { sold: next.sold, capacity: next.capacity }) : "—"}
           </dd>
         </div>

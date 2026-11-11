@@ -24,7 +24,7 @@ export function SeatBar({
           style={{ width: `${ratio * 100}%` }}
         />
       </span>
-      <span className="tabular shrink-0 text-caption whitespace-nowrap text-graphite">
+      <span className="shrink-0 text-caption whitespace-nowrap text-graphite tabular">
         {t("seatsOf", { sold, capacity })}
       </span>
     </div>

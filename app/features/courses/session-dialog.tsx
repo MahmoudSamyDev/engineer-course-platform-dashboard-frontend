@@ -254,7 +254,7 @@ export function SessionDialog({
                 key={index}
                 className="grid grid-cols-[auto_1fr_auto] items-end gap-2 sm:grid-cols-[1.5rem_minmax(9rem,1fr)_8.5rem_8.5rem_auto]"
               >
-                <span className="tabular pb-2.5 text-caption text-graphite">{index + 1}</span>
+                <span className="pb-2.5 text-caption text-graphite tabular">{index + 1}</span>
                 <Field
                   label={<span className="sr-only">{t("date", { number: index + 1 })}</span>}
                   className="col-span-2 sm:col-span-1"

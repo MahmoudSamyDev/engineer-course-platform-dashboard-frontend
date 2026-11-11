@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import { Dialog as RadixDialog } from "radix-ui";
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 import { useTranslations } from "use-intl";
 import { cn } from "~/lib/cn";
 
@@ -10,6 +10,7 @@ const SIZES = { sm: "sm:max-w-[27.5rem]", md: "sm:max-w-[35rem]", lg: "sm:max-w-
  * Modal dialog (DESIGN_SYSTEM §6): title, description, scrolling body, footer actions.
  * Below 640px it fills the screen so long forms stay usable on phones.
  * `onRequestClose` lets forms ask before discarding unsaved changes (DSH-GEN-06).
+ * `initialFocus` picks the field that gets focus on open (default: the first focusable).
  */
 export function Dialog({
   open,
@@ -20,6 +21,7 @@ export function Dialog({
   children,
   footer,
   onRequestClose,
+  initialFocus,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -29,6 +31,7 @@ export function Dialog({
   children: ReactNode;
   footer?: ReactNode;
   onRequestClose?: () => boolean;
+  initialFocus?: RefObject<HTMLElement | null>;
 }) {
   const t = useTranslations("common");
   const handleOpenChange = (next: boolean) => {
@@ -40,6 +43,11 @@ export function Dialog({
       <RadixDialog.Portal>
         <RadixDialog.Overlay className="fixed inset-0 z-40 animate-overlay-in bg-overlay" />
         <RadixDialog.Content
+          onOpenAutoFocus={(event) => {
+            if (!initialFocus?.current) return;
+            event.preventDefault();
+            initialFocus.current.focus();
+          }}
           className={cn(
             "fixed inset-0 z-50 flex animate-dialog-in flex-col bg-sheet shadow-float outline-none",
             "sm:inset-auto sm:top-1/2 sm:left-1/2 sm:max-h-[min(90dvh,52rem)] sm:w-[calc(100vw-2rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-md",

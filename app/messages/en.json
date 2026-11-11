@@ -97,10 +97,6 @@
   "actions": {
     "addCourse": "Add course"
   },
-  "placeholder": {
-    "title": "This page is next on the plan",
-    "description": "It's built in phase {phase}. The navigation, sign-in and data layer are ready for it."
-  },
   "errors": {
     "notFoundTitle": "This page doesn't exist",
     "notFoundDescription": "The link may be old or mistyped.",
@@ -930,5 +926,55 @@
         "same": "Choose a password different from the current one."
       }
     }
+  },
+  "inbox": {
+    "tabsLabel": "Message folders",
+    "tabs": {
+      "inbox": "Inbox",
+      "archived": "Archived"
+    },
+    "newCount": "{count, plural, one {# new message} other {# new messages}}",
+    "title": "Message",
+    "subjects": {
+      "COURSE_INQUIRY": "Course inquiry",
+      "BOOKING_HELP": "Booking help",
+      "CORPORATE": "Corporate training",
+      "OTHER": "Other"
+    },
+    "empty": {
+      "inbox": "No messages yet",
+      "archived": "Nothing archived"
+    },
+    "emptyHint": {
+      "inbox": "Messages from the website's contact form appear here.",
+      "archived": "Archive a message you've dealt with to keep the inbox short."
+    },
+    "messageLabel": "Message",
+    "sender": "Sender",
+    "phone": "Phone",
+    "noPhone": "Not given",
+    "received": "Received",
+    "replyEmail": "Reply by email",
+    "replyWhatsapp": "Reply on WhatsApp",
+    "replyHint": "Replies open in your email app or WhatsApp, in the language the sender wrote in. The dashboard doesn't send messages itself.",
+    "markNew": "Mark as new",
+    "markedNew": "Marked as new",
+    "archive": "Archive",
+    "archived": "Message archived",
+    "unarchive": "Move to inbox",
+    "unarchived": "Moved to inbox"
+  },
+  "search": {
+    "open": "Find a booking",
+    "title": "Find a booking",
+    "description": "By booking reference, phone number or email.",
+    "label": "Reference, phone or email",
+    "placeholder": "e.g. KM-2611, 010…, name@…",
+    "results": "Matching bookings",
+    "hint": "Type at least {count} characters.",
+    "none": "No booking matches. Check the number or try the email.",
+    "error": "Search isn't available right now. Try again in a moment.",
+    "count": "{count, plural, one {# booking} other {# bookings}} — press Enter to open the highlighted one.",
+    "more": "Showing the latest {shown} of {count}. Type more to narrow it down."
   }
 }

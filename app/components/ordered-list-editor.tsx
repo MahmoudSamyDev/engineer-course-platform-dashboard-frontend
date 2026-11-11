@@ -43,7 +43,7 @@ export function OrderedListEditor<T>({
         {items.map((item, index) => (
           <li key={index} className="rounded-sm border border-line">
             <div className="flex items-center gap-1 border-b border-line bg-paper px-3 py-1.5">
-              <span className="tabular flex-1 text-label font-semibold text-ink">
+              <span className="flex-1 text-label font-semibold text-ink tabular">
                 {itemLabel(index)}
               </span>
               <IconButton

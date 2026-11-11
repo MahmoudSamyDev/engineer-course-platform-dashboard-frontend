@@ -14,7 +14,7 @@ import {
 export function Money({ amount, wrap = false }: { amount: Piasters; wrap?: boolean }) {
   const t = useTranslations("common");
   return (
-    <span className={wrap ? "tabular" : "tabular whitespace-nowrap"}>
+    <span className={wrap ? "tabular" : "whitespace-nowrap tabular"}>
       {t("money", { amount: formatAmount(amount) })}
     </span>
   );
@@ -42,7 +42,7 @@ export function DateTime({
     <time
       dateTime={iso}
       title={short ? formatDateTime(iso, locale) : undefined}
-      className={wrap ? "tabular" : "tabular whitespace-nowrap"}
+      className={wrap ? "tabular" : "whitespace-nowrap tabular"}
     >
       {text}
     </time>
@@ -52,7 +52,7 @@ export function DateTime({
 export function TimeOnly({ iso }: { iso: string }) {
   const locale = useLocale();
   return (
-    <time dateTime={iso} className="tabular whitespace-nowrap">
+    <time dateTime={iso} className="whitespace-nowrap tabular">
       {formatTime(iso, locale)}
     </time>
   );
@@ -75,7 +75,7 @@ export function formatPhone(e164: string): string {
 
 export function Phone({ e164 }: { e164: string }) {
   return (
-    <bdi dir="ltr" className="tabular whitespace-nowrap">
+    <bdi dir="ltr" className="whitespace-nowrap tabular">
       {formatPhone(e164)}
     </bdi>
   );

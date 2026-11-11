@@ -1,9 +1,7 @@
 import { useTranslations } from "use-intl";
-import { ExportButton } from "~/components/export-button";
 import { FilterBar, FilterChips, SearchInput } from "~/components/ui/filter-bar";
 import { Select } from "~/components/ui/select";
 import { DATE_RANGES } from "~/lib/date-ranges";
-import { toQueryString } from "~/store/api";
 import { useCourseOptions, useSessionOptions } from "../courses/options";
 import {
   ATTENDANCE_FILTERS,
@@ -46,8 +44,6 @@ export function StudentsFilters({ state }: { state: State }) {
     range && { key: "range", label: tr(range), onRemove: () => url.set({ range: undefined }) },
   ].filter(Boolean) as Array<{ key: string; label: string; onRemove: () => void }>;
 
-  const { page: _page, pageSize: _size, sort: _sort, ...exportFilters } = filters;
-
   return (
     <>
       <FilterBar
@@ -60,13 +56,6 @@ export function StudentsFilters({ state }: { state: State }) {
           />
         }
         activeCount={chips.length}
-        actions={
-          <ExportButton
-            path="/registrations/export.csv"
-            query={toQueryString(exportFilters)}
-            filename="registrations.csv"
-          />
-        }
       >
         <Select
           aria-label={t("course")}

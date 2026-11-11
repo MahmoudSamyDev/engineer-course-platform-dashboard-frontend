@@ -30,7 +30,7 @@ export function Pagination({
       aria-label={t("pagination")}
       className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
     >
-      <p className="tabular text-caption text-graphite" aria-live="polite">
+      <p className="text-caption text-graphite tabular" aria-live="polite">
         {t("showing", { from, to, total })}
       </p>
       <div className="flex items-center gap-2">

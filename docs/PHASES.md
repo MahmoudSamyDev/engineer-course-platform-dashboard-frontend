@@ -5,7 +5,7 @@
 | Version | 1.0 |
 | Date | 2026-10-03 |
 | Sources | `docs/SRS.md` · `docs/PRD.md` · `docs/DESIGN_SYSTEM.md` · `docs/MARKET_RESEARCH.md` · `../SYSTEM.md` |
-| Status | D0–D10 done; next: **D11 — Messages & polish** |
+| Status | D0–D11 done; next: **D12 — QA & hardening** |
 
 This file is the **authoritative phase list**. `AGENTS.md` §5 points here; `PROGRESS.md` tracks status.
 
@@ -68,7 +68,7 @@ Status: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 | D8 | **Payments** | Payments endpoint + summary, details sheet, record refund, move, cancel, export | DSH-PAY-*, DUS-09…11, DAC-04 | DAC-04 passes; independent review of money actions | ✅ |
 | D9 | **Courses, sessions & attendance** | Course cards + Add course dialog, details tabs, publishing checklist (DBR-04), sessions + meetings (Cairo time, weekly helper), roster, print, attendance grid + manual check-in | DSH-CRS-*, DSH-SES-*, DSH-ATT-*, DUS-12…19, DAC-02/03/06 | DAC-02/03/06 pass; **review point** | ✅ |
 | D10 | **Assistants & profile** | Assistant cards + dialog + (de)activate; profile tabs, photo upload/crop, certifications & journey lists, account language/password | DSH-ASS-*, DSH-PRO-*, DUS-20…24, DAC-07/08 | DAC-07, DAC-08 (mock) pass | ✅ |
-| D11 | **Messages & polish** | Inbox + sheet, nav badges, unsaved-changes guards everywhere, quick search (Could) | DSH-MSG-*, DSH-NAV-04, DSH-GEN-06/12 | DUS-25 passes | ⬜ |
+| D11 | **Messages & polish** | Inbox + sheet, nav badges, unsaved-changes guards everywhere, quick search (Could) | DSH-MSG-*, DSH-NAV-04, DSH-GEN-06/12 | DUS-25 passes | ✅ |
 | D12 | **QA & hardening** | Full Playwright suite (DAC-01…10, both locales), axe checks, bundle budget, security headers config for the host, print checks | DNFR-* | All guardrails green | ⬜ |
 | D13 | **Real API switch** | Shared schema package (types + Zod) with the Website; contract tests run against MSW and the real API; `VITE_API_MOCKING=false`; CORS/cookie setup; deploy | SRS §7.2/7.3, DD-020 | All DAC pass against the real backend | ⬜ (needs Website Phase 8 + admin API) |
 | D14 | **Final review** | Independent senior review, fixes, final report, client walkthrough | quality.md §5 | DoD complete | ⬜ |

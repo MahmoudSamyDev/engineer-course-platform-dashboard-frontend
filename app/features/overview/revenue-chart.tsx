@@ -39,7 +39,7 @@ export function RevenueChart({ data }: { data: Overview["revenueByMonth"] }) {
           {data.slice(-2).map((d) => (
             <div key={d.month}>
               <dt className="text-label text-graphite">{monthLabel(d.month, locale, "long")}</dt>
-              <dd className="tabular font-display text-heading font-semibold">
+              <dd className="font-display text-heading font-semibold tabular">
                 {tc("money", { amount: formatAmount(d.amount) })}
               </dd>
             </div>
@@ -59,7 +59,7 @@ export function RevenueChart({ data }: { data: Overview["revenueByMonth"] }) {
                 style={{ bottom: fraction * CHART_HEIGHT }}
               >
                 <span className="h-px flex-1 bg-line" />
-                <span className="tabular w-14 shrink-0 text-end text-[0.75rem] leading-none text-graphite">
+                <span className="w-14 shrink-0 text-end text-[0.75rem] leading-none text-graphite tabular">
                   {fraction === 0 ? "0" : `${formatAmount((top * fraction) / 1000)}k`}
                 </span>
               </div>
@@ -84,7 +84,7 @@ export function RevenueChart({ data }: { data: Overview["revenueByMonth"] }) {
                           style={{ height: `${Math.max(2, (d.amount / top) * 100)}%` }}
                         >
                           {label && d.amount > 0 ? (
-                            <span className="tabular absolute -top-5 left-1/2 -translate-x-1/2 text-[0.75rem] whitespace-nowrap text-ink">
+                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[0.75rem] whitespace-nowrap text-ink tabular">
                               {formatAmount(d.amount / 1000)}k
                             </span>
                           ) : null}

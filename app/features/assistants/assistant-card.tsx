@@ -106,7 +106,7 @@ export function AssistantCard({
       <dl className="mt-auto grid grid-cols-2 border-t border-line text-caption">
         <div className="flex min-w-0 flex-col gap-0.5 border-e border-line px-3 py-2.5">
           <dt className="text-graphite">{t("checkIns")}</dt>
-          <dd className="tabular font-medium text-ink">
+          <dd className="font-medium text-ink tabular">
             {t("checkInsCount", { count: checkInsCount })}
           </dd>
         </div>

@@ -33,6 +33,8 @@ test.describe("sign-in and shell", () => {
 
     await page.goto("/students?status=ALL");
     await expect(page.getByRole("heading", { level: 1, name: "Students" })).toBeVisible();
+    // Requests already in flight would be joined by the refetch below (and succeed).
+    await page.waitForLoadState("networkidle");
 
     // The server ends the session behind the app's back (idle or absolute timeout)...
     await page.evaluate(() =>

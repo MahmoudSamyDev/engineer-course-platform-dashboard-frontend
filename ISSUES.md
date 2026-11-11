@@ -18,7 +18,7 @@ Severity: **High** = wrong behavior or risk before go-live · **Medium** = spec/
 | 8 | Low | Tests | `futureDate()` in the e2e tests uses UTC dates |
 | 9 | Low | Mocks | `inRange` ignores the Cairo timezone |
 | 10 | Low | Tooling | ~~`.npmrc` sets `legacy-peer-deps=true`~~ — **resolved**, switched to pnpm (DD-032) |
-| 11 | Low | UI | Known visual bugs from the progress file |
+| 11 | Low | UI | ~~Known visual bugs from the progress file~~ — **resolved in D11** (DD-046, DD-047) |
 | 12 | Info | Verification | ~~Checks not run in this scan~~ — **done** after the pnpm install |
 
 ---
@@ -139,6 +139,8 @@ The project now uses pnpm 11 (DD-032). `.npmrc` and `package-lock.json` are gone
 - The course card "next session" date truncates in Arabic.
 
 **Fix:** Fix both and re-check with screenshots at 360 / 768 / 1280 / 1440 in Arabic and English, as the Definition of Done requires.
+
+**Resolved (D11):** Export moved to the page header; the card shows day and month. Found on the way: tables overflowed the page at 768–1023 px because `md:scroll-x` didn't exist (DD-048).
 
 ---
 

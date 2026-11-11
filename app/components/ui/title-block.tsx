@@ -48,7 +48,7 @@ export function TitleCell({
       <dt className="text-label font-medium text-graphite">{label}</dt>
       <dd
         className={cn(
-          "tabular min-w-0 break-words text-ink",
+          "min-w-0 break-words text-ink tabular",
           size === "kpi"
             ? "font-display text-[1.375rem] leading-7 font-semibold sm:text-kpi"
             : "text-subheading font-semibold",

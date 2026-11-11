@@ -96,7 +96,7 @@ export default function Course() {
           label: t(`publishing.tabs.${tab}`),
           marker:
             tab === "publishing" && course.readiness.length > 0 ? (
-              <span className="tabular inline-flex h-5 min-w-5 items-center justify-center rounded-xs bg-warning-wash px-1.5 text-caption font-semibold text-warning">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-xs bg-warning-wash px-1.5 text-caption font-semibold text-warning tabular">
                 {course.readiness.length}
                 <span className="sr-only"> {t("publishing.missingCount")}</span>
               </span>

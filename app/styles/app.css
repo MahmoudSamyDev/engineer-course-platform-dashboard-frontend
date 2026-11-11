@@ -234,21 +234,21 @@
   }
 }
 
-@layer utilities {
-  /*
-   * A horizontally scrolling table still grows the document's scrollable width in
-   * Chromium, which makes the whole page scroll sideways on phones. `contain: paint`
-   * keeps that overflow inside the scroller (design.md §4).
-   */
-  .scroll-x {
-    overflow-x: auto;
-    contain: paint;
-  }
+/*
+ * A horizontally scrolling table still grows the document's scrollable width in
+ * Chromium, which makes the whole page scroll sideways on phones. `contain: paint`
+ * keeps that overflow inside the scroller (design.md §4).
+ * Declared with `@utility` so variants work (`md:scroll-x` in DataTable): a plain class in
+ * `@layer utilities` gets no variants in Tailwind v4, and tables overflowed the page at 768 px.
+ */
+@utility scroll-x {
+  overflow-x: auto;
+  contain: paint;
+}
 
-  /* Numbers that line up in tables and title blocks. */
-  .tabular {
-    font-variant-numeric: tabular-nums;
-  }
+/* Numbers that line up in tables and title blocks. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Print: ink on white, no chrome — the session roster goes to the door on paper (§10). */

@@ -1,4 +1,5 @@
 import { useTranslations } from "use-intl";
+import { ExportButton } from "~/components/export-button";
 import { Money } from "~/components/format";
 import { PageHeader } from "~/components/layout/page-header";
 import { Pagination } from "~/components/ui/pagination";
@@ -10,6 +11,7 @@ import { PaymentSheet } from "~/features/payments/payment-sheet";
 import { PaymentsFilters } from "~/features/payments/payments-filters";
 import { PaymentsTable } from "~/features/payments/payments-table";
 import { usePaymentFilters } from "~/features/payments/use-payment-filters";
+import { toQueryString } from "~/store/api";
 
 /** Payments — "Do the numbers reconcile, and what needs action?" (SRS §4.5, DUS-09…11, DAC-04). */
 export default function Payments() {
@@ -23,6 +25,7 @@ export default function Payments() {
   });
   const { data: counts } = useGetCountsQuery();
   const openId = url.get("payment");
+  const { page: _page, pageSize: _size, sort: _sort, ...exportFilters } = filters;
   const filtered = Boolean(
     filters.q ||
     filters.status ||
@@ -34,7 +37,19 @@ export default function Payments() {
 
   return (
     <>
-      <PageHeader title={tp("title")} description={tp("description")} />
+      <PageHeader
+        title={tp("title")}
+        description={tp("description")}
+        actions={
+          // Page-level action, with the current filters (DSH-PAY-08); keeps the filter row on
+          // one line at 1280 px.
+          <ExportButton
+            path="/payments/export.csv"
+            query={toQueryString(exportFilters)}
+            filename="payments.csv"
+          />
+        }
+      />
       <PaymentsFilters state={state} needsActionCount={counts?.refundRequired ?? 0} />
 
       <section aria-label={t("summary.label")} className="mb-4">

@@ -11,7 +11,7 @@ export function StartGuide() {
       <ol className="mt-4 flex flex-col gap-3 text-body text-ink">
         {(["one", "two", "three"] as const).map((step, index) => (
           <li key={step} className="flex gap-3">
-            <span className="tabular inline-flex size-6 shrink-0 items-center justify-center rounded-xs bg-cyan-wash text-caption font-semibold text-cyan">
+            <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-xs bg-cyan-wash text-caption font-semibold text-cyan tabular">
               {index + 1}
             </span>
             {t(step)}

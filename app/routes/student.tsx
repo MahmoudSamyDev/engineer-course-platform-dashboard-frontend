@@ -142,7 +142,7 @@ export default function Student() {
                   <div>
                     <dt className="text-caption text-graphite">{t("reference")}</dt>
                     <dd className="flex items-center gap-1">
-                      <Ltr className="tabular font-medium">{r.reference}</Ltr>
+                      <Ltr className="font-medium tabular">{r.reference}</Ltr>
                       <CopyButton value={r.reference} />
                     </dd>
                   </div>

@@ -1,10 +1,12 @@
 import { useTranslations } from "use-intl";
+import { ExportButton } from "~/components/export-button";
 import { PageHeader } from "~/components/layout/page-header";
 import { Pagination } from "~/components/ui/pagination";
 import { StudentsFilters } from "~/features/students/students-filters";
 import { StudentsTable } from "~/features/students/students-table";
 import { useGetRegistrationsQuery } from "~/features/students/api";
 import { useRegistrationFilters } from "~/features/students/use-registration-filters";
+import { toQueryString } from "~/store/api";
 
 /** Students — "Who is registered?" (SRS §4.4, DUS-06…08, DAC-05). */
 export default function Students() {
@@ -12,13 +14,24 @@ export default function Students() {
   const state = useRegistrationFilters();
   const { filters, url, setQ } = state;
   const { data, error, isLoading, isFetching, refetch } = useGetRegistrationsQuery(filters);
+  const { page: _page, pageSize: _size, sort: _sort, ...exportFilters } = filters;
   const filtered = Boolean(
     filters.q || filters.courseId || filters.attendance || state.range || state.status !== "PAID",
   );
 
   return (
     <>
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={
+          <ExportButton
+            path="/registrations/export.csv"
+            query={toQueryString(exportFilters)}
+            filename="registrations.csv"
+          />
+        }
+      />
       <StudentsFilters state={state} />
       <div
         aria-busy={isFetching}

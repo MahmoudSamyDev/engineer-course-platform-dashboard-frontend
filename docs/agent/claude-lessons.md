@@ -13,6 +13,7 @@
 | D8 | **Independent review** | A fresh subagent reviews refund/cancel/move against DBR-11/12 without seeing the implementation | ⬜ |
 | D9 | **Path-scoped rules** | `.claude/rules/` file scoped to `app/features/courses/**` with the session/capacity rules | ⬜ |
 | D10 | **MCP servers** | Playwright MCP to drive the dashboard in a browser; `.mcp.json` project scope and trust | ✅ |
+| D11 | **Hooks** | `PostToolUse` hook that runs Prettier after every Edit/Write (`.claude/settings.json`, `/hooks`) | ✅ |
 | D12 | **Headless mode & CI** | `claude -p` in a GitHub Action to review PRs against `quality.md` | ⬜ |
 | D13 | **Working across repos/folders** | Changing the API contract in the Website backend and the Dashboard in one session; `/add-dir` | ⬜ |
 | D14 | **Turning the workflow into a reusable skill or plugin** | Package "SRS → PRD → design system → phases" as a skill for future client projects | ⬜ |

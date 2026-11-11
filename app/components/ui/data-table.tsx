@@ -66,7 +66,7 @@ export function DataTable<T>({
 
   return (
     <>
-      <div className="md:scroll-x hidden min-w-0 rounded-sm border border-line bg-sheet md:block">
+      <div className="hidden min-w-0 rounded-sm border border-line bg-sheet md:block md:scroll-x">
         <table className="w-full border-collapse text-body">
           <caption className="sr-only">{caption}</caption>
           <thead className="bg-paper">
@@ -155,7 +155,7 @@ export function DataTable<T>({
                         key={column.key}
                         className={cn(
                           "px-3 py-3",
-                          column.align === "end" ? "tabular text-end" : "text-start",
+                          column.align === "end" ? "text-end tabular" : "text-start",
                           column.className,
                         )}
                       >
