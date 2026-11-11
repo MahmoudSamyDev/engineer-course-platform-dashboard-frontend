@@ -1,4 +1,6 @@
 import { http, HttpResponse } from "msw";
+import type { ChangePasswordInput } from "~/domain/api";
+import { MIN_PASSWORD_LENGTH } from "~/domain/constants";
 import type { Locale } from "~/domain/types";
 import { MOCK_API } from "../config";
 import { db, failedAttempts, mockSession, toPublicAdmin } from "../db";
@@ -55,5 +57,21 @@ export const authHandlers = [
     if (body.locale === "ar" || body.locale === "en") admin.locale = body.locale;
     if (typeof body.name === "string" && body.name.trim()) admin.name = body.name.trim();
     return HttpResponse.json({ data: toPublicAdmin(admin) });
+  }),
+
+  http.post(`${MOCK_API}/auth/password`, async ({ request }) => {
+    await latency();
+    const admin = currentAdmin();
+    if (!admin) return apiError(401, "UNAUTHENTICATED", "Sign in to continue.");
+    const body = (await request.json()) as Partial<ChangePasswordInput>;
+    const fields: Record<string, string> = {};
+    // A wrong current password is a field error: a 401 here would end the session.
+    if (body.currentPassword !== admin.password) fields.currentPassword = "INCORRECT";
+    if ((body.newPassword ?? "").length < MIN_PASSWORD_LENGTH) fields.newPassword = "TOO_SHORT";
+    else if (body.newPassword === body.currentPassword) fields.newPassword = "SAME";
+    if (Object.keys(fields).length)
+      return apiError(422, "VALIDATION_FAILED", "Check the passwords.", fields);
+    admin.password = body.newPassword!;
+    return new HttpResponse(null, { status: 204 });
   }),
 ];

@@ -6,28 +6,65 @@ import type {
   MilestoneDto,
   UpdateInstructorInput,
 } from "~/domain/api";
+import { EG_MOBILE_E164, EG_PHONE_E164 } from "~/domain/phone";
+import {
+  checkYears,
+  filledBoth,
+  isOptionalHttpsUrl,
+  isValidSocialUrl,
+} from "~/domain/profile-rules";
+import { checkImage, type UploadKind, UPLOAD_RULES } from "~/domain/uploads";
 import { MOCK_API } from "../config";
 import { db, mockNow, type MockAssistant } from "../db";
 import { apiError, latency } from "../http";
 import { itemResponse, matchesQuery } from "./helpers";
 
-const E164_EG_MOBILE = /^\+201[0125]\d{8}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const toAssistant = (a: MockAssistant) => ({
   ...a,
-  checkInsCount: db.checkIns.filter((c) => c.by === a.fullName).length,
+  checkInsCount: db.checkIns.filter((c) => c.assistantId === a.id).length,
 });
 
 function validateAssistant(body: AssistantInput, id?: string) {
   const fields: Record<string, string> = {};
   if (!body.fullName?.trim() || body.fullName.trim().length < 3) fields.fullName = "REQUIRED";
-  if (!E164_EG_MOBILE.test(body.phoneE164 ?? "")) fields.phoneE164 = "INVALID";
+  if (!EG_MOBILE_E164.test(body.phoneE164 ?? "")) fields.phoneE164 = "INVALID";
   else if (db.assistants.some((a) => a.phoneE164 === body.phoneE164 && a.id !== id))
     fields.phoneE164 = "TAKEN";
   if (body.email && !EMAIL.test(body.email)) fields.email = "INVALID";
   return Object.keys(fields).length
     ? apiError(422, "VALIDATION_FAILED", "Check the assistant's details.", fields)
+    : null;
+}
+
+/** Section PATCH validation (DSH-PRO-02…05): required bilingual fields, contact, links, stats. */
+function validateInstructor(body: UpdateInstructorInput) {
+  const fields: Record<string, string> = {};
+  for (const key of [
+    "name",
+    "shortName",
+    "title",
+    "specialization",
+    "photoAlt",
+    "positioningStatement",
+    "valueProposition",
+    "bioShort",
+  ] as const) {
+    if (key in body && !filledBoth(body[key])) fields[key] = "REQUIRED";
+  }
+  if (body.contact) {
+    if (!EG_PHONE_E164.test(body.contact.phoneE164)) fields["contact.phoneE164"] = "INVALID";
+    if (!EG_MOBILE_E164.test(body.contact.whatsappE164)) fields["contact.whatsappE164"] = "INVALID";
+    if (!EMAIL.test(body.contact.email)) fields["contact.email"] = "INVALID";
+  }
+  for (const link of body.social ?? []) {
+    if (!isValidSocialUrl(link.platform, link.url)) fields[`social.${link.platform}`] = "INVALID";
+  }
+  if (body.stats?.some((stat) => !stat.value.trim() || !filledBoth(stat.label)))
+    fields.stats = "REQUIRED";
+  return Object.keys(fields).length
+    ? apiError(422, "VALIDATION_FAILED", "Check the profile details.", fields)
     : null;
 }
 
@@ -106,31 +143,52 @@ export const peopleHandlers = [
   http.patch(`${MOCK_API}/instructor`, async ({ request }) => {
     await latency();
     const body = (await request.json()) as UpdateInstructorInput;
-    if (body.contact) {
-      const fields: Record<string, string> = {};
-      if (!/^\+20\d{9,10}$/.test(body.contact.phoneE164)) fields["contact.phoneE164"] = "INVALID";
-      if (!/^\+20\d{9,10}$/.test(body.contact.whatsappE164))
-        fields["contact.whatsappE164"] = "INVALID";
-      if (!EMAIL.test(body.contact.email)) fields["contact.email"] = "INVALID";
-      if (Object.keys(fields).length)
-        return apiError(422, "VALIDATION_FAILED", "Check the contact details.", fields);
-    }
+    const invalid = validateInstructor(body);
+    if (invalid) return invalid;
     Object.assign(db.instructor, body);
     return itemResponse(db.instructor);
   }),
 
   http.put(`${MOCK_API}/instructor/certifications`, async ({ request }) => {
     await latency();
-    db.instructor.certifications = (await request.json()) as CertificationDto[];
+    const certifications = (await request.json()) as CertificationDto[];
+    const year = mockNow().getFullYear();
+    const bad = certifications.findIndex(
+      (c) =>
+        !filledBoth(c.name) ||
+        !filledBoth(c.issuer) ||
+        checkYears(c.year, undefined, year) !== null ||
+        !isOptionalHttpsUrl(c.credentialUrl),
+    );
+    if (bad >= 0) {
+      return apiError(422, "VALIDATION_FAILED", "Check the certification details.", {
+        certifications: "INVALID",
+        index: String(bad),
+      });
+    }
+    db.instructor.certifications = certifications.map((c) => ({
+      ...c,
+      credentialUrl: c.credentialUrl?.trim() || null,
+      imageUrl: c.imageUrl ?? null,
+    }));
     return itemResponse(db.instructor);
   }),
 
   http.put(`${MOCK_API}/instructor/journey`, async ({ request }) => {
     await latency();
     const journey = (await request.json()) as MilestoneDto[];
-    if (journey.some((j) => typeof j.endYear === "number" && j.endYear < j.startYear)) {
-      return apiError(422, "VALIDATION_FAILED", "End year can't be before the start year.", {
-        journey: "END_BEFORE_START",
+    const year = mockNow().getFullYear();
+    const bad = journey.findIndex(
+      (j) =>
+        !filledBoth(j.title) ||
+        !filledBoth(j.organization) ||
+        checkYears(j.startYear, j.endYear, year) !== null,
+    );
+    if (bad >= 0) {
+      const problem = checkYears(journey[bad]!.startYear, journey[bad]!.endYear, year);
+      return apiError(422, "VALIDATION_FAILED", "Check the milestone years and titles.", {
+        journey: problem === "endBeforeStart" ? "END_BEFORE_START" : "INVALID",
+        index: String(bad),
       });
     }
     db.instructor.journey = journey;
@@ -162,13 +220,17 @@ export const peopleHandlers = [
     await latency();
     const form = await request.formData();
     const file = form.get("file");
+    const kind = form.get("kind") as UploadKind;
+    if (!(kind in UPLOAD_RULES))
+      return apiError(422, "VALIDATION_FAILED", "Unknown upload kind.", { kind: "INVALID" });
     if (!(file instanceof File))
       return apiError(422, "VALIDATION_FAILED", "Choose an image.", { file: "REQUIRED" });
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type))
+    const problem = checkImage(kind, file);
+    if (problem === "type")
       return apiError(422, "VALIDATION_FAILED", "Use a JPG, PNG or WebP image.", { file: "TYPE" });
-    if (file.size > 5 * 1024 * 1024)
-      return apiError(422, "VALIDATION_FAILED", "The image is larger than 5 MB.", { file: "SIZE" });
-    // The mock keeps the image in this browser tab only.
+    if (problem === "size")
+      return apiError(422, "VALIDATION_FAILED", "The image is too large.", { file: "SIZE" });
+    // The mock keeps the image in this browser tab only (a blob: URL).
     return itemResponse({ url: URL.createObjectURL(file), width: 0, height: 0 }, 201);
   }),
 ];

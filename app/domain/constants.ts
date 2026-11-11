@@ -18,3 +18,6 @@ export const SHOW_EXACT_SEATS_AT_OR_BELOW = 10;
 
 /** Max number of courses shown in the Home "courses" section (FR-HOME-06). */
 export const HOME_FEATURED_COURSES = 3;
+
+/** DSH-AUTH-08: minimum length of a new Dashboard password. */
+export const MIN_PASSWORD_LENGTH = 10;

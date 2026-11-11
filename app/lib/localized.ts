@@ -14,6 +14,20 @@ export function textToList(text: LocalizedText): LocalizedList {
   return { ar: split(text.ar), en: split(text.en) };
 }
 
+/** Prose split into paragraphs (long bio): blank lines separate paragraphs in the editor. */
+export function paragraphsToText(list: LocalizedList | undefined): LocalizedText {
+  return { ar: (list?.ar ?? []).join("\n\n"), en: (list?.en ?? []).join("\n\n") };
+}
+
+export function textToParagraphs(text: LocalizedText): LocalizedList {
+  const split = (value: string) =>
+    value
+      .split(/\n\s*\n/)
+      .map((paragraph) => paragraph.replace(/\s*\n\s*/g, " ").trim())
+      .filter(Boolean);
+  return { ar: split(text.ar), en: split(text.en) };
+}
+
 export const emptyText = (): LocalizedText => ({ ar: "", en: "" });
 
 /** Shallow-stable deep equality for small form values (dirty checks). */

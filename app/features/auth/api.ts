@@ -1,4 +1,5 @@
 import type { AdminUser, ItemResponse } from "~/domain/admin";
+import type { ChangePasswordInput } from "~/domain/api";
 import type { Locale } from "~/domain/types";
 import { api } from "~/store/api";
 import type { LoginInput } from "./schema";
@@ -51,8 +52,31 @@ export const authApi = api.injectEndpoints({
         }
       },
     }),
+    /** DSH-PRO-08 — the signed-in user's display name. */
+    updateMyName: build.mutation<AdminUser, string>({
+      query: (name) => ({ url: "/auth/me", method: "PATCH", body: { name } }),
+      transformResponse: (response: ItemResponse<AdminUser>) => response.data,
+      async onQueryStarted(_name, { dispatch, queryFulfilled }) {
+        try {
+          const { data: user } = await queryFulfilled;
+          dispatch(authApi.util.upsertQueryData("me", undefined, user));
+        } catch {
+          // The form shows the error; the cached user stays as it was.
+        }
+      },
+    }),
+    /** DSH-AUTH-08 — a wrong current password is a field error (422), not a 401. */
+    changePassword: build.mutation<void, ChangePasswordInput>({
+      query: (body) => ({ url: "/auth/password", method: "POST", body }),
+    }),
   }),
 });
 
-export const { useMeQuery, useLoginMutation, useLogoutMutation, useUpdateMyLocaleMutation } =
-  authApi;
+export const {
+  useMeQuery,
+  useLoginMutation,
+  useLogoutMutation,
+  useUpdateMyLocaleMutation,
+  useUpdateMyNameMutation,
+  useChangePasswordMutation,
+} = authApi;

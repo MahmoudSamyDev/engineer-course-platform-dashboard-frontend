@@ -13,9 +13,30 @@ import type {
   UpdateCourseInput,
 } from "~/domain/api";
 import { api, toQueryString } from "~/store/api";
+import type { AppDispatch } from "~/store/store";
 
 type Item<T> = ItemResponse<T>;
 const unwrap = <T>(r: Item<T>) => r.data;
+
+/**
+ * A section save answers with the whole course: write it to the cache as soon as it
+ * resolves, so the tab's draft and the server value agree immediately — no "unsaved"
+ * window while the invalidated query refetches (that window tripped the tab guard).
+ */
+async function writeCourseCache(
+  id: string,
+  {
+    dispatch,
+    queryFulfilled,
+  }: { dispatch: AppDispatch; queryFulfilled: Promise<{ data: CourseDetail }> },
+) {
+  try {
+    const { data } = await queryFulfilled;
+    dispatch(coursesApi.util.upsertQueryData("getCourse", id, data));
+  } catch {
+    // The form shows the error; the cached course stays as it was.
+  }
+}
 
 /** SRS §7.2 — courses, sessions, check-ins, locations (DSH-CRS, DSH-SES, DSH-ATT). */
 export const coursesApi = api.injectEndpoints({
@@ -48,6 +69,7 @@ export const coursesApi = api.injectEndpoints({
         body,
       }),
       transformResponse: unwrap<CourseDetail>,
+      onQueryStarted: ({ id }, api) => writeCourseCache(id, api),
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Course", id },
         { type: "Course", id: "LIST" },
@@ -61,6 +83,7 @@ export const coursesApi = api.injectEndpoints({
         body: modules,
       }),
       transformResponse: unwrap<CourseDetail>,
+      onQueryStarted: ({ id }, api) => writeCourseCache(id, api),
       invalidatesTags: (_r, _e, { id }) => [{ type: "Course", id }],
     }),
     replaceFaq: build.mutation<CourseDetail, { id: string; faq: FaqInput[] }>({
@@ -70,6 +93,7 @@ export const coursesApi = api.injectEndpoints({
         body: faq,
       }),
       transformResponse: unwrap<CourseDetail>,
+      onQueryStarted: ({ id }, api) => writeCourseCache(id, api),
       invalidatesTags: (_r, _e, { id }) => [{ type: "Course", id }],
     }),
     setCourseArchived: build.mutation<CourseDetail, { id: string; archived: boolean }>({

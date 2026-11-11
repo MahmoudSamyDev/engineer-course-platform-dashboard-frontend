@@ -21,6 +21,7 @@
 | --- | --- | --- | --- |
 | 1.0 | 2026-10-03 | Mahmoud Samy | Initial Dashboard SRS: routes, functional requirements, admin API contract, data additions, NFRs, acceptance criteria |
 | 1.1 | 2026-10-03 | Mahmoud Samy | Added `GET /admin/counts` for navigation badges (DD-026) |
+| 1.2 | 2026-11-11 | Mahmoud Samy | `POST /admin/auth/password` answers 204, or 422 with `fields.currentPassword = INCORRECT` / `fields.newPassword = TOO_SHORT \| SAME` (DD-036); certifications carry `imageUrl` (DD-035) |
 
 ---
 
@@ -515,7 +516,7 @@ Implemented by the shared backend (Website app). The Dashboard's RTK Query endpo
 | POST | `/admin/auth/logout` | Sign out | DSH-AUTH-06 |
 | GET | `/admin/auth/me` | Current user or 401 | DSH-AUTH-04 |
 | PATCH | `/admin/auth/me` | Update own name/locale | DSH-PRO-08 |
-| POST | `/admin/auth/password` | Change own password | DSH-AUTH-08 |
+| POST | `/admin/auth/password` | Change own password `{ currentPassword, newPassword }` → 204; a wrong current password is **422** `fields.currentPassword = INCORRECT` (never 401, which ends the session) | DSH-AUTH-08 |
 | GET | `/admin/overview` | KPIs, needs-action counts, revenue by month, upcoming sessions | DSH-HOME-01…07 |
 | GET | `/admin/counts` | `{ refundRequired, newMessages }` for navigation badges | DSH-NAV-04 |
 | GET | `/admin/registrations` | Students table (filters: `courseId`, `sessionId`, `bookingStatus`, `attendance`, `from`, `to`) | DSH-STU-01…04 |
@@ -551,7 +552,7 @@ Implemented by the shared backend (Website app). The Dashboard's RTK Query endpo
 | DELETE | `/admin/assistants/:id` | Delete (no check-ins) | DSH-ASS-03 |
 | GET | `/admin/instructor` | Instructor profile incl. stats, certifications, journey, contact | DSH-PRO-01…07 |
 | PATCH | `/admin/instructor` | Update a profile section | DSH-PRO-02…05 |
-| PUT | `/admin/instructor/certifications` | Replace ordered certifications | DSH-PRO-06 |
+| PUT | `/admin/instructor/certifications` | Replace ordered certifications `[{ id, name, issuer, year, credentialUrl, imageUrl }]` | DSH-PRO-06 |
 | PUT | `/admin/instructor/journey` | Replace ordered milestones | DSH-PRO-07 |
 | GET | `/admin/messages` | Messages (filters: `status`) | DSH-MSG-01 |
 | PATCH | `/admin/messages/:id` | Set status | DSH-MSG-02 |

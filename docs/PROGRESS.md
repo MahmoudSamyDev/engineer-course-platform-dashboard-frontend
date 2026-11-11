@@ -1,7 +1,7 @@
 # Progress Tracker — Dashboard
 
-**Current phase:** D10 — Assistants & profile (next). D9 finished; **review point** — the owner can now publish a course end to end.
-**Last updated:** 2026-10-03
+**Current phase:** D11 — Messages & polish (next). D10 finished: assistants and the instructor profile are managed from the Dashboard.
+**Last updated:** 2026-11-11
 
 Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definitions: `docs/PHASES.md`.
 
@@ -19,7 +19,7 @@ Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definit
 | D7 | Students | ✅ | Table, filters, search, paging, CSV, student page |
 | D8 | Payments | ✅ | Summary, filters, details sheet, refund / move / cancel (independent review still pending) |
 | D9 | Courses, sessions & attendance | ✅ | Cards, Add course dialog, 6 tabs, sessions + meetings, roster, attendance, print. DAC-02/03/06 pass |
-| D10 | Assistants & profile | ⬜ | |
+| D10 | Assistants & profile | ✅ | Assistant cards + dialog + (de)activate/delete; profile in 7 tabs; uploads; password. DAC-07, DAC-08 (mock) pass |
 | D11 | Messages & polish | ⬜ | |
 | D12 | QA & hardening | ⬜ | |
 | D13 | Real API switch | ⬜ | Depends on Website Phase 8 + admin API |
@@ -27,36 +27,41 @@ Agents update this file in every loop iteration (AGENTS.md §5.2). Phase definit
 
 Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with notes · ⛔ blocked
 
-## Handoff — where to continue (2026-10-03)
+## Handoff — where to continue (2026-11-11)
 
-**State:** typecheck, lint, Prettier, 30 unit/component tests and 12 Playwright tests (desktop + mobile) all pass. Production build contains no mock code. Every page verified at 360 px in Arabic and English with no horizontal page scroll.
+**State:** package manager is **pnpm** (DD-032). `pnpm typecheck`, `pnpm lint`, Prettier, **56 unit/component tests** and **18 Playwright tests** (desktop + mobile) all pass. Production build contains no mock code. D10 pages checked at 360/768/1280/1440 in Arabic and English: no horizontal scroll, no console errors.
 
-**Done (code map)**
-- **D5 UI kit** — `app/components/ui/`: dialog, sheet, confirm-dialog, menu, tabs (`UrlTabs`), select, switch, textarea, toast, skeleton, title-block, seat-bar, data-table, filter-bar, pagination, error-state, icon-button, bilingual-field, panel, amount-input. Shared: `components/format.tsx`, `components/status.tsx`, `section-form.tsx`, `ordered-list-editor.tsx`, `unsaved-changes.tsx`, `use-discard-guard.tsx`, `export-button.tsx`, `copy-button.tsx`.
-- **Data** — `app/domain/api.ts` (all payload types) + pure rules with tests: `attendance.ts`, `months.ts`, `course-rules.ts`, `session-rules.ts`, `status-tone.ts`, `money.ts`.
-- **Mock API** — `app/mocks/`: seeded database, payload builders (`views.ts`), handlers for every SRS §7.2 endpoint.
-- **Pages** — Home, Students, Student, Payments (with refund / move / cancel), Courses, Course (6 tabs), Session (roster, attendance, print).
+**Done (code map, D10)**
+- **Assistants** — `routes/assistants.tsx` (Active/Inactive/All, search, cards grid, confirm dialogs), `features/assistants/assistant-card.tsx`, `assistant-dialog.tsx` (+ test).
+- **Profile** — `routes/profile.tsx` (`UrlTabs`), `features/profile/tabs/{personal,contact,bio,stats,certifications,journey,account}-tab.tsx`, `use-profile-save.ts`.
+- **Uploads** — `features/uploads/{api,use-image-upload}.ts`, `components/ui/image-picker.tsx`.
+- **Rules** — `domain/phone.ts`, `domain/uploads.ts`, `domain/profile-rules.ts` (tests in `tests/unit/people.test.ts`).
+- **Shared fixes** — tab-aware unsaved guard (`components/unsaved-changes.tsx`), section saves write the response to the cache (`features/courses/api.ts`, `features/profile/api.ts`), `lib/website-url.ts` (moved from courses).
 
-**D10 — Assistants & profile, in order**
-1. `routes/assistants.tsx` — replace the placeholder: cards in a 1/2/3-column grid (avatar, name, phone + WhatsApp link, active badge, "Scanner app — coming soon", notes), filter Active/Inactive/All + search, row menu: edit, activate/deactivate, delete (only with no check-ins). APIs ready in `features/assistants/api.ts`.
-2. `features/assistants/assistant-dialog.tsx` — add/edit (full name, Egyptian phone → E.164, optional email, photo via `useUploadImageMutation`, notes). Map the API's `phoneE164: "TAKEN"` to a field error (DAC-07).
-3. `routes/profile.tsx` — `UrlTabs`: personal · contact · bio · stats · certifications · journey · account. Reuse `SectionForm` + `useDraft` (see `features/courses/tabs/overview-tab.tsx`) and `OrderedListEditor` for certifications and journey. APIs ready in `features/profile/api.ts`.
-4. Messages (EN + AR), screenshots at 360/1280 in both languages, an e2e for DAC-07, phase report, commit.
+**D11 — Messages & polish, in order**
+1. `routes/messages.tsx` — replace the placeholder: inbox list (New / Read / Archived), reading sheet `?message=<id>`, reply via email/WhatsApp links, mark read (optimistic, DSH-MSG-02). APIs ready in `features/messages/api.ts`; nav badge from `/admin/counts` must drop when a message is read.
+2. Polish from the backlog: Payments filter bar wrapping at 1280 px; course card "next session" truncating in Arabic.
+3. Quick search (Could), then the e2e for DUS-25, screenshots, phase report, commit.
 
-**Then:** D11 messages (`features/messages/api.ts` ready) → D12 QA → D13 real API → D14 review (`docs/PHASES.md`).
+**Then:** D12 QA (start with `ISSUES.md`) → D13 real API → D14 review (`docs/PHASES.md`).
 
 **Notes for whoever continues**
 - Follow the existing patterns: tab components in `features/<x>/tabs/`, one `SectionForm` per tab, `useDraft` for editable copies, `getApiError` to map server field errors.
-- Keep the Cairo-time rule in mind: date/time inputs are wall-clock and go through `zonedLocalToUtcIso`; weekly repeats step the local date (DD-029).
-- A wide table goes in a `.scroll-x` container (DD-030), and timestamps in narrow cells use `<DateTime wrap />`.
+- A mutation that answers with the whole record should also `upsertQueryData` it (DD-038), or the tab guard fires right after a save.
+- Text typed by people goes in `<bdi>`; Arabic copy with spaced numbers needs Unicode isolates (DD-041).
+- Keep the Cairo-time rule in mind: date/time inputs are wall-clock and go through `zonedLocalToUtcIso` (DD-029).
 - Independent review of the money actions (refund/move/cancel) is still outstanding — CLAUDE.md asks for one in D8.
-- `/admin/counts` is an addition to the API contract (DD-026) the Website backend must implement.
+- Contract items the Website backend must implement: `/admin/counts` (DD-026), certification `imageUrl` (DD-035), password errors (DD-036).
 
 ## Page briefs
 
 **Sign in.** Question: "Can I get in safely?" Primary user: the owner, on a phone or laptop. Primary action: *Sign in*. Hierarchy: brand block + language switch → title + one-line purpose → email, password (show/hide) → error → button → forgot-password note. States: field errors on blur, wrong credentials (one generic message), locked (429), network error, session-ended and signed-out notices. Covers DSH-AUTH-01…03, 05–07; DAC-01.
 
 **App shell.** Question: "Where am I and where can I go?" Rail ≥ 1024 px (brand title block, 7 routes, language, user menu); mobile top bar (menu, product, language) + drawer. Active route: wash + start bar + semibold. Covers DSH-NAV-01…03, 05; DSH-GEN-02, 10.
+
+**Assistants.** Question: "Who scans tickets at the door, and can they?" Primary user: the owner, often on a phone. Primary action: *Add assistant*. Secondary: edit, deactivate/activate, delete (only without check-ins). Hierarchy: header → Active/Inactive/All + search → cards (avatar, name, status, phone + WhatsApp, email, notes; facts: check-ins, Scanner app "coming soon"). Data: `GET/POST/PATCH/DELETE /admin/assistants`, `POST /admin/uploads`. URL: `?status=`, `?new=1` (search never in the URL). Responsive: 1/2/3 columns. States: skeleton, first-use empty explaining the Scanner app, no results + clear search, error + retry, long names wrap. Covers DSH-ASS-01…04, DUS-20/21, DAC-07.
+
+**Profile.** Question: "What do students see about me, and is it right?" Primary user: the owner. Primary action: *Save changes* per tab (no header primary; *View on website* is secondary). Hierarchy: header → tabs Personal · Contact · Bio · Stats · Certifications · Journey · Account → one section form per tab with a sticky save bar. Data: `GET/PATCH /admin/instructor`, `PUT …/certifications`, `PUT …/journey`, `POST /admin/uploads`, `PATCH /admin/auth/me`, `POST /admin/auth/password`. URL: `?tab=`. Responsive: AR/EN side by side ≥ 768 px, stacked below. States: skeleton, error + retry (Account still works), missing-language errors per field, unsaved guard on tab change and navigation, truthful-claims notice on Stats. Covers DSH-PRO-01…09, DSH-AUTH-08, DUS-22…24, DAC-08 (mock).
 
 ## Traceability
 
@@ -73,6 +78,19 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 | DSH-AUTH-06 | user menu | `UserMenu` | `POST /admin/auth/logout` | cache reset, signed-out notice | visual | ✅ (mock) |
 | DSH-AUTH-07 | `/login` | note | — | "Contact the administrator" | visual | ✅ |
 | DMK-01…05 | — | `app/mocks/*` | auth | dev + tests; no mock code in build | build grep | ✅ (auth only) |
+| DSH-ASS-01 | `/assistants` | `AssistantCard` | `GET /admin/assistants` | 360/768/1280/1440 AR/EN, long names, bidi | e2e DAC-07 | ✅ (mock) |
+| DSH-ASS-02 | `/assistants?new=1` | `AssistantDialog`, `ImagePicker` | `POST /admin/assistants`, `POST /admin/uploads` | validation, E.164, photo ≤ 2 MB, dirty guard, keyboard | `assistant-dialog.test.tsx`, e2e | ✅ (mock) |
+| DSH-ASS-03 | `/assistants` | card menu, `ConfirmDialog` | `PATCH`/`DELETE /admin/assistants/:id` | deactivate keeps history; delete only without check-ins | e2e DAC-07, unit (rename keeps count) | ✅ (mock) |
+| DSH-ASS-04 | `/assistants` | filter tabs, `SearchInput` | `?active=`, `?q=` | first-use empty, no results, error | e2e | ✅ (mock) |
+| DSH-PRO-01 | `/profile` | `UrlTabs`, `SectionForm` | — | `?tab=`, guard on tab change | e2e DAC-08 | ✅ |
+| DSH-PRO-02 | `?tab=personal` | `PersonalTab`, `ImagePicker` (4:5) | `PATCH /admin/instructor`, uploads | both languages required, ≥ 800×1000 | e2e DAC-08 | ✅ (mock) |
+| DSH-PRO-03 | `?tab=contact` | `ContactTab` | `PATCH /admin/instructor` | landline/mobile, same-as-phone, link per platform | unit | ✅ (mock) |
+| DSH-PRO-04 | `?tab=bio` | `BioTab` | `PATCH /admin/instructor` | paragraphs, character guidance | unit | ✅ (mock) |
+| DSH-PRO-05 | `?tab=stats` | `StatsTab` | `PATCH /admin/instructor` | truthful-claims notice (DBR-17) | e2e | ✅ (mock) |
+| DSH-PRO-06 | `?tab=certifications` | `CertificationsTab` | `PUT /admin/instructor/certifications` | add/reorder/delete, year, https link, image | unit | ✅ (mock) |
+| DSH-PRO-07 | `?tab=journey` | `JourneyTab` | `PUT /admin/instructor/journey` | range/present/single, end ≥ start | e2e, unit | ✅ (mock) |
+| DSH-PRO-08 / DSH-AUTH-08 | `?tab=account` | `AccountTab` | `PATCH /admin/auth/me`, `POST /admin/auth/password` | name, language, password errors | — (visual) | ✅ (mock) |
+| DSH-PRO-09 | `/profile` | header link | — | opens the Website home in the UI language | visual | ✅ |
 
 ## Phase reports
 
@@ -141,3 +159,31 @@ Legend: ⬜ not started · 🔄 in progress · ✅ done · ⚠️ done with note
 - **Why it matters:** the author's context is the worst place to catch an assumption the author made. For money and seats, that bias is expensive.
 - **Try it yourself:** in Claude Code, run `/agents` to see the built-in agents, then ask for "an Explore agent to find every place the dashboard changes a booking's status" — note that its findings come back without the file dumps.
 - **Docs:** https://code.claude.com/docs/en/sub-agents
+
+### Phase D10 — Assistants & profile: ✅ complete
+
+**Delivered:** DSH-ASS-01…04, DSH-PRO-01…09, DSH-AUTH-08; DUS-20…24; DAC-07 and DAC-08 (mock part). Assistant cards with Active/Inactive/All and search, add/edit dialog (Egyptian phone → E.164, optional email and photo, notes), deactivate/activate, delete only without check-ins. Profile in 7 independently saved tabs: personal + 4:5 photo, contact + social links, bio, stats with the truthful-claims notice, certifications and journey (reorderable lists), account (name, language, password).
+
+**Verified:** typecheck ✅ · lint ✅ · Prettier ✅ · 56 unit/component tests ✅ (+26: phone, uploads, profile rules, paragraphs, assistant dialog incl. DAC-07) · 18 Playwright tests ✅ (+6: DAC-07, DAC-08 mock, journey years — desktop + mobile) · build ✅ with no mock code. 72 screenshots (9 views × 4 widths × 2 languages): no horizontal scroll, no console errors; `?mockError=500`, keyboard (focus in/out, Escape, dirty guard) and long Arabic names checked.
+
+**Fixed during review:**
+- **Tab switch lost unsaved edits** on the course page and profile — the guard only watched the path. It now also watches `?tab=`; saves write their response into the cache so the guard doesn't fire right after saving (DD-038). The course DAC-02 e2e caught that race.
+- **Check-in count reset on rename** (mock counted by name) → by assistant id (DD-040).
+- **Bidi:** phone examples reversed in Arabic ("5678 1234 010"), English notes with the period on the wrong side, an Arabic name drifting away from its badge in English (DD-041).
+- Account name button misaligned with its input.
+
+**API contract (flag for the Website backend):** certification `imageUrl` (DD-035); `POST /admin/auth/password` error semantics (DD-036). SRS rev 1.2.
+
+**Decisions:** DD-033…DD-043.
+
+**Known issues / backlog:** no interactive photo cropper (DD-034); Payments filter bar wrap at 1280 px and course card date truncation in Arabic (from D9); independent review of the money actions still to run; `routes/payments.tsx` has no `clientLoader` prefetch (ISSUES #6).
+
+**Next:** D11 — Messages & polish (tasks above).
+
+**🎓 Claude ecosystem lesson — MCP servers**
+- **Concept:** MCP (Model Context Protocol) servers give Claude Code new tools — a browser, a database, an issue tracker. Add one with `claude mcp add <name> -- <command>` (stdio) or `claude mcp add --transport http <name> <url>`; check it with `/mcp`.
+- **Scopes:** `local` (default, you, this project, in `~/.claude.json`), `project` (shared with the team through a committed `.mcp.json` at the repo root), `user` (all your projects).
+- **Trust:** Claude Code asks for approval before using a project's `.mcp.json` servers in an interactive session; `claude mcp reset-project-choices` resets those choices. Only connect servers you trust — a server that reads web pages can carry prompt injection.
+- **How we used it here:** this phase drove Chromium through Playwright scripts (72 screenshots, keyboard and error-state checks). A Playwright MCP server would let Claude do the same interactively — click, read the page, screenshot — without writing a script.
+- **Try it yourself:** `claude mcp add --scope project playwright -- npx @playwright/mcp@latest`, restart, run `/mcp`, then ask "open http://localhost:5173/assistants and tell me what's on the page".
+- **Docs:** https://code.claude.com/docs/en/mcp

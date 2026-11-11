@@ -12,7 +12,7 @@ import type { Locale } from "~/domain/types";
 import { useDraft } from "~/lib/use-draft";
 import { getApiError } from "~/store/api";
 import { useUpdateCourseMutation } from "../api";
-import { websiteCourseUrl } from "../website-url";
+import { websiteCourseUrl } from "~/lib/website-url";
 
 /** Which tab fixes each missing item (DSH-CRS-05). */
 const FIXED_IN: Record<ReadinessIssue, "overview" | "content" | "curriculum"> = {

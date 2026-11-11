@@ -3,12 +3,21 @@ import { useBlocker } from "react-router";
 import { useTranslations } from "use-intl";
 import { ConfirmDialog } from "./ui/confirm-dialog";
 
-/** Asks before leaving a page with unsaved changes (DSH-GEN-06): in-app navigation and tab close. */
+/** The `?tab=` of a page whose tabs save independently (course details, profile). */
+const tabOf = (search: string) => new URLSearchParams(search).get("tab");
+
+/**
+ * Asks before leaving a page with unsaved changes (DSH-GEN-06): in-app navigation, switching
+ * to another tab of the same page (each tab keeps its own draft), and closing the browser tab.
+ * Other query changes (filters, an opened dialog) don't leave the form, so they pass.
+ */
 export function UnsavedChangesGuard({ when }: { when: boolean }) {
   const t = useTranslations("common");
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      when && currentLocation.pathname !== nextLocation.pathname,
+      when &&
+      (currentLocation.pathname !== nextLocation.pathname ||
+        tabOf(currentLocation.search) !== tabOf(nextLocation.search)),
   );
 
   useEffect(() => {

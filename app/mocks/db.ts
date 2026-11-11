@@ -104,7 +104,10 @@ export type MockCheckIn = {
   bookingId: string;
   meetingId: string;
   at: string;
+  /** Display name of whoever checked the student in. */
   by: string;
+  /** Set when an assistant scanned the ticket; counts survive a rename (DBR-14). */
+  assistantId?: string;
   source: "SCANNER" | "DASHBOARD";
 };
 
@@ -415,6 +418,11 @@ function createDb(now: Date) {
     },
   ];
 
+  const scannedBy = (assistant: MockAssistant) => ({
+    by: assistant.fullName,
+    assistantId: assistant.id,
+  });
+
   // Attendance for meetings that already started (85% show-up), recorded by the assistants.
   for (const booking of bookings) {
     if (booking.status !== "PAID" && booking.status !== "CANCELLED") continue;
@@ -427,7 +435,7 @@ function createDb(now: Date) {
         bookingId: booking.id,
         meetingId: meeting.id,
         at: iso(start - random.int(0, 25) * 60_000),
-        by: random.pick(assistants.filter((a) => a.isActive || random.chance(0.3))).fullName,
+        ...scannedBy(random.pick(assistants.filter((a) => a.isActive || random.chance(0.3)))),
         source: "SCANNER",
       });
     }
@@ -465,6 +473,7 @@ function createDb(now: Date) {
       issuer: c.issuer,
       year: c.year,
       credentialUrl: null,
+      imageUrl: c.image ?? null,
     })),
     journey: seedJourney.map((j): MilestoneDto => ({
       id: j.id,

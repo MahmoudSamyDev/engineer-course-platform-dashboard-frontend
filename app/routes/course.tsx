@@ -17,7 +17,7 @@ import { FaqTab } from "~/features/courses/tabs/faq-tab";
 import { OverviewTab } from "~/features/courses/tabs/overview-tab";
 import { PublishingTab } from "~/features/courses/tabs/publishing-tab";
 import { SessionsTab } from "~/features/courses/tabs/sessions-tab";
-import { websiteCourseUrl } from "~/features/courses/website-url";
+import { websiteCourseUrl } from "~/lib/website-url";
 import { store } from "~/store/store";
 import type { Route } from "./+types/course";
 

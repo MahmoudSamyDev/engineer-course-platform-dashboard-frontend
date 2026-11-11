@@ -8,7 +8,7 @@ import type { CourseCard as CourseCardData } from "~/domain/api";
 import type { Locale } from "~/domain/types";
 import { formatDate } from "~/lib/format";
 import { CourseCover } from "./course-cover";
-import { websiteCourseUrl } from "./website-url";
+import { websiteCourseUrl } from "~/lib/website-url";
 
 /** Course card (DSH-CRS-01, DESIGN_SYSTEM §7.4): sheet cover, badges, title, title-block facts. */
 export function CourseCard({

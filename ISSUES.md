@@ -12,9 +12,9 @@ Severity: **High** = wrong behavior or risk before go-live · **Medium** = spec/
 | 2 | High | Process | Independent review of the money actions (refund/move/cancel) is still outstanding |
 | 3 | Medium | Payments | Mock refund sets `REFUNDED` on a partial refund |
 | 4 | Medium | Mocks | Mock move/cancel/refund ignore the `Idempotency-Key`; price difference on move isn't recorded |
-| 5 | Medium | API contract | `POST /admin/auth/password` (DSH-AUTH-08) is in the contract but not mocked or built |
-| 6 | Medium | Conventions | `clientLoader` prefetching is not used consistently |
-| 7 | Medium | Tests | Thin UI test coverage: no e2e for payments, students or attendance |
+| 5 | Medium | API contract | ~~`POST /admin/auth/password` not mocked or built~~ — **resolved in D10** (DD-036) |
+| 6 | Medium | Conventions | `clientLoader` prefetching is not used consistently — D10 routes prefetch; **`payments.tsx` still doesn't** |
+| 7 | Medium | Tests | Thin UI test coverage — improved in D10 (+26 unit/component, +6 e2e); **payments and students still have no e2e** |
 | 8 | Low | Tests | `futureDate()` in the e2e tests uses UTC dates |
 | 9 | Low | Mocks | `inRange` ignores the Cairo timezone |
 | 10 | Low | Tooling | ~~`.npmrc` sets `legacy-peer-deps=true`~~ — **resolved**, switched to pnpm (DD-032) |
@@ -71,13 +71,9 @@ Severity: **High** = wrong behavior or risk before go-live · **Medium** = spec/
 
 ---
 
-## 5. `POST /admin/auth/password` is missing — Medium
+## 5. `POST /admin/auth/password` is missing — Medium — RESOLVED (D10)
 
-**Where:** `docs/SRS.md` §7.2 (DSH-AUTH-08); no handler in `app/mocks/handlers/auth.ts`, no endpoint in `features/auth/api.ts`
-
-**What:** The contract lists it, but nothing implements it. The Account tab in D10 will need it.
-
-**Fix:** Add the RTK Query mutation and the MSW handler as part of D10, with current/new password validation and the error codes from the SRS.
+Mutation `changePassword` in `features/auth/api.ts`, MSW handler in `mocks/handlers/auth.ts`, form on Profile → Account. A wrong current password is a 422 field error, not a 401 (DD-036, SRS rev 1.2).
 
 ---
 
@@ -145,3 +141,12 @@ The project now uses pnpm 11 (DD-032). `.npmrc` and `package-lock.json` are gone
 ## 12. Checks were not run — Info — DONE
 
 After installing with pnpm: typecheck ✅, lint ✅, 30 unit/component tests ✅, production build ✅ with no `msw` or `mockServiceWorker` in `build/client`. Not run: Prettier on the whole tree after the final edits, and Playwright e2e (needs a browser install).
+
+---
+
+## Found and fixed during D10
+
+- **Tab switch dropped unsaved edits** (course page and profile): the guard ignored `?tab=` changes. Fixed, plus a cache write on save so the guard doesn't fire right after saving (DD-038).
+- **Mock counted an assistant's check-ins by display name**, so a rename allowed deleting someone with history (DBR-14). Now by assistant id (DD-040).
+- **Bidi in Arabic:** spaced phone examples rendered reversed; user-typed Latin text misplaced its punctuation (DD-041).
+

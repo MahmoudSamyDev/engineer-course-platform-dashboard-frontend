@@ -388,6 +388,8 @@ export type CertificationDto = {
   issuer: LocalizedText;
   year: number;
   credentialUrl: string | null;
+  /** Optional certificate image (DSH-PRO-06), uploaded with kind `certification`. */
+  imageUrl: string | null;
 };
 
 export type MilestoneDto = {
@@ -418,6 +420,9 @@ export type InstructorProfile = {
   certifications: CertificationDto[];
   journey: MilestoneDto[];
 };
+
+/** `POST /admin/auth/password` (DSH-AUTH-08). */
+export type ChangePasswordInput = { currentPassword: string; newPassword: string };
 
 export type UpdateInstructorInput = Partial<Omit<InstructorProfile, "certifications" | "journey">>;
 

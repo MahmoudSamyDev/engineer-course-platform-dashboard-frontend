@@ -95,8 +95,7 @@
     }
   },
   "actions": {
-    "addCourse": "Add course",
-    "addAssistant": "Add assistant"
+    "addCourse": "Add course"
   },
   "placeholder": {
     "title": "This page is next on the plan",
@@ -161,7 +160,11 @@
     "moveUp": "Move {item} up",
     "moveDown": "Move {item} down",
     "remove": "Remove {item}",
-    "saveFailed": "The changes couldn't be saved. Try again."
+    "saveFailed": "The changes couldn't be saved. Try again.",
+    "uploading": "Uploading…",
+    "chooseImage": "Choose image",
+    "replaceImage": "Replace image",
+    "removeImage": "Remove image"
   },
   "status": {
     "booking": {
@@ -697,6 +700,235 @@
       "undoDescription": "{name} will no longer be counted as attending meeting {number}.",
       "undoConfirm": "Undo attendance",
       "undone": "Attendance undone"
+    }
+  },
+  "uploads": {
+    "type": "Use a JPG, PNG or WebP image.",
+    "size": "This image is larger than {max} MB. Choose a smaller one.",
+    "dimensions": "This image is too small. Use one at least {width} × {height} pixels.",
+    "failed": "The image couldn't be uploaded. Try again."
+  },
+  "assistants": {
+    "add": "Add assistant",
+    "filterLabel": "Show assistants",
+    "filters": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "all": "All"
+    },
+    "searchLabel": "Search assistants",
+    "searchPlaceholder": "Name or phone",
+    "noResults": "No assistants match your search",
+    "noResultsHint": "Check the spelling, or search by phone number.",
+    "empty": {
+      "active": "No active assistants",
+      "inactive": "No inactive assistants",
+      "all": "No assistants yet"
+    },
+    "emptyHint": "Assistants will scan student tickets at the door with the mobile app. Add them here with their phone number so they're ready when it launches.",
+    "showAll": "Show all assistants",
+    "activated": "Assistant activated",
+    "deactivated": "Assistant deactivated",
+    "deleted": "Assistant deleted",
+    "deleteBlocked": "This assistant has check-in history, so they can't be deleted. Deactivate them instead.",
+    "deleteTitle": "Delete {name}?",
+    "deleteDescription": "They have no check-ins, so nothing else changes. You can't undo this.",
+    "deactivateTitle": "Deactivate {name}?",
+    "deactivateDescription": "{count, plural, =0 {They won't be able to use the Scanner app. You can activate them again at any time.} one {They won't be able to use the Scanner app. Their # check-in stays in the attendance history.} other {They won't be able to use the Scanner app. Their # check-ins stay in the attendance history.}}",
+    "card": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "delete": "Delete",
+      "phone": "Phone",
+      "noEmail": "No email",
+      "notes": "Notes",
+      "checkIns": "Check-ins",
+      "checkInsCount": "{count, plural, =0 {None yet} one {# check-in} other {# check-ins}}",
+      "scannerApp": "Scanner app",
+      "comingSoon": "Coming soon"
+    },
+    "dialog": {
+      "addTitle": "Add assistant",
+      "editTitle": "Edit assistant",
+      "description": "Assistants scan tickets at the door. Only you and other admins see these details.",
+      "submit": "Add assistant",
+      "added": "Assistant added",
+      "fullName": "Full name",
+      "phone": "Mobile number",
+      "phoneHint": "Egyptian mobile, e.g. 010 1234 5678.",
+      "email": "Email",
+      "optional": "Optional.",
+      "photo": "Photo",
+      "photoHint": "Optional. JPG, PNG or WebP, up to {max} MB. Shown as a circle.",
+      "notes": "Notes",
+      "notesHint": "Internal only, e.g. which branch or days they cover.",
+      "errors": {
+        "name": "Enter the assistant's full name (at least 3 characters).",
+        "phoneRequired": "Enter the assistant's mobile number.",
+        "phone": "Enter an Egyptian mobile number, e.g. 010 1234 5678.",
+        "phoneTaken": "This phone number is already used by another assistant.",
+        "email": "Enter a valid email address, or leave it empty."
+      }
+    }
+  },
+  "profile": {
+    "viewOnWebsite": "View on website",
+    "tabsLabel": "Profile sections",
+    "tabs": {
+      "personal": "Personal",
+      "contact": "Contact",
+      "bio": "Bio",
+      "stats": "Stats",
+      "certifications": "Certifications",
+      "journey": "Journey",
+      "account": "Account"
+    },
+    "bothLanguages": "Some fields are missing a language. The website shows both, so fill in Arabic and English.",
+    "fillBoth": "Fill this in.",
+    "personal": {
+      "name": "Full name",
+      "nameHint": "Shown in the about section and certificates.",
+      "shortName": "Short name",
+      "shortNameHint": "Shown in the header and on course pages.",
+      "title": "Title",
+      "titleHint": "Shown under your name in the home page hero.",
+      "specialization": "Specialization",
+      "specializationHint": "One line about what you design and teach.",
+      "photoSection": "Photo",
+      "photo": "Portrait",
+      "photoHint": "JPG, PNG or WebP, up to {max} MB, at least {width} × {height} pixels. The preview shows the 4:5 crop the website hero uses.",
+      "photoAlt": "Photo description",
+      "photoAltHint": "Read aloud by screen readers, e.g. \"Portrait of Eng. Karim Mostafa\"."
+    },
+    "contact": {
+      "phone": "Phone",
+      "phoneHint": "Mobile or landline, e.g. 010 1234 5678.",
+      "email": "Public email",
+      "emailHint": "Shown on the website's contact page.",
+      "sameAsPhone": "WhatsApp uses the same number",
+      "sameAsPhoneHint": "Turn off to show a different WhatsApp number.",
+      "whatsapp": "WhatsApp number",
+      "whatsappHint": "An Egyptian mobile number.",
+      "social": "Social links",
+      "socialHint": "Optional. Leave a link empty to hide that icon on the website.",
+      "platforms": {
+        "linkedin": "LinkedIn",
+        "facebook": "Facebook",
+        "youtube": "YouTube",
+        "instagram": "Instagram"
+      },
+      "errors": {
+        "phone": "Enter an Egyptian phone number, e.g. 010 1234 5678.",
+        "phoneNotMobile": "WhatsApp needs a mobile number. Use a mobile here, or turn off \"same number\" and add one.",
+        "whatsapp": "Enter an Egyptian mobile number, e.g. 010 1234 5678.",
+        "email": "Enter a valid email address.",
+        "social": "Paste the full {platform} link, starting with https://."
+      }
+    },
+    "bio": {
+      "positioningStatement": "Positioning statement",
+      "positioningStatementHint": "The headline of the home page — one sentence.",
+      "valueProposition": "Value proposition",
+      "valuePropositionHint": "Two or three sentences under the headline.",
+      "bioShort": "Short bio",
+      "bioShortHint": "Shown on course pages next to your photo.",
+      "bioLong": "Long bio",
+      "bioLongHint": "The about page. Leave a blank line between paragraphs; keep each under {max} characters.",
+      "audience": "Who it's for",
+      "audienceHint": "One audience per line; keep each under {max} characters."
+    },
+    "stats": {
+      "truthful": "These numbers appear in the home page hero. Use only true numbers you can back up — the website never shows placeholder figures.",
+      "incomplete": "Each stat needs a value and a label in Arabic and English.",
+      "keys": {
+        "years": "Years of experience",
+        "students": "Students trained",
+        "cohorts": "Cohorts delivered",
+        "projects": "Projects"
+      },
+      "valueHint": "As shown, e.g. 14+ or 3,200+.",
+      "valueMissing": "Enter the number.",
+      "label": "Label"
+    },
+    "certifications": {
+      "intro": "Shown on the about page in this order. Add only certifications you actually hold.",
+      "item": "Certification {order}",
+      "add": "Add certification",
+      "empty": "No certifications yet. The website hides the section until you add one.",
+      "invalid": "Certification {order} is incomplete. Check the highlighted fields.",
+      "name": "Name",
+      "issuer": "Issued by",
+      "year": "Year",
+      "url": "Credential link",
+      "urlHint": "Optional. A link where students can verify it.",
+      "image": "Certificate image",
+      "imageHint": "Optional. JPG, PNG or WebP, up to {max} MB.",
+      "errors": {
+        "name": "Enter the name in Arabic and English.",
+        "issuer": "Enter the issuer in Arabic and English.",
+        "year": "Enter a year between {min} and {max}.",
+        "url": "Use a full link starting with https://, or leave it empty."
+      }
+    },
+    "journey": {
+      "intro": "The timeline on the about page, in this order.",
+      "item": "Milestone {order}",
+      "add": "Add milestone",
+      "empty": "No milestones yet. The website hides the timeline until you add one.",
+      "invalid": "Milestone {order} needs attention. Check the highlighted fields.",
+      "type": "Type",
+      "types": {
+        "EDUCATION": "Education",
+        "ENGINEERING": "Engineering",
+        "TEACHING": "Teaching",
+        "MILESTONE": "Milestone"
+      },
+      "startYear": "Start year",
+      "end": "Ends",
+      "ends": {
+        "range": "In a year",
+        "present": "Ongoing (present)",
+        "single": "Single year"
+      },
+      "endYear": "End year",
+      "title": "Title",
+      "organization": "Organization",
+      "description": "Description",
+      "errors": {
+        "endBeforeStart": "The end year can't be before the start year.",
+        "year": "Enter a year between {min} and {max}.",
+        "title": "Enter the title in Arabic and English.",
+        "organization": "Enter the organization in Arabic and English."
+      }
+    },
+    "account": {
+      "details": "Your details",
+      "name": "Your name",
+      "nameHint": "Shown in the menu and next to actions you take.",
+      "nameError": "Enter your name.",
+      "saveName": "Save name",
+      "email": "Email",
+      "emailHint": "You sign in with this. Ask the owner to change it.",
+      "role": "Role",
+      "language": "Dashboard language",
+      "languageHint": "Applies right away and is saved to your account.",
+      "password": "Change password",
+      "passwordHint": "Use at least {min} characters. You stay signed in on this device.",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Repeat new password",
+      "changePassword": "Change password",
+      "passwordChanged": "Password changed",
+      "passwordErrors": {
+        "current": "Enter your current password.",
+        "incorrect": "The current password is incorrect.",
+        "short": "Use at least {min} characters.",
+        "match": "The two new passwords don't match.",
+        "same": "Choose a password different from the current one."
+      }
     }
   }
 }
