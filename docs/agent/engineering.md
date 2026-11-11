@@ -18,7 +18,7 @@
   Await it only when the page can't render a skeleton without it (rare). Never return server data from loaders as a second cache — RTK Query is the cache.
 - URL state: filters, sort, page and tabs in `useSearchParams` (**not** free-text search, DSH-GEN-04). Detail drawers use `?payment=<id>` so they're linkable.
 - Unsaved changes: `useBlocker` (DSH-GEN-06).
-- Use `<Link prefetch="intent">` for main navigation. Use the generated `Route` types (`./+types/<route>`), and run `npm run typecheck` (typegen + tsc).
+- Use `<Link prefetch="intent">` for main navigation. Use the generated `Route` types (`./+types/<route>`), and run `pnpm typecheck` (typegen + tsc).
 - Read `node_modules/react-router/docs/` for anything not covered here.
 
 ## 2. Data: RTK Query

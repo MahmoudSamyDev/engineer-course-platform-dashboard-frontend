@@ -6,7 +6,7 @@
 | Phase | Lesson | What to show using this project | Status |
 |---|---|---|---|
 | D0 | **Reusing project memory across apps** | How `AGENTS.md`/`CLAUDE.md` were adapted for a second app in the same system; project skills copied selectively into `.claude/skills/`; the React Router skill that ships with `create-react-router` | ⬜ |
-| D4 | **Settings & permissions** | `.claude/settings.json` allow rules for `npm run *`, deny rules for `.env`; permission modes | ⬜ |
+| D4 | **Settings & permissions** | `.claude/settings.json` allow rules for `pnpm *`, deny rules for `.env`; permission modes | ⬜ |
 | D5 | **Custom slash commands (user-invocable skills)** | A `/verify` skill that runs `quality.md` §1 (typecheck, lint, test, build, mock-code grep, screenshots) | ⬜ |
 | D6 | **Hooks** | A `PostToolUse` hook running `eslint --fix` on edited files; a `PreToolUse` hook blocking edits to `.env*` | ⬜ |
 | D7 | **Subagents** | A read-only `ui-reviewer` agent in `.claude/agents/` that checks screenshots against DESIGN_SYSTEM | ⬜ |

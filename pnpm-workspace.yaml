@@ -1,0 +1,9 @@
+# pnpm settings for this single-package project (pnpm reads them from this file).
+# Reproducible installs (CI): `pnpm install --frozen-lockfile`.
+
+# Peer ranges the upstream packages haven't widened yet. Each one was tested to work;
+# keep this list short and remove an entry once upstream catches up (DD-032).
+peerDependencyRules:
+  allowedVersions:
+    eslint-plugin-jsx-a11y>eslint: "10"
+    "@vitest/mocker>msw": "3"

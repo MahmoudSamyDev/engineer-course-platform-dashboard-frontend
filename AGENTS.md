@@ -52,7 +52,7 @@ Priority: **Dashboard SRS → Dashboard PRD → Website SRS (shared model and ru
 - **All server state goes through RTK Query** (`app/store/api.ts` + `injectEndpoints` per feature, tag invalidation). Redux slices hold client-only state. No `useEffect` fetching, no other data libraries.
 - Route modules prefetch with `store.dispatch(api.endpoints.x.initiate(...))` in `clientLoader`; components read with the generated hooks.
 - Radix has no table: tables are semantic `<table>` + tokens (`DataTable`). Don't add Radix Themes, shadcn, MUI or another UI kit.
-- Any new dependency needs a one-line justification in `DECISIONS.md`. Install with the committed `.npmrc` (see DD-005).
+- Any new dependency needs a one-line justification in `DECISIONS.md`. Install with pnpm (`pnpm add <pkg>`); commit `pnpm-lock.yaml` and keep pnpm settings in `pnpm-workspace.yaml` (see DD-032). Never use npm or yarn here.
 
 ## 5. Work loop
 

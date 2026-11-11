@@ -12,8 +12,8 @@
 ## Run the dashboard
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Open http://localhost:5173 and sign in with one of the accounts above.

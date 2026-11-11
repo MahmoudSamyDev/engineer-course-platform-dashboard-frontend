@@ -6,12 +6,12 @@ The owner's admin app for the engineer's course platform: courses and sessions, 
 
 ## Getting started (Windows, macOS or Linux)
 
-Requirements: Node.js 22 LTS or newer.
+Requirements: Node.js 22 LTS or newer and [pnpm](https://pnpm.io) 11 (`corepack enable` picks the version pinned in `package.json`).
 
 ```bash
-npm install
+pnpm install
 copy .env.example .env      # Windows (macOS/Linux: cp .env.example .env)
-npm run dev                 # http://localhost:5173
+pnpm dev                 # http://localhost:5173
 ```
 
 With `VITE_API_MOCKING=true` (the default in `.env.example`) the app answers every API call from an in-browser mock (MSW), so no backend is needed.
@@ -29,14 +29,14 @@ Add `?mockError=500` to any page URL to see how a page handles API errors.
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Dev server with the mock API |
-| `npm run build` | Production SPA build in `build/client` (no mock code) |
-| `npm run typecheck` | Route type generation + TypeScript |
-| `npm run lint` | ESLint (incl. a11y rules and a "no raw hex colors" rule) |
-| `npm run format` | Prettier (+ Tailwind class sorting) |
-| `npm test` | Vitest unit and component tests (MSW in Node) |
-| `npm run test:e2e` | Playwright (run `npx playwright install chromium` once) |
-| `npm run check` | typecheck + lint + tests |
+| `pnpm dev` | Dev server with the mock API |
+| `pnpm build` | Production SPA build in `build/client` (no mock code) |
+| `pnpm typecheck` | Route type generation + TypeScript |
+| `pnpm lint` | ESLint (incl. a11y rules and a "no raw hex colors" rule) |
+| `pnpm format` | Prettier (+ Tailwind class sorting) |
+| `pnpm test` | Vitest unit and component tests (MSW in Node) |
+| `pnpm test:e2e` | Playwright (run `pnpm exec playwright install chromium` once) |
+| `pnpm check` | typecheck + lint + tests |
 
 ## Project structure
 
@@ -58,7 +58,7 @@ docs/                 SRS, PRD, design system, plan, progress, decisions
 
 ## Deploying
 
-`npm run build`, then serve `build/client` from any static host with all paths rewritten to `index.html` (e.g. Netlify `_redirects`: `/* /index.html 200`). Set `VITE_API_BASE_URL` to the Website backend's `/api/v1` and `VITE_API_MOCKING=false`. The backend must allow this origin with credentials (SRS §7.2).
+`pnpm build`, then serve `build/client` from any static host with all paths rewritten to `index.html` (e.g. Netlify `_redirects`: `/* /index.html 200`). Set `VITE_API_BASE_URL` to the Website backend's `/api/v1` and `VITE_API_MOCKING=false`. The backend must allow this origin with credentials (SRS §7.2).
 
 ## Documentation
 

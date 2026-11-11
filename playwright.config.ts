@@ -9,7 +9,7 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:5173",
     trace: "on-first-retry",
-    // Optional: point at an already-installed Chromium instead of `npx playwright install`.
+    // Optional: point at an already-installed Chromium instead of `pnpm exec playwright install`.
     launchOptions: process.env.PW_CHROMIUM_PATH
       ? { executablePath: process.env.PW_CHROMIUM_PATH }
       : {},
@@ -22,7 +22,7 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: "npm run dev",
+    command: "pnpm dev",
     url: "http://localhost:5173/login",
     reuseExistingServer: !process.env.CI,
     env: { VITE_API_MOCKING: "true", VITE_API_BASE_URL: "http://localhost:3000/api/v1" },

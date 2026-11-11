@@ -5,9 +5,9 @@
 ## 1. Verification checklist (every phase)
 
 **Automated**
-- [ ] `npm run typecheck` and `npm run lint` pass
-- [ ] `npm test` passes (unit + component tests against MSW)
-- [ ] `npm run build` succeeds; `build/client` contains no mock code (`grep -r "setupWorker\|dashboard-demo" build/client` finds nothing)
+- [ ] `pnpm typecheck` and `pnpm lint` pass
+- [ ] `pnpm test` passes (unit + component tests against MSW)
+- [ ] `pnpm build` succeeds; `build/client` contains no mock code (`grep -r "setupWorker\|dashboard-demo" build/client` finds nothing)
 - [ ] Relevant Playwright specs pass in both projects (desktop, mobile)
 
 **Visual & behavioral** (dev server with mocks; screenshots at 360 / 768 / 1280 / 1440 in Arabic and English — **look at them**)
