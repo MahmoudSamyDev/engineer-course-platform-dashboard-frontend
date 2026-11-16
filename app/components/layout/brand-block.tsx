@@ -13,7 +13,7 @@ export function BrandBlock() {
         className="flex w-11 shrink-0 items-center justify-center border-e-[1.5px] border-line-strong bg-cyan-deep font-display text-body font-bold text-sheet"
         dir="ltr"
       >
-        KM
+        MS
       </div>
       <div className="flex min-w-0 flex-col justify-center px-3 py-1.5">
         <span className="truncate text-body font-semibold text-ink">{t("owner")}</span>

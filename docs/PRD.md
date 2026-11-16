@@ -8,7 +8,7 @@
 | Version | 1.0 — Draft for review |
 | Date | 2026-10-03 |
 | Owner | Mahmoud Samy (product & engineering) |
-| Client | Civil engineer & course instructor (placeholder "Eng. Karim Mostafa") |
+| Client | Civil engineer & course instructor (placeholder "Eng. Mahmoud Samy") |
 | Companion | `docs/SRS.md` (exact behavior — wins on behavior) · `docs/MARKET_RESEARCH.md` · `../Website/docs/PRD.md` |
 
 ### How to read this document
@@ -80,7 +80,7 @@ Analytics suite or custom reports · moving money (refunds via API) · marketing
 
 ## 5. Personas
 
-### 5.1 "Eng. Karim" — the owner (primary)
+### 5.1 "Eng. Mahmoud" — the owner (primary)
 
 Practicing structural engineer and instructor, 38. Busy on site and in the office; checks his phone between meetings; uses a laptop in the evening to plan cohorts. Arabic first, comfortable with English technical terms. **Needs:** numbers at a glance, publishing without friction, confidence that the data is right. **Frustration:** tools that look like accounting software or need training.
 

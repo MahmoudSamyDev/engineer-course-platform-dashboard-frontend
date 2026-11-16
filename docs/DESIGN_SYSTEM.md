@@ -171,7 +171,7 @@ Icons: `lucide-react`, 1.5px stroke, 20px in navigation, 16px inline; `aria-hidd
 ```
 desktop ≥ 1024 (RTL shown; LTR mirrors)
 ┌────────────────────────────────────────────────────┬───────────────┐
-│ (mock-data banner, development only)               │ ▣ KM │ Karim  │ ← brand block
+│ (mock-data banner, development only)               │ ▣ MS │ Mahmoud│ ← brand block
 ├────────────────────────────────────────────────────┤      │ office │   (title-block style)
 │ h1 Courses                       [+ Add course]    ├───────────────┤
 │ description                                        │▌ Home         │ ← active: wash + bar + semibold
@@ -183,7 +183,7 @@ desktop ≥ 1024 (RTL shown; LTR mirrors)
 │                                                    │  Profile      │
 │                                                    ├───────────────┤
 │                                                    │ [AR | EN]     │ ← language switch
-│                                                    │ (KM) Karim  ⇕ │ ← user menu: profile, sign out
+│                                                    │ (MS) Mahmoud⇕ │ ← user menu: profile, sign out
 └────────────────────────────────────────────────────┴───────────────┘
 No top bar on desktop: the page header (h1 + one primary action) opens the content.
 

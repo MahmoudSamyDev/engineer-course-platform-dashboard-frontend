@@ -7,8 +7,8 @@ describe("formatting", () => {
   });
 
   it("builds initials without the engineer title", () => {
-    expect(initials("Eng. Karim Mostafa")).toBe("KM");
-    expect(initials("م. كريم مصطفى")).toBe("كم");
+    expect(initials("Eng. Mahmoud Samy")).toBe("MS");
+    expect(initials("م. محمود سامي")).toBe("مس");
     expect(initials("Hany")).toBe("H");
   });
 });

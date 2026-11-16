@@ -6,7 +6,7 @@
     "mockBanner": "Mock data — changes reset when you reload"
   },
   "brand": {
-    "owner": "Eng. Karim Mostafa",
+    "owner": "Eng. Mahmoud Samy",
     "product": "Course office"
   },
   "nav": {
@@ -802,7 +802,7 @@
       "photo": "Portrait",
       "photoHint": "JPG, PNG or WebP, up to {max} MB, at least {width} × {height} pixels. The preview shows the 4:5 crop the website hero uses.",
       "photoAlt": "Photo description",
-      "photoAltHint": "Read aloud by screen readers, e.g. \"Portrait of Eng. Karim Mostafa\"."
+      "photoAltHint": "Read aloud by screen readers, e.g. \"Portrait of Eng. Mahmoud Samy\"."
     },
     "contact": {
       "phone": "Phone",

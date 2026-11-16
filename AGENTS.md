@@ -16,7 +16,7 @@ Act as a **Senior Product Engineer, Senior React Developer, Senior UI/UX Designe
 
 ## 2. Project context
 
-- **Client:** a civil engineer teaching in-person courses in Cairo. V1 uses the fictional placeholder identity "Eng. Karim Mostafa" (Website `docs/DUMMY_DATA.md`).
+- **Client:** a civil engineer teaching in-person courses in Cairo. V1 uses the fictional placeholder identity "Eng. Mahmoud Samy" (Website `docs/DUMMY_DATA.md`).
 - **This app:** the owner's office — publish courses and sessions, see registrations and payments, resolve exceptions (refund-required), manage assistants, edit the public profile.
 - **System:** Website (public, **owns the backend**) + **Dashboard (this folder)** + Scanner app (future). See `../SYSTEM.md`. The Dashboard is a static SPA; all data goes through the admin API (`/api/v1/admin/*`, SRS §7.2). Until the backend implements it, **MSW** answers with the same contract (SRS §7.4).
 - **Users:** Owner and Admin roles. Assistants never use the Dashboard.

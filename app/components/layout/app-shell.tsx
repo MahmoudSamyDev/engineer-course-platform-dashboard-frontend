@@ -55,9 +55,9 @@ export function AppShell({ user, children }: { user: AdminUser; children: ReactN
               dir="ltr"
               className="inline-flex size-7 shrink-0 items-center justify-center rounded-xs bg-cyan-deep font-display text-caption font-bold text-sheet"
             >
-              KM
+              MS
             </span>
-            {/* Below 400px the search and language controls need the room; the KM mark stays. */}
+            {/* Below 400px the search and language controls need the room; the MS mark stays. */}
             <span className="truncate text-body font-semibold max-[399px]:sr-only">
               {t("brand.product")}
             </span>

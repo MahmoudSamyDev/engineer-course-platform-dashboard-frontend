@@ -144,7 +144,7 @@ function createDb(now: Date) {
   const admins: MockAdmin[] = [
     {
       id: "adm_owner",
-      name: "Karim Mostafa",
+      name: "Mahmoud Samy",
       email: "owner@example.com",
       role: "OWNER",
       locale: "ar",
@@ -377,7 +377,7 @@ function createDb(now: Date) {
       .timeline.push({
         type: "CANCELLED",
         at: booking.cancelledAt,
-        by: "Karim Mostafa",
+        by: "Mahmoud Samy",
         note: booking.cancelReason,
       });
   }
@@ -459,13 +459,13 @@ function createDb(now: Date) {
     contact: {
       phoneE164: "+201000000000",
       whatsappE164: "+201000000000",
-      email: "contact@karim-mostafa.example",
+      email: "contact@mahmoud-samy.example",
     },
     social: [
-      { platform: "linkedin", url: "https://www.linkedin.com/in/example-karim-mostafa" },
-      { platform: "facebook", url: "https://www.facebook.com/example.karim.mostafa" },
-      { platform: "youtube", url: "https://www.youtube.com/@example-karim-mostafa" },
-      { platform: "instagram", url: "https://www.instagram.com/example.karim.mostafa" },
+      { platform: "linkedin", url: "https://www.linkedin.com/in/example-mahmoud-samy" },
+      { platform: "facebook", url: "https://www.facebook.com/example.mahmoud.samy" },
+      { platform: "youtube", url: "https://www.youtube.com/@example-mahmoud-samy" },
+      { platform: "instagram", url: "https://www.instagram.com/example.mahmoud.samy" },
     ],
     certifications: seedCerts.map((c): CertificationDto => ({
       id: c.id,

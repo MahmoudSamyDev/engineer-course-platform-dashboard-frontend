@@ -11,7 +11,7 @@
 | Document version | 1.0 — Draft for review |
 | Date | 2026-10-03 |
 | Prepared by | Mahmoud Samy (Frontend / Software Engineer) |
-| Client | Civil engineer & course instructor (identity placeholder: "Eng. Karim Mostafa", Website `DUMMY_DATA.md`) |
+| Client | Civil engineer & course instructor (identity placeholder: "Eng. Mahmoud Samy", Website `DUMMY_DATA.md`) |
 | Status | Draft — pending product-owner approval |
 | Companion documents | `docs/PRD.md` (this app) · `../Website/docs/SRS.md` (shared data model, business rules, QR format) · `docs/MARKET_RESEARCH.md` |
 
@@ -23,6 +23,7 @@
 | 1.1 | 2026-10-03 | Mahmoud Samy | Added `GET /admin/counts` for navigation badges (DD-026) |
 | 1.2 | 2026-11-11 | Mahmoud Samy | `POST /admin/auth/password` answers 204, or 422 with `fields.currentPassword = INCORRECT` / `fields.newPassword = TOO_SHORT \| SAME` (DD-036); certifications carry `imageUrl` (DD-035) |
 | 1.3 | 2026-11-11 | Mahmoud Samy | Money actions after the independent review (DD-050…052): refund also accepted for a `CANCELLED` booking whose payment is `SUCCEEDED`; move accepts the booking's own session when it has a free seat, and targets must be published, not closed, not started; rule violations are 409 `CONFLICT` with the reason in `fields` (`payment`/`booking: INVALID_STATE`, `targetSessionId: NO_SEATS`), invalid input 422 (`targetSessionId: INVALID \| OTHER_COURSE \| NOT_OPEN \| STARTED`, `amount: OUT_OF_RANGE`); a repeated `Idempotency-Key` replays the stored answer (not for 5xx) |
+| 1.4 | 2026-11-16 | Mahmoud Samy | Placeholder owner identity renamed from "Eng. Karim Mostafa" to "Eng. Mahmoud Samy", matching the Website `DUMMY_DATA.md`; no behavior or contract change |
 
 ---
 

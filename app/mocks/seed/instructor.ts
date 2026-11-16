@@ -5,9 +5,9 @@
 import type { Certification, Differentiator, Instructor, JourneyMilestone } from "~/domain/types";
 
 export const instructor: Instructor = {
-  slug: "karim-mostafa",
-  name: { en: "Eng. Karim Mostafa Hassan", ar: "م. كريم مصطفى حسن" },
-  shortName: { en: "Eng. Karim Mostafa", ar: "م. كريم مصطفى" },
+  slug: "mahmoud-samy",
+  name: { en: "Eng. Mahmoud Samy", ar: "م. محمود سامي" },
+  shortName: { en: "Eng. Mahmoud Samy", ar: "م. محمود سامي" },
   title: { en: "Senior Structural Engineer & BIM Instructor", ar: "مهندس إنشائي أول ومدرّب BIM" },
   specialization: {
     en: "Structural design of reinforced concrete buildings",
@@ -27,12 +27,12 @@ export const instructor: Instructor = {
   },
   bioLong: {
     en: [
-      "I'm Karim Mostafa, a senior structural engineer specialized in the design of reinforced concrete buildings. I graduated from Cairo University's Faculty of Engineering in 2012, then earned my M.Sc. in Structural Engineering from Ain Shams University.",
+      "I'm Mahmoud Samy, a senior structural engineer specialized in the design of reinforced concrete buildings. I graduated from Cairo University's Faculty of Engineering in 2012, then earned my M.Sc. in Structural Engineering from Ain Shams University.",
       "I started my career on construction sites, supervising reinforcement and concrete works, then moved to structural design, where I have designed more than 60 residential, commercial, educational and industrial buildings. Today I lead a team of structural engineers at a Cairo-based consultancy.",
       "I began teaching in 2016 because I kept meeting talented graduates who knew the theory but had never been shown how a design office actually works. My courses close that gap: one real project, step by step, with the same checklists and review process my team uses.",
     ],
     ar: [
-      "أنا كريم مصطفى، مهندس إنشائي أول متخصص في تصميم المباني الخرسانية المسلحة. تخرجت في كلية الهندسة بجامعة القاهرة عام 2012، ثم حصلت على درجة الماجستير في الهندسة الإنشائية من جامعة عين شمس.",
+      "أنا محمود سامي، مهندس إنشائي أول متخصص في تصميم المباني الخرسانية المسلحة. تخرجت في كلية الهندسة بجامعة القاهرة عام 2012، ثم حصلت على درجة الماجستير في الهندسة الإنشائية من جامعة عين شمس.",
       "بدأت مسيرتي في مواقع التنفيذ مشرفًا على أعمال التسليح والخرسانة، ثم انتقلت إلى التصميم الإنشائي، وصمّمت أكثر من 60 مبنى سكنيًا وتجاريًا وتعليميًا وصناعيًا. وأقود اليوم فريقًا من المهندسين الإنشائيين في مكتب استشاري بالقاهرة.",
       "بدأت التدريس عام 2016 لأنني كنت ألتقي دائمًا بخريجين موهوبين يعرفون النظريات، لكن لم يُشرح لهم أبدًا كيف يعمل مكتب التصميم فعليًا. دوراتي تسد هذه الفجوة: مشروع حقيقي واحد، خطوة بخطوة، بنفس قوائم المراجعة وخطوات التدقيق التي يستخدمها فريقي.",
     ],
@@ -51,7 +51,7 @@ export const instructor: Instructor = {
   },
   photo: {
     src: "https://images.unsplash.com/photo-1587715718640-987708ba38e1",
-    alt: { en: "Portrait of Eng. Karim Mostafa", ar: "صورة م. كريم مصطفى" },
+    alt: { en: "Portrait of Eng. Mahmoud Samy", ar: "صورة م. محمود سامي" },
     width: 1200,
     height: 1500,
     credit: {

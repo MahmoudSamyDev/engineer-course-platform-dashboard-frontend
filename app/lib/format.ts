@@ -50,7 +50,7 @@ export function formatPrice(amount: Piasters, currencyLabel: string): string {
   return `${formatAmount(amount)} ${currencyLabel}`;
 }
 
-/** Initials for avatars: "Karim Mostafa" → "KM", "كريم مصطفى" → "كم". */
+/** Initials for avatars: "Mahmoud Samy" → "MS", "محمود سامي" → "مس". */
 export function initials(name: string): string {
   const words = name
     .replace(/^(Eng\.|م\.)\s*/u, "")
