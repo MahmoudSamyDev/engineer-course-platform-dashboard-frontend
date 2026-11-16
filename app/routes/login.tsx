@@ -162,7 +162,10 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   dir="ltr"
-                  className={cn(inputClasses, "pe-11")}
+                  // The field is always left-to-right (dir="ltr"), so logical padding would follow the
+                  // text, not the page. The eye sits on the page's end side (left in Arabic):
+                  // reserve room on that physical side so typing never runs under it.
+                  className={cn(inputClasses, "[[dir=ltr]_&]:pr-11 [[dir=rtl]_&]:pl-11")}
                 />
                 <button
                   type="button"
