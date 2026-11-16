@@ -12,6 +12,7 @@ import {
 import { useTranslations } from "use-intl";
 import type { Route } from "./+types/root";
 import { BrandBlock } from "./components/layout/brand-block";
+import { CreditHeader } from "./components/layout/credit-header";
 import { StatusScreen } from "./components/layout/status-screen";
 import { Button } from "./components/ui/button";
 import { Spinner } from "./components/ui/spinner";
@@ -82,6 +83,7 @@ function Document({ children }: { children: ReactNode }) {
         <Links />
       </head>
       <body>
+        <CreditHeader />
         <AppProviders locale={locale}>{children}</AppProviders>
         <ScrollRestoration />
         <Scripts />
