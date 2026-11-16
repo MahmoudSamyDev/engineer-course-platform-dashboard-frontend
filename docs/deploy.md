@@ -46,6 +46,18 @@ location / {
 location /assets/ { add_header Cache-Control "public, max-age=31536000, immutable"; }
 ```
 
+## Demo deployment (no backend)
+
+For a public preview with sample data, build with the demo switch. In Vercel (or any host), set these **build-time** variables and redeploy:
+
+| Variable | Value |
+|---|---|
+| `VITE_API_MOCKING` | `true` |
+| `VITE_DEMO` | `true` |
+| `VITE_API_BASE_URL` | leave unset (or `/api/v1`) |
+
+The build then includes the in-browser mock API (data resets on reload) and shows the demo banner and the demo accounts on the sign-in page. Use it only to show the work, never with real data, and never for the real deployment (omit `VITE_DEMO`). Vercel ignores `_headers`, so the security headers are not applied there.
+
 ## Backend side
 
 The Website backend must allow this origin with credentials (CORS), set the session cookie `httpOnly; Secure; SameSite=Strict` (DNFR-SEC-01/04), and implement the contract in `docs/SRS.md` §7.2, including revisions 1.1–1.3.

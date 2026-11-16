@@ -201,8 +201,8 @@ export default function Login() {
         <p className="mt-5 text-caption text-graphite">{t("auth.forgot")}</p>
       </main>
 
-      {/* `import.meta.env.DEV` inline so production builds drop the mock credentials entirely. */}
-      {import.meta.env.DEV && MOCKING_ENABLED ? (
+      {/* Inline build-time constants so normal production builds drop the mock credentials entirely. */}
+      {(import.meta.env.DEV || import.meta.env.VITE_DEMO === "true") && MOCKING_ENABLED ? (
         <p className="mt-4 text-center text-caption text-graphite" dir="auto">
           {t("auth.mockAccounts", {
             accounts: "owner@example.com, admin@example.com",

@@ -1,8 +1,10 @@
 import { useTranslations } from "use-intl";
 
-export const MOCKING_ENABLED = import.meta.env.DEV && import.meta.env.VITE_API_MOCKING === "true";
+export const MOCKING_ENABLED =
+  (import.meta.env.DEV || import.meta.env.VITE_DEMO === "true") &&
+  import.meta.env.VITE_API_MOCKING === "true";
 
-/** Visible reminder that the data is not real (SRS DSH-GEN-10). Development only. */
+/** Visible reminder that the data is not real (SRS DSH-GEN-10). Development and demo builds only. */
 export function MockBanner() {
   const t = useTranslations("app");
   if (!MOCKING_ENABLED) return null;
